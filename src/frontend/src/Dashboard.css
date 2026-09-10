@@ -1,0 +1,22 @@
+.dash { max-width: 700px; margin: 0 auto; padding: 24px 16px; font-family: -apple-system, "Segoe UI", sans-serif; }
+.toolbar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.btn { border: 1px solid #c9c9c9; background: #fff; border-radius: 8px; padding: 6px 14px; font-size: 13px; cursor: pointer; }
+.btn-active { border: 2px solid #1D9E75; background: #eafbf4; color: #0F6E56; }
+.btn-run { margin-left: auto; border-color: #1D9E75; }
+.btn:disabled { opacity: 0.5; }
+
+.dash-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; }
+.panel { background: #fff; border: 1px solid #e2e2e2; border-radius: 12px; padding: 16px; }
+.graph-panel { min-height: 360px; }
+
+.metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.metric-card { background: #f6f7f8; border-radius: 8px; padding: 10px; }
+.metric-label { font-size: 11px; color: #666; margin: 0 0 4px; }
+.metric-value { font-size: 20px; font-weight: 600; margin: 0; }
+
+.explain-panel { background: #faf9fc; }
+.explain-label { font-size: 11px; color: #666; margin: 0 0 6px; }
+.explain-placeholder { font-size: 12px; color: #999; font-style: italic; margin: 0; }
+
+.hint, .error { color: #666; font-size: 14px; }
+.error { color: #b3261e; }

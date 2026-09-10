@@ -1,0 +1,20 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #f6f7f8; color: #1a1a1a; font-family: -apple-system, "Segoe UI", sans-serif; }
+.app { max-width: 640px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 22px; margin-bottom: 4px; }
+.subtitle { color: #666; font-size: 14px; margin-top: 0; margin-bottom: 20px; }
+.error { color: #b3261e; }
+
+.card { background: #fff; border: 1px solid #e2e2e2; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.asset-name { font-weight: 600; font-size: 15px; margin: 0; }
+
+.btn { border: 1px solid #c9c9c9; background: #fff; border-radius: 8px; padding: 5px 12px; font-size: 12px; cursor: pointer; }
+.btn:disabled { opacity: 0.5; cursor: default; }
+.btn-confirmed { border-color: #1d9e75; background: #eafbf4; color: #0f6e56; }
+.btn-edited { border-color: #b98900; background: #fff8e6; color: #8a6600; }
+
+.badge-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.badge-select { font-size: 12px; padding: 3px 6px; border-radius: 6px; border: 1px solid #d6d6d6; background: #f3f3f3; }
+
+.reasoning { font-size: 13px; color: #555; line-height: 1.5; margin: 0; }

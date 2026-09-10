@@ -1,0 +1,13 @@
+*.vmdk
+*.vdi
+*.ova
+data/*.db
+!data/schema.sql
+!data/seed.sql
+!data/demo_ai_suggestions.sql
+.env
+*.key
+__pycache__/
+*.pyc
+node_modules/
+dist/
