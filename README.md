@@ -1,53 +1,82 @@
-# iDECOP-ICS — Phase C build
+# iDECOP-ICS
 
-*intelligent Deception Planning and Placement Optimization for Industrial Control Systems.* Prototype name per D18 in `docs/00-decisions-log.md` — the thesis title itself is unchanged ("AI-Assisted Deception Placement Optimization for Industrial Control Systems").
+*intelligent Deception Planning and Placement Optimization for Industrial Control Systems.*
 
-Real, tested code — the database was initialized and queried, the API was started and hit with real requests, the frontend built successfully, and now the optimizer has actually been run against real data and produced real comparative results. Nothing below is illustrative or hypothetical.
+Prototype for an M.Tech Cyber Security major project at the National Forensic Sciences University. Prototype name per D18 in `docs/00-decisions-log.md`; the thesis title itself is unchanged — "AI-Assisted Deception Placement Optimization for Industrial Control Systems".
 
-## What's here
+**The problem.** Industrial networks can be defended with decoys — fake PLCs, honey credentials, decoy services — so that any interaction with them is high-confidence evidence of intrusion. Building convincing decoys is a solved, crowded field. Deciding *where* to put them is still done manually, by template, or by architectural convention. This project makes that decision a formal optimisation problem over IEC 62443 zone structure, asset criticality, and MITRE ATT&CK for ICS attack paths.
 
-- `data/schema.sql`, `data/seed.sql` — transcribed from `02-data-model.md`, with a real fix fed back into that document: the original seed data never populated `edges`/`conduits`, leaving the graph with zero connectivity (found while building this).
-- `data/demo_ai_suggestions.sql` — the three assets worked through by name in `02-ai-role.md` §10, for the review-screen demo.
-- `src/api/main.py` — FastAPI backend for Screen 3 (plausibility review): `GET /assets`, `GET /candidates`, `POST /candidates/{asset_id}/confirm`.
-- `src/frontend/` — the working React app for Screen 3.
-- `src/graph_model/` — loads the real graph from SQLite, computes betweenness centrality (genuinely computed, not placeholder) and `Crit(v)` (uses placeholder SL/damage values — see the module's own docstring for why those specifically still need real elicitation, not computation).
-- `src/optimizer/metrics.py` — `F(x)` and all five components, shared by every method so they're scored identically.
-- `src/optimizer/baselines.py` — greedy, random (30 trials), and centrality, implementing `02-optimization-formulation.md` §2/4/5 exactly.
-- `scripts/run_comparison.py` — runs all three against the real testbed graph and prints a comparison. This produced the results below.
+**What this is not:** another honeypot, a honeytoken platform, an AI chatbot, a generic attack graph, a vulnerability scanner, an asset inventory, a GRC dashboard, or a network visualiser. That boundary governs every design decision in `docs/00-decisions-log.md`.
 
-## First real comparison — all four methods, read the caveats not just the numbers
+Everything below is real, executed code. The database is initialised and queried, the API is started and hit with real requests, the frontend builds, and the optimiser runs against the real graph. Nothing here is illustrative.
 
-Budget = 2, candidates = 5 (the confirmed subset of `L`), default weights (α=β=γ=δ=1, ε=0.1):
+---
 
-| Method | F(x) | Coverage | Early | CritProt |
-|---|---|---|---|---|
-| Greedy (proposed) | **0.450** | 0.67 | 0.00 | 0.18 |
-| MILP (validation) | **0.450** | 0.67 | 0.00 | 0.18 |
-| Centrality | 0.103 | 0.33 | 0.75 | 0.12 |
-| Random (mean of 30) | -0.179 | — | — | — |
+## Repository layout
 
-Greedy matched MILP's exact optimum on this instance (0.0% gap) — expected on a small testbed, not itself evidence the D1 approximation guarantee holds in general. This is a 5-candidate, 3-path smoke test with placeholder criticality inputs, not a thesis result. Three genuine findings worth knowing about, not just the headline numbers:
+| Path | Contents |
+|---|---|
+| `docs/` | Specification, research, decisions log, project tracking. Naming convention in `docs/00-workflow-and-rules.md` |
+| `src/graph_model/` | Builds `G = (V,E)` from SQLite; weighted betweenness centrality; `Crit(v)` |
+| `src/optimizer/` | `metrics.py` (F(x) and its five components), `baselines.py` (greedy, random, centrality), `milp.py` (exact validator) |
+| `src/api/` | FastAPI backend — nine endpoints |
+| `src/frontend/` | React + Vite interface |
+| `data/` | Schema, seed data, demo AI suggestions |
+| `scripts/` | `run_comparison.py` — runs all four methods and prints a comparison |
+| `references/` | Papers cited in `docs/sources.md`, by source number |
 
-**MILP's first implementation was wrong, and building it is what proved that.** `02-optimization-formulation.md` §3 originally recommended an "unnormalized Early proxy" as the simpler linearization option. Building it and running it produced a placement that scored *worse* on the true F(x) than greedy — logically impossible for an exact validator. Root cause and fix are in that document's §3 now, corrected in place rather than hidden — D16 in the decisions log has the full story.
+---
 
-**Greedy correctly stopped at one decoy, not two.** Adding DMZ Jump Host as a second placement would improve coverage and early-detection, but its `detectability_risk` (0.7 — "most externally-scanned zone") costs more in the objective than it gains. D5's "weight operational risk heavily" decision, actually doing something.
+## Current state
 
-**Resolved (D19):** Engineering WS-2 originally contributed nothing to any attack path — logged as D15. Fixed by rerouting P3 through it rather than leaving P3's second step disjunctive with HMI. Re-running confirmed the fix works as intended: WS-2 is no longer structurally excluded from ever being selected (it joins DMZ Jump Host and HMI for full coverage once coverage is weighted higher, α=3) — though under the *default* weights, greedy still picks DMZ Jump Host alone, since `Early(x)` is a mean over intercepted paths and both WS-2's and HMI's interceptions land at the latest possible stage, dragging that average down rather than helping it. A genuine, worth-keeping illustration of the coverage/early-detection tradeoff for the results chapter, not a bug.
+**Built and working**
 
-## What's tested and confirmed working
+- `data/schema.sql`, `data/seed.sql` — ten tables, transcribed from `docs/02-data-model.md`. A real fix was fed back into that document while building: the original seed never populated `edges`/`conduits`, leaving the graph with zero connectivity.
+- `src/graph_model/` — loads the real graph, computes betweenness centrality (genuinely computed, not placeholder) and `Crit(v)`. SL and damage values are still placeholders pending real elicitation; the module docstring explains why.
+- `src/optimizer/` — all four methods, scored by a single shared `score()` so results stay comparable.
+- `src/api/main.py` — `GET /health`, `/graph`, `/assets`, `/candidates`, `/attack-paths`, `/runs`, `/runs/{id}`; `POST /optimize`, `/candidates/{asset_id}/confirm`.
+- `src/frontend/` — Screen 3 (plausibility review) and Screen 1 (single-run dashboard).
 
-- Database, API, and frontend — see the Phase C notes in `00-decisions-log.md` (D14).
-- `graph_model`: real betweenness centrality computed from the actual 14-edge graph (verified DMZ Jump Host has the highest centrality — a genuine hub node, correctly identified); criticality scores written back to `assets`.
-- `optimizer`: greedy's early-stopping behavior confirmed (doesn't spend the full budget when nothing improves); random's 30-trial mean and std computed; centrality's deterministic top-B selection confirmed against actual betweenness values.
+**Not built yet**
 
-## What isn't built yet
+Explanation layer (`/runs/{id}/explain` — needs a live Ollama instance), Screen 2 (sensitivity-sweep comparison), the Colab plausibility-scoring notebook, and the physical VM testbed.
 
-`/optimize`/`/runs`/`/explain` endpoints (the optimizer modules exist now, just not wired to the API yet), Screens 1 and 2, the AI explanation layer's Ollama integration, the Colab notebook, and the physical VMs.
+---
+
+## Current comparison — read the caveats, not just the numbers
+
+Budget = 2, five confirmed candidates, three attack paths, default weights (α=β=γ=δ=1, ε=0.1). Produced by `scripts/run_comparison.py`.
+
+| Method | Placement | F(x) | Coverage | Early | CritProt | Risk | Cost |
+|---|---|---|---|---|---|---|---|
+| Greedy (proposed) | DMZ Jump Host | **0.4032** | 0.33 | 0.75 | 0.12 | 0.70 | 1 |
+| MILP (validation) | DMZ Jump Host | **0.4032** | 0.33 | 0.75 | 0.12 | 0.70 | 1 |
+| Centrality | DMZ Jump Host, Eng WS-2 | 0.1465 | 0.67 | 0.38 | 0.20 | 0.90 | 2 |
+| Random (mean of 30) | — | −0.1358 | — | — | — | — | — |
+
+Greedy matched the exact optimum (0.0% gap). Expected at this instance size, and not itself evidence that the D1 approximation guarantee holds in general. This is a five-candidate, three-path instance with placeholder criticality inputs — a working comparison, not a thesis result.
+
+### Known open issue, stated here rather than buried
+
+`Risk(x)` is implemented as an unnormalised sum of per-decoy detectability, while `docs/formal-problem-definition.md` §5 defines it as a probability. `CritProt(x)` is normalised against the criticality of every asset in the graph, capping it at roughly 0.30 even at full coverage. Both terms are therefore on different scales from `Coverage` and `Early`, which distorts what equal weights mean. This is the same failure class as D16 and must be resolved before the evaluation campaign. It is why greedy currently wins on the objective while covering *fewer* paths than the centrality baseline.
+
+---
+
+## Three findings that only appeared when the specification was built
+
+**The MILP's first implementation was wrong, and building it proved that.** `docs/02-optimization-formulation.md` §3 originally recommended an unnormalised early-detection proxy as the simpler linearisation. Running it produced a placement scoring *worse* on the true F(x) than greedy — impossible for an exact validator. The unnormalised proxy rewards covering more paths over covering them earlier. Corrected in place, with the failed option kept in the text. Full account in D16.
+
+**Greedy correctly stops before spending its budget.** A second placement at DMZ Jump Host would improve coverage, but its detectability risk costs more in the objective than it gains. D5's decision to weight operational risk heavily, visibly doing something.
+
+**`Early(x)` is a mean, and that has consequences.** Engineering WS-2 originally contributed to no attack path (D15), fixed by rerouting P3 through it (D19). After the fix, greedy still selects DMZ Jump Host alone under default weights — both WS-2 and HMI intercept at the latest possible stage, so adding either drags the mean down. Raise the coverage weight to α=3 and all three are selected for full coverage. An interpretable illustration of the coverage/earliness tradeoff, not a bug.
+
+---
 
 ## Running it
 
 ```bash
-pip install fastapi "uvicorn[standard]" pydantic networkx ortools --break-system-packages
+pip install -r requirements.txt
+
 python3 -c "
 import sqlite3
 conn = sqlite3.connect('data/deception_placement.db')
@@ -55,11 +84,16 @@ for f in ['data/schema.sql','data/seed.sql','data/demo_ai_suggestions.sql']:
     conn.executescript(open(f).read())
 conn.commit()
 "
-python3 scripts/run_comparison.py          # the three-method comparison above
 
-python3 -m uvicorn src.api.main:app --reload   # backend, separately
-cd src/frontend && npm install && npm run dev  # frontend, separately
+python3 scripts/run_comparison.py               # the comparison above
+python3 -m uvicorn src.api.main:app --reload    # backend
+cd src/frontend && npm install && npm run dev   # frontend
 ```
 
-`node_modules/`, `dist/`, and `*.db` aren't included — regenerate with the commands above.
+`node_modules/`, `dist/` and `*.db` are not tracked — regenerate with the commands above.
 
+---
+
+## Where to start reading
+
+New to the project: `docs/02-system-flow.md` for how it fits together, then `docs/formal-problem-definition.md` for the mathematics. `docs/00-glossary.md` defines every term. `docs/00-decisions-log.md` explains why each choice was made, including the ones that turned out wrong.
