@@ -45,22 +45,41 @@ Explanation layer (`/runs/{id}/explain` — needs a live Ollama instance), Scree
 
 ## Current comparison — read the caveats, not just the numbers
 
-Budget = 2, five confirmed candidates, three attack paths, default weights (α=β=γ=δ=1, ε=0.1). Produced by `scripts/run_comparison.py`.
+Budget = 3, five confirmed candidates, three attack paths, default weights (α=β=γ=δ=1, ε=0.1). Produced by `scripts/run_comparison.py`.
 
 | Method | Placement | F(x) | Coverage | Early | CritProt | Risk | Cost |
 |---|---|---|---|---|---|---|---|
-| Greedy (proposed) | DMZ Jump Host | **0.4032** | 0.33 | 0.75 | 0.12 | 0.70 | 1 |
-| MILP (validation) | DMZ Jump Host | **0.4032** | 0.33 | 0.75 | 0.12 | 0.70 | 1 |
-| Centrality | DMZ Jump Host, Eng WS-2 | 0.1465 | 0.67 | 0.38 | 0.20 | 0.90 | 2 |
-| Random (mean of 30) | — | −0.1358 | — | — | — | — | — |
+| Greedy (proposed) | DMZ Jump Host, Eng WS-2, HMI | **1.750** | **1.00** | 0.25 | 1.00 | 0.40 | 3 |
+| MILP (validation) | DMZ Jump Host, Eng WS-2, HMI | **1.750** | **1.00** | 0.25 | 1.00 | 0.40 | 3 |
+| Centrality | DMZ Jump Host, Eng WS-2, Historian | 1.098 | 0.67 | 0.25 | 0.68 | 0.40 | 3 |
+| Random (mean of 30) | — | 1.024 | — | — | — | — | — |
 
-Greedy matched the exact optimum (0.0% gap). Expected at this instance size, and not itself evidence that the D1 approximation guarantee holds in general. This is a five-candidate, three-path instance with placeholder criticality inputs — a working comparison, not a thesis result.
+Greedy matched the exact optimum — a 0.0% optimality gap. Expected at this instance size and **not** evidence that an approximation guarantee holds in general; see the note on that below.
 
-### Known open issue, stated here rather than buried
+### Across budgets and weightings
 
-`Risk(x)` is implemented as an unnormalised sum of per-decoy detectability, while `docs/formal-problem-definition.md` §5 defines it as a probability. `CritProt(x)` is normalised against the criticality of every asset in the graph, capping it at roughly 0.30 even at full coverage. Both terms are therefore on different scales from `Coverage` and `Early`, which distorts what equal weights mean. This is the same failure class as D16 and must be resolved before the evaluation campaign. It is why greedy currently wins on the objective while covering *fewer* paths than the centrality baseline.
+A single budget is a single data point. Sweeping B = 1..4 across five weightings (default, α=3, β=3, γ=3, δ=3) gives 20 configurations:
 
----
+**Greedy beats the centrality baseline in 17, ties in 3, and never loses.**
+
+Three results worth reading the code for:
+
+- **Full coverage at lower cost.** At B=3 greedy reaches Coverage 1.00; centrality needs B=4 for the same. That is the "equal coverage at lower deployment cost" clause of the primary research question, answered.
+- **It knows when not to act.** At δ=3, B=1 greedy places *nothing* (F = 0.000) while centrality places a decoy and scores **−1.239**. A top-B ranking has no mechanism for declining to spend its budget.
+- **Topology-only ranking misfires.** Centrality spends spare budget on the Historian — an asset that appears on no attack path in **P**. Pure cost and detectability risk for zero coverage gain.
+
+### Reported honestly: where the methods coincide
+
+At **B=2 under default weights, greedy, MILP and centrality all select the same pair and score identically** (1.048). On a five-candidate instance a topology heuristic can land on the optimum by coincidence. This is in the results because selecting a more flattering budget and omitting this one would make the other 17 configurations less credible, not more.
+
+### On the greedy approximation guarantee — read before citing
+
+The objective was corrected in D20 after exhaustive structural testing (`scripts/structure_check.py` enumerates all 32 subsets of **L**; no sampling).
+
+- **Before D20:** `Early(x)` was a mean over *intercepted* paths, making it non-monotone — 16 monotonicity and 18 submodularity violations. F(x) was **not submodular at all**, so no greedy guarantee of any kind was available, contradicting what the specification claimed.
+- **After D20:** F(x) is **submodular but not monotone**, and necessarily so, because Risk and Cost are subtracted. The classical (1−1/e) bound requires *monotone* submodular maximisation under a cardinality constraint, so **it still does not apply directly to F(x)**.
+
+No approximation guarantee is claimed here. `formal-problem-definition.md` §7 records the two honest routes — cite the regularised result for a monotone-submodular-minus-modular objective, or move risk from a penalty to a constraint — and A27 blocks any claim until a primary source is verified. What carries the practical argument meanwhile is the exact validator's 0.0% gap: at testbed scale the optimum is computable, so the guarantee matters for the scalability argument rather than for these results.
 
 ## Three findings that only appeared when the specification was built
 
@@ -68,9 +87,9 @@ Greedy matched the exact optimum (0.0% gap). Expected at this instance size, and
 
 **Greedy correctly stops before spending its budget.** A second placement at DMZ Jump Host would improve coverage, but its detectability risk costs more in the objective than it gains. D5's decision to weight operational risk heavily, visibly doing something.
 
-**`Early(x)` is a mean, and that has consequences.** Engineering WS-2 originally contributed to no attack path (D15), fixed by rerouting P3 through it (D19). After the fix, greedy still selects DMZ Jump Host alone under default weights — both WS-2 and HMI intercept at the latest possible stage, so adding either drags the mean down. Raise the coverage weight to α=3 and all three are selected for full coverage. An interpretable illustration of the coverage/earliness tradeoff, not a bug.
+**`Early(x)` was structurally broken, and only exhaustive testing showed it.** Engineering WS-2 originally contributed to no attack path (D15), fixed by rerouting P3 through it (D19). After that fix greedy *still* selected DMZ Jump Host alone under default weights, and the reason turned out to be structural rather than incidental: a mean over intercepted paths is non-monotone, so adding a late-intercepting decoy lowers the score. D19 observed the symptom; D20 identified the cause by enumerating every subset and verifying the violation count. Changing the denominator to a fixed |P| makes the term monotone and submodular, and — not coincidentally — removes the need for D16's k-enumeration workaround entirely, since the early coefficient stops depending on a quantity the solver is choosing.
 
----
+**Conduits were named in the novelty claim and computed nowhere.** The claim states that IEC 62443 zone *and conduit* structure are first-class inputs. Zones genuinely were: `SL(zone(v))` enters `Crit(v)`. Conduits were stored, diagrammed, and inert — the clause was false as built. D20 adds `ConduitSL(v)`: a conduit takes the higher SL of the two zones it joins, and an asset inherits the highest SL among conduits incident to its zone. Modular in **x**, so submodularity survives; re-verified after the change.
 
 ## Running it
 
@@ -86,6 +105,7 @@ conn.commit()
 "
 
 python3 scripts/run_comparison.py               # the comparison above
+python3 scripts/structure_check.py              # monotonicity + submodularity, exhaustive
 python3 -m uvicorn src.api.main:app --reload    # backend
 cd src/frontend && npm install && npm run dev   # frontend
 ```

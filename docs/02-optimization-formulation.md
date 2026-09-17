@@ -110,3 +110,13 @@ Deterministic — one run, no repetition needed. Betweenness centrality specific
 
 - **AI role** — the explanation layer's prompt takes exactly this document's output as input: `x*`, `F(x*)` and its five components, plus the same metrics for Methods 1 and 2 for comparison. Nothing here is invented fresh in that document; it's assembled from what greedy/MILP/random/centrality all return.
 - **Prototype architecture** — the `/optimize` endpoint from `02-data-model.md`'s API contract calls whichever of GREEDY/MILP/RANDOM/CENTRALITY the request specifies; this document is that endpoint's actual implementation, not just its interface.
+
+---
+
+## Revision note — D20 supersedes the Option 1 recommendation in §3
+
+§3 above recommends Option 1 (enumerate coverage count k = 0..|P|, fix the denominator per solve, keep the best true F(x)) after Option 2 was found wrong by implementation — see D16. **That workaround is no longer needed.**
+
+Both options existed only because `Early(x)` was normalised by the *variable* count of intercepted paths, so the early coefficient depended on a quantity the solver was choosing. D20 changed the denominator to a fixed |P|. The coefficient is now constant, the objective linearises directly, and `solve_milp` performs **one** exact solve instead of |P|+1.
+
+The D16 account stays in §3 unchanged. It remains a real and useful cautionary finding — an unnormalised proxy scoring *better* than the true objective is exactly the kind of error that only surfaces when an exact validator disagrees with a heuristic in the wrong direction — and the methodology chapter should keep it. What changed is the fix, not the diagnosis.

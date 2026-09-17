@@ -15,7 +15,7 @@ Standing checklist of things that need your action because they're outside what 
 
 | # | Item | Why it's manual | Status |
 |---|---|---|---|
-| A11 | Decide how to resolve the `Risk(x)` and `CritProt(x)` normalisation mismatch — mean, union probability, or keep the sum and document the scale | A modelling decision with thesis consequences, not a bug fix. Blocks Phase D, which blocks Chapter 5 | **Pending — highest technical priority** |
+| ~~A11~~ | ~~Decide how to resolve the `Risk(x)` and `CritProt(x)` normalisation mismatch — mean, union probability, or keep the sum and document the scale | A modelling decision with thesis consequences, not a bug fix. Blocks Phase D~~ | Resolved by D20 | **Done** |
 | A12 | Decide whether the primary research question should be rephrased. As written it asks for higher Coverage and CritProt than the baselines; current output wins on the objective while covering fewer paths | Research-question wording is yours and the guide's call | Pending |
 | A13 | Decide what to do about Historian and PLC-02 — both are confirmed candidates that appear in no attack path and can never contribute coverage. Reroute a path through them, or document them as search-space filler | Same fork D19 resolved for Engineering WS-2 | Pending |
 
@@ -39,10 +39,11 @@ Standing checklist of things that need your action because they're outside what 
 
 | # | Item | Why it's manual | Status |
 |---|---|---|---|
-| A22 | Decide how conduits enter the model quantitatively. They are named in the novelty claim as a first-class input, but currently carry no security level and contribute nothing to `Crit(v)`. Options (a) assign conduit SL per #330 and feed it into criticality, (b) use conduit adjacency in rubric criterion 2 only, (c) narrow the claim to zones. Recommendation: (b), with (a) as a stretch | A modelling decision affecting the novelty claim | **Pending — blocking Phase D** |
+| ~~A22~~ | ~~Decide how conduits enter the model quantitatively. They are named in the novelty claim as a first-class input, but currently carry no security level and contribute nothing to `Crit(v)`. Options (a) assign conduit SL per #330 and feed it into criticality, (b) use conduit adjacency in rubric criterion 2 only, (c) narrow the claim to zones. Resolved by D20 — option (a) implemented: ConduitSL(v) added to Crit(v). Option (b) would not have made the novelty claim true, since it shapes L rather than F(x)~~ | — | **Done** |
 | A23 | Build a Filter 2 scoring rubric from #333's fingerprinting-artifact taxonomy, replacing the current qualitative down-weighting. Read #333 in full first | Needs a design decision on which artifact classes apply at which network positions | Pending — cheap, high value |
 | A24 | Add to `threat-attack-model.md`: the stated assumption that emulated ICS decoys are detectable by a capable adversary with engineering tooling (#20 §6.3), and the derived principle that Sweep candidates are more robust to detectability than Seek candidates | A threat-model assumption, yours to confirm | Pending |
 | A25 | Reframe `Damage(v)` elicitation in Asset Criticality Analysis consequence-category terms (#336), using the consequence decomposition only, never ACA's likelihood term | Changes how the number is requested from a process engineer | Pending — low priority |
+| A27 | Locate and verify the primary source for the regularised submodular result (f = g − ℓ, g monotone submodular, ℓ modular non-negative) — attributed to Sviridenko, Vondrák & Ward. **Until verified, claim no approximation guarantee for greedy.** Alternative: adopt the risk-as-constraint reformulation in §7(ii) | Needs a paper obtained and its theorem statement checked against this objective's structure | **Pending — blocks any guarantee claim** |
 | A26 | Disambiguate "detectability" in `00-glossary.md` — ACA uses it for advance detection of failures, this project for attacker identification of decoys | Trivial; fold into the next glossary edit | Pending |
 
 ## Repository hygiene

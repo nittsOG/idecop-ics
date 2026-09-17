@@ -60,18 +60,66 @@ def compute_centrality(g: nx.DiGraph) -> dict[int, float]:
     return nx.betweenness_centrality(g, weight="weight", normalized=True)
 
 
-def compute_criticality(g: nx.DiGraph, w1: float = 0.5, w2: float = 0.5) -> dict[int, dict]:
-    """Crit(v) = w1*SL(v) + w2*Central(v)*Damage(v), formal-problem-definition.md §2.
-    Returns per-node components too, not just the final score — useful for
-    sanity-checking which term is actually driving a given asset's ranking."""
+def load_conduit_sl(g: nx.DiGraph, db_path: Path = DB_PATH) -> dict[int, float]:
+    """ConduitSL(v) — the highest security level among the conduits incident to
+    v's zone, or 0.0 if v's zone has none.
+
+    A22/D20: conduits were named in the novelty claim as a first-class input
+    but entered no computation — they were stored, diagrammed, and otherwise
+    inert. This makes them numeric. The aggregation rule (a conduit takes the
+    highest SL of the zones it joins) follows sources.md #330, which treats a
+    conduit as carrying the protection burden of the more demanding side of the
+    boundary it crosses.
+
+    Rationale for attaching it to the asset rather than to the edge: every
+    attack path in P must traverse a conduit to reach impact, so an asset
+    sitting at a high-SL boundary is materially more important to protect than
+    the same asset type deeper inside a single zone. Modular in x, so it does
+    not disturb the submodularity D20 restores."""
+    conn = sqlite3.connect(db_path)
+    # graph nodes carry the zone NAME; conduits reference zone IDs
+    id_to_name = {r[0]: r[1] for r in conn.execute("SELECT zone_id, name FROM zones")}
+
+    zone_sl: dict[str, float] = {}
+    for _, data in g.nodes(data=True):
+        z = data.get("zone")
+        if z is None:
+            continue
+        sl = PLACEHOLDER_SL_BY_LEVEL.get(data["purdue_level"], 0.5)
+        zone_sl[z] = max(zone_sl.get(z, 0.0), sl)
+
+    incident: dict[str, float] = {}
+    for za, zb in conn.execute("SELECT zone_a_id, zone_b_id FROM conduits"):
+        na, nb = id_to_name.get(za), id_to_name.get(zb)
+        c_sl = max(zone_sl.get(na, 0.0), zone_sl.get(nb, 0.0))
+        for nz in (na, nb):
+            if nz is not None:
+                incident[nz] = max(incident.get(nz, 0.0), c_sl)
+    conn.close()
+
+    return {n: incident.get(data.get("zone"), 0.0) for n, data in g.nodes(data=True)}
+
+
+def compute_criticality(g: nx.DiGraph, w1: float = 0.4, w2: float = 0.4,
+                        w3: float = 0.2) -> dict[int, dict]:
+    """Crit(v) = w1*SL(v) + w2*Central(v)*Damage(v) + w3*ConduitSL(v),
+    formal-problem-definition.md §2. The third term was added by A22/D20.
+
+    Default weights are a starting point for the sensitivity sweep, not a
+    claimed correct weighting — same status as the objective's alpha..epsilon.
+    Returns per-node components so it stays visible which term drives a
+    given asset's ranking."""
     central = compute_centrality(g)
+    conduit_sl = load_conduit_sl(g)
     result = {}
     for n, data in g.nodes(data=True):
         sl = PLACEHOLDER_SL_BY_LEVEL.get(data["purdue_level"], 0.5)
         damage = PLACEHOLDER_DAMAGE_BY_TYPE.get(data["asset_type"], 0.3)
         c = central.get(n, 0.0)
-        crit = w1 * sl + w2 * c * damage
-        result[n] = {"name": data["name"], "sl": sl, "central": c, "damage": damage, "criticality": crit}
+        csl = conduit_sl.get(n, 0.0)
+        crit = w1 * sl + w2 * c * damage + w3 * csl
+        result[n] = {"name": data["name"], "sl": sl, "central": c, "damage": damage,
+                     "conduit_sl": csl, "criticality": crit}
     return result
 
 

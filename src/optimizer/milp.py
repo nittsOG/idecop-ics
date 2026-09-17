@@ -34,7 +34,7 @@ def _solve_for_fixed_coverage(candidates, paths, criticality, detectability_risk
     model.Add(sum(x.values()) <= budget)
 
     y, z = {}, {}
-    max_crit = sum(c["criticality"] for c in criticality.values()) or 1.0
+    max_crit = sum(criticality[p["asset_sequence"][-1]]["criticality"] for p in paths) or 1.0  # D20
     obj_terms = []
 
     for i, p in enumerate(paths):
@@ -63,15 +63,17 @@ def _solve_for_fixed_coverage(candidates, paths, criticality, detectability_risk
         obj_terms.append(int(round(alpha * SCALE / len(paths))) * yi)
         obj_terms.append(int(round(gamma * SCALE * target_crit / max_crit)) * yi)
         # Early is now correctly normalized by the FIXED k, not a variable.
-        early_coef = (beta * SCALE / k) if k > 0 else 0
+        early_coef = beta * SCALE / len(paths)   # D20: fixed |P|, never k
         for step_idx, a in candidate_steps:
             w = int(round(early_coef * (1 - step_idx / p["length"])))
             obj_terms.append(w * z[(i, step_idx)])
 
-    model.Add(sum(y.values()) == k)  # the fix: fix the denominator, don't let the solver choose it
+    if k is not None:
+        model.Add(sum(y.values()) == k)
 
+    # D20: Risk and Cost are now /budget, so scale the penalty accordingly.
     for l in candidates:
-        penalty = int(round(delta * SCALE * detectability_risk.get(l, 0.0) + epsilon * SCALE))
+        penalty = int(round((delta * SCALE * detectability_risk.get(l, 0.0) + epsilon * SCALE) / budget))
         obj_terms.append(-penalty * x[l])
 
     model.Maximize(sum(obj_terms))
@@ -88,24 +90,18 @@ def solve_milp(candidates: list[int], paths: list[dict], criticality: dict,
                detectability_risk: dict, budget: int,
                weights: tuple[float, float, float, float, float] = (1.0, 1.0, 1.0, 1.0, 0.1),
                time_limit_seconds: float = 10.0) -> tuple[set[int], object, dict]:
-    """Runs |P|+1 solves (one per achievable coverage count) and returns
-    whichever gives the best TRUE F(x), evaluated the same way every other
-    method is scored — this is what makes it a trustworthy validator rather
-    than an optimizer for a proxy that might not match."""
-    best_x, best_metrics, total_time, statuses = set(), score(set(), paths, criticality, detectability_risk, weights), 0.0, []
-
-    for k in range(0, len(paths) + 1):
-        result = _solve_for_fixed_coverage(candidates, paths, criticality, detectability_risk,
-                                           budget, weights, k, time_limit_seconds)
-        if result is None:
-            statuses.append(f"k={k}: infeasible")
-            continue
-        x_k, wall_time = result
-        total_time += wall_time
-        m_k = score(x_k, paths, criticality, detectability_risk, weights)
-        statuses.append(f"k={k}: F={m_k.f_score:.4f}")
-        if m_k.f_score > best_metrics.f_score:
-            best_x, best_metrics = x_k, m_k
-
-    solve_info = {"status": "OPTIMAL (best-of-k)", "wall_time": total_time, "per_k": statuses}
-    return best_x, best_metrics, solve_info
+    """SINGLE exact solve. D20 removed the |P|+1 enumeration: once Early(x) is
+    normalized by a FIXED |P| rather than by the variable count of intercepted
+    paths, the early coefficient is constant and the objective linearizes
+    directly. The k-enumeration existed only to work around the variable
+    denominator described in D16 — with the denominator fixed, the workaround
+    is unnecessary. Kept as a comment rather than deleted silently because the
+    reason it existed is methodologically useful."""
+    result = _solve_for_fixed_coverage(candidates, paths, criticality, detectability_risk,
+                                       budget, weights, None, time_limit_seconds)
+    if result is None:
+        empty = score(set(), paths, criticality, detectability_risk, weights, budget)
+        return set(), empty, {"status": "INFEASIBLE", "wall_time": 0.0, "solves": 1}
+    x_star, wall_time = result
+    metrics = score(x_star, paths, criticality, detectability_risk, weights, budget)
+    return x_star, metrics, {"status": "OPTIMAL", "wall_time": wall_time, "solves": 1}
