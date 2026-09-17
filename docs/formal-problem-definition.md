@@ -40,11 +40,19 @@ At minimum, include one reconnaissance-heavy path, one credential-theft/lateral-
 
 Not every **v ∈ V** is a valid decoy site. Define **L ⊆ V** by applying two filters in sequence:
 
-**Filter 1 — Plausibility rubric** (adapted from source 53, originally scoped to the Enterprise ATT&CK matrix; this project is the first to apply it to ICS ATT&CK). For each candidate, score four criteria (yes/mostly/no):
+**Filter 1 — Plausibility rubric** (adapted from source 53). For each candidate, score four criteria (yes/mostly/no):
 1. Can a defender-controlled decoy plausibly exist at `type(v)`?
 2. Would an attacker following a path in **P** plausibly reach or interact with it?
 3. Does that interaction yield useful signal?
 4. Is the interaction a reliable indicator of malicious intent (low false-positive risk)?
+
+**What is adapted, stated precisely (revised at iteration 11).** Source 53 applies these four criteria to *ATT&CK techniques*, asking of each technique whether it admits a decoy anywhere. This project applies them to *assets in a specific architecture* — asking, of each `v ∈ V` in a zone-structured topology, whether a decoy at that position is plausible given the paths in **P** that actually traverse it. The unit of analysis changes from technique to network position, and the output is a filtered search space for an optimizer rather than a coverage map of a matrix.
+
+*This replaces an earlier and weaker claim* that the project is "the first to apply the rubric to ICS ATT&CK." That claim was dropped at iteration 11 rather than defended: MITRE Engage has published mappings for ATT&CK for ICS since 2024, and while those map techniques to engagement *activities* rather than applying this rubric, the distinction is definitional and not worth the argument it would invite. The claim above is narrower, is specific to this formulation, and does not depend on what any adjacent mapping does or does not contain. See `iteration-11-findings.md`.
+
+**Sweep–Seek refinement of criterion 2 (added at iteration 11).** Source 53's full text supplies a sharper operational form of criterion 2 than "would an attacker plausibly reach it." A decoy is encountered under exactly one of two conditions: **Sweep** — the attacker moves broadly through assets in range and meets the decoy incidentally; or **Seek** — the attacker is looking for a specific asset type and interacts with a fabricated instance of it. A candidate satisfying neither goes untouched regardless of how plausible it looks in isolation. Score criterion 2 by naming which of the two applies, and to which path in **P**. This maps directly onto the attack path set: P3 is a sweep, P1 is a seek, and a candidate that can be justified under neither should not be in **L**.
+
+**Available external input.** MITRE Engage's ATT&CK for ICS mappings are a curated, defensible source for criteria 2 and 3 and should be cited where they inform a score, rather than every score being derived from scratch.
 
 **Filter 2 — Detectability check** (new synthesis from sources 262, 263, 290, 278): exclude or down-weight candidates that would be trivially fingerprintable at that network position (e.g., a heavily-externally-scanned segment where port-count or TTL heuristics reliably expose decoys).
 

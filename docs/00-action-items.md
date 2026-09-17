@@ -35,6 +35,16 @@ Standing checklist of things that need your action because they're outside what 
 | A4 | Get the full PDF of Shahin, Maghanaki, Chen (2026), `sources.md` #315 — likely free via MDPI | Needed to confirm whether it is a genuine manufacturing-sector competitor. The Jay paper showed that abstracts are an unreliable basis for a novelty judgement | Pending |
 | A17 | Perform the certified systematic database sweep — IEEE Xplore, Scopus, Web of Science | The one systematic gap in the literature review. Request access early; the lead time is outside your control | Pending |
 
+## Specification decisions opened by iterations 11–12
+
+| # | Item | Why it's manual | Status |
+|---|---|---|---|
+| A22 | Decide how conduits enter the model quantitatively. They are named in the novelty claim as a first-class input, but currently carry no security level and contribute nothing to `Crit(v)`. Options (a) assign conduit SL per #330 and feed it into criticality, (b) use conduit adjacency in rubric criterion 2 only, (c) narrow the claim to zones. Recommendation: (b), with (a) as a stretch | A modelling decision affecting the novelty claim | **Pending — blocking Phase D** |
+| A23 | Build a Filter 2 scoring rubric from #333's fingerprinting-artifact taxonomy, replacing the current qualitative down-weighting. Read #333 in full first | Needs a design decision on which artifact classes apply at which network positions | Pending — cheap, high value |
+| A24 | Add to `threat-attack-model.md`: the stated assumption that emulated ICS decoys are detectable by a capable adversary with engineering tooling (#20 §6.3), and the derived principle that Sweep candidates are more robust to detectability than Seek candidates | A threat-model assumption, yours to confirm | Pending |
+| A25 | Reframe `Damage(v)` elicitation in Asset Criticality Analysis consequence-category terms (#336), using the consequence decomposition only, never ACA's likelihood term | Changes how the number is requested from a process engineer | Pending — low priority |
+| A26 | Disambiguate "detectability" in `00-glossary.md` — ACA uses it for advance detection of failures, this project for attacker identification of decoys | Trivial; fold into the next glossary edit | Pending |
+
 ## Repository hygiene
 
 | # | Item | Why it's manual | Status |
