@@ -37,8 +37,23 @@ Deliberately the least severe path — included because it tests whether your pl
 | 2 | OT DMZ → Engineering WS-2 | Discovery | Network and remote system enumeration | Resolved toward WS-2, not left disjunctive — a reconnaissance sweep at this stage plausibly lands on whichever workstation is discoverable, not necessarily the primary one; see D19. Previously read "Engineering WS or HMI," an unresolved disjunction the optimizer needed settled regardless of D15. |
 | — | — | — | — | No physical impact by design. Success for your placement means interception *during* this path, not after it — this is the path that most directly measures `Early(x)`. |
 
+## P4 — Dragonfly-class: ICS data collection for later operations
+
+Added at D21, before the evaluation campaign. Models an adversary whose objective is intelligence, not impact: it steals the documentation needed to plan a later physical attack. Included because P1–P3 left the Historian on no path at all, and because a collection-motivated campaign is a distinct attacker behaviour the other three do not represent.
+
+Grounded in Dragonfly / Dragonfly 2.0, whose documented behaviour was accessing workstations and servers holding ICS reference material — wiring diagrams, panel layouts, vendor documentation — after entry through trojanised vendor software.
+
+| Step | Asset (`v ∈ V`) | Tactic | Technique | Notes |
+|---|---|---|---|---|
+| 1 | Engineering Workstation | Initial Access | **T0862 — Supply Chain Compromise** | Dragonfly's documented vector: legitimate ICS vendor software trojanised at the source and installed by the victim. Verified against MITRE-authored ATT&CK for ICS material |
+| 2 | Historian | Collection | **T0811 — Data from Information Repositories** | Verified at attack.mitre.org/techniques/T0811/ — Collection tactic, and its Targeted Assets list names **A0006 Data Historian** explicitly. Dragonfly 2.0 appears as a procedure example |
+| 3 | Engineering Workstation | Collection | **T0811 — Data from Information Repositories** | Continued collection of ICS reference documents. The same technique page lists Engineering Workstation as a targeted asset |
+| — | — | — | — | No process impact by design. Success for the placement means interception before the documentation leaves the environment |
+
+**Why the entry point is the engineering workstation and not the DMZ jump host.** Both were drafted. The jump-host version was rejected on two grounds: it is less faithful to Dragonfly, whose documented initial access was supply-chain and watering-hole rather than perimeter intrusion; and it left the Historian contributing nothing, since a decoy at the jump host would intercept P4 at step 1 and make the Historian redundant. The supply-chain version is both historically accurate and structurally useful. The order in which those two facts were established is recorded in D21 rather than presented as a single clean decision.
+
 ## How this feeds the rest of the specification
 
 - **`L` (candidate locations, Section 4 of the formal problem definition):** the plausibility rubric should be run against the specific asset types these three paths actually touch (Engineering WS, HMI, PLC/RTU, OT DMZ, Jump Server) — not the full asset list in the abstract.
 - **Testbed architecture (next step):** every asset type named in the tables above needs a corresponding node in the VMware/Kali/pfSense build. If a step can't be physically realized in the testbed (e.g., a true IEC-104 RTU), note where a modeled/simulated node substitutes for a physical one, per the "richer graph than physical build" recommendation in the synthesis document.
-- **Baseline comparison:** all three methods (random, centrality, proposed) get evaluated against the same **P = {P1, P2, P3}** — the comparison is only meaningful if every method faces identical attack scenarios.
+- **Baseline comparison:** all methods get evaluated against the same **P = {P1, P2, P3, P4}** — the comparison is only meaningful if every method faces identical attack scenarios.

@@ -24,7 +24,8 @@ INSERT INTO assets (name, zone_id, purdue_level, asset_type, is_physical) VALUES
 INSERT INTO attack_paths (name, description) VALUES
     ('P1', 'Stuxnet-class: engineering-workflow-mediated physical sabotage'),
     ('P2', 'Industroyer2-class: protocol-specific direct grid impact'),
-    ('P3', 'Reconnaissance-only: early-detection stress test');
+    ('P3', 'Reconnaissance-only: early-detection stress test'),
+    ('P4', 'Dragonfly-class: ICS data collection for later operations');
 
 INSERT INTO attack_path_steps (path_id, step_order, asset_id, tactic, technique_id, technique_name) VALUES
     (1, 1, (SELECT asset_id FROM assets WHERE name='Engineering WS'), 'Initial Access', 'T1091', 'Replication Through Removable Media'),
@@ -37,15 +38,25 @@ INSERT INTO attack_path_steps (path_id, step_order, asset_id, tactic, technique_
     (2, 3, (SELECT asset_id FROM assets WHERE name='PLC-03 (RTU)'),   'Impair Process Control', 'T0836', 'Modify Parameter'),
     (2, 4, (SELECT asset_id FROM assets WHERE name='PLC-03 (RTU)'),   'Impair Process Control', 'T0806', 'Brute Force I/O'),
     (3, 1, (SELECT asset_id FROM assets WHERE name='OT Firewall'),    'Initial Access', NULL, 'External scan / perimeter probe'),
-    (3, 2, (SELECT asset_id FROM assets WHERE name='Engineering WS-2'), 'Discovery', NULL, 'Network and remote system enumeration');
+    (3, 2, (SELECT asset_id FROM assets WHERE name='Engineering WS-2'), 'Discovery', NULL, 'Network and remote system enumeration'),
+    -- P4 added by D21. T0811 verified at attack.mitre.org/techniques/T0811/ —
+    -- Collection tactic, and its Targeted Assets list names A0006 Data Historian
+    -- explicitly. Procedure example: Dragonfly 2.0 accessed servers holding ICS
+    -- reference documents, wiring diagrams and panel layouts.
+    (4, 1, (SELECT asset_id FROM assets WHERE name='Engineering WS'), 'Initial Access', 'T0862', 'Supply Chain Compromise'),
+    (4, 2, (SELECT asset_id FROM assets WHERE name='Historian'),      'Collection', 'T0811', 'Data from Information Repositories'),
+    (4, 3, (SELECT asset_id FROM assets WHERE name='Engineering WS'), 'Collection', 'T0811', 'Data from Information Repositories');
 
+-- detectability_risk values derived by the Filter 2 rubric (D22), not assigned
+-- by judgement. risk = 0.4*Exposure + 0.3*ProbingDepth + 0.3*ArtifactSurface.
+-- Per-candidate factor scores and their sources: docs/02-detectability-rubric.md
 INSERT INTO candidate_locations (asset_id, passes_plausibility, detectability_risk, is_candidate, rationale) VALUES
-    ((SELECT asset_id FROM assets WHERE name='Engineering WS-2'), 1, 0.2, 1, 'Standard deception target, precedent in HoneyPLC/Conpot'),
-    ((SELECT asset_id FROM assets WHERE name='PLC-02'),           1, 0.2, 1, 'Standard deception target'),
-    ((SELECT asset_id FROM assets WHERE name='HMI'),              1, 0.3, 1, 'Standard deception target'),
-    ((SELECT asset_id FROM assets WHERE name='Historian'),        1, 0.3, 1, 'Collection-tactic relevance'),
+    ((SELECT asset_id FROM assets WHERE name='Engineering WS-2'), 1, 0.56, 1, 'Standard deception target, precedent in HoneyPLC/Conpot'),
+    ((SELECT asset_id FROM assets WHERE name='PLC-02'),           1, 0.62, 1, 'Standard deception target'),
+    ((SELECT asset_id FROM assets WHERE name='HMI'),              1, 0.62, 1, 'Standard deception target'),
+    ((SELECT asset_id FROM assets WHERE name='Historian'),        1, 0.69, 1, 'Collection-tactic relevance'),
     ((SELECT asset_id FROM assets WHERE name='OT Firewall'),      0, 0.0, 0, 'Fails plausibility — no realistic "decoy firewall"'),
-    ((SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),    1, 0.7, 1, 'Passes plausibility, down-weighted — most externally-scanned zone');
+    ((SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),    1, 0.69, 1, 'Passes plausibility, down-weighted — most externally-scanned zone');
 
 INSERT INTO conduits (zone_a_id, zone_b_id, description) VALUES
     ((SELECT zone_id FROM zones WHERE name='External'),    (SELECT zone_id FROM zones WHERE name='OT DMZ'),      'Firewall rules'),

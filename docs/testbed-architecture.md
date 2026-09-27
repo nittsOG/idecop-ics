@@ -68,9 +68,12 @@ Running Section 4's two-filter process against this specific graph — included 
 |---|---|
 | P1 (Stuxnet-class) | Engineering WS ✓, PLC ✓, HMI ✓ — all physical |
 | P2 (Industroyer2-class) | DMZ Jump Host ✓ (physical), Control LAN ✓, PLC/RTU — **PLC-03 (modeled)** carries the IEC-104-specific step; PLC-01/02 can carry the generic Modify Parameter step |
-| P3 (reconnaissance-only) | OT DMZ ✓, Engineering WS or HMI ✓ — terminates before Control LAN by design |
+| P3 (reconnaissance-only) | OT DMZ ✓, Engineering WS-2 ✓ — terminates before Control LAN by design |
+| P4 (Dragonfly-class collection) | Engineering WS ✓ (physical), **Historian ✓ (modelled)** — terminates before impact by design |
 
-No gaps. If a fourth path is added later, check it against this table before assuming the current build supports it.
+No gaps. If a fifth path is added later, check it against this table before assuming the current build supports it.
+
+**Note on PLC-02 (added D21).** PLC-02 is a confirmed candidate location but appears on no path in **P**, so no method can ever select it — it contributes cost and detectability risk with zero coverage gain. This is recorded as a deliberate position rather than fixed. Its stated purpose in this document is to make "which PLC" a real decision, and it serves that purpose as *search-space richness*: it is a plausible decoy site the optimiser must evaluate and correctly reject. Manufacturing a fifth attack path solely to make it selectable would be fitting the threat model to the search space rather than to documented adversary behaviour. If a future path legitimately traverses PLC-02, it becomes live at no cost.
 
 ## Where the optimizer and AI layer sit
 
