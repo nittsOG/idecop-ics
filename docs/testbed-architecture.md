@@ -97,4 +97,4 @@ The optimizer never touches the live VMs directly during placement decisions —
 ## What This Enables Next
 
 - **Data model** — the SQLite schema for `G`, `L`, `P`, and computed scores, plus how the FastAPI backend reads/writes it
-- **Evaluation methodology** — the actual procedure for running Methods 1–3 against P1–P3 on this build and recording results
+- **Evaluation methodology** — the actual procedure for running Methods 1–3 (five implementations since D23) against P1–P4 on this build and recording results. The comparison grid is now held in `scripts/sweep.py`, and the evaluation criterion beyond F itself is open under A12 (D24)

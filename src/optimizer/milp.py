@@ -23,7 +23,17 @@ from ortools.sat.python import cp_model
 
 from .metrics import score
 
-SCALE = 10_000
+# D24: raised from 10_000. CP-SAT needs integer coefficients, so every term is
+# rounded, and each rounding can shift a placement's objective by up to half a
+# unit. At 10_000 the MILP was still exact on every configuration tested, but by
+# thin margins: the gap between the optimum and the best strictly-worse placement
+# was only 34 integer units on the documented grid (B=3, delta=3; true-F gap
+# 0.0034) and 8 units on a delta-only check grid (B=3, delta=0.5; gap 0.00084).
+# At 1_000_000 those margins become 3,356 and 837. No placement or F-value
+# changes on any configuration tested. The margin matters beyond this testbed:
+# the exhaustive-enumeration cross-check in scripts/sweep.py exists only while
+# |L| is small, so on a larger instance rounding error would go unchecked.
+SCALE = 1_000_000
 
 
 def _solve_for_fixed_coverage(candidates, paths, criticality, detectability_risk,
@@ -65,7 +75,14 @@ def _solve_for_fixed_coverage(candidates, paths, criticality, detectability_risk
         # Early is now correctly normalized by the FIXED k, not a variable.
         early_coef = beta * SCALE / len(paths)   # D20: fixed |P|, never k
         for step_idx, a in candidate_steps:
-            w = int(round(early_coef * (1 - step_idx / p["length"])))
+            # D24: stage is 1-BASED, matching metrics._intercepted_paths, which
+            # records `step_idx + 1`. This term previously used the raw 0-based
+            # step_idx, over-valuing every interception by exactly 1/length and
+            # making the solver maximise a different function from the one
+            # metrics.score reports — so the "exact" validator returned
+            # placements that scored BELOW greedy on the true objective. Same
+            # class of defect as D16, in a different place. See D24.
+            w = int(round(early_coef * (1 - (step_idx + 1) / p["length"])))
             obj_terms.append(w * z[(i, step_idx)])
 
     if k is not None:

@@ -75,7 +75,11 @@ CREATE TABLE attack_path_steps (
 
 CREATE TABLE placement_runs (
     run_id           INTEGER PRIMARY KEY AUTOINCREMENT,
-    method           TEXT NOT NULL CHECK (method IN ('random','centrality','proposed_greedy','proposed_milp')),
+    -- 'proposed_distorted_greedy' added per D23: the method D22's freeze statement
+    -- already counted among the frozen methods, but which was reachable only from
+    -- Python and could not be recorded here. Adding the name permits its runs to
+    -- be stored; it changes no evaluation input.
+    method           TEXT NOT NULL CHECK (method IN ('random','centrality','proposed_greedy','proposed_distorted_greedy','proposed_milp')),
     alpha REAL, beta REAL, gamma REAL, delta REAL, epsilon REAL,
     budget           INTEGER NOT NULL,
     coverage_score   REAL,

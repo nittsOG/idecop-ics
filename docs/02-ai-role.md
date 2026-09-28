@@ -6,7 +6,7 @@ Turns the architecture principle from `01-original-brief.md` §9 and D6 into act
 
 ## 1. Scope — what each component does, and what neither does
 
-**Explanation does:** given a completed placement run (from any of the four methods, but reported to the analyst only for the proposed method's result), generate a plain-language explanation of which locations were chosen, why, and how the result compares to the two baselines.
+**Explanation does:** given a completed placement run (from any of the five methods, but reported to the analyst only for the proposed method's result), generate a plain-language explanation of which locations were chosen, why, and how the result compares to the two baselines.
 
 **Plausibility-scoring assist does:** given an asset's type, zone, and which attack paths touch it, generate a first-pass score and justification for each of the four Filter 1 criteria from `formal-problem-definition.md` §4 — reviewed and confirmed or overridden by a human before any value reaches the `candidate_locations` columns the optimizer actually reads.
 

@@ -53,8 +53,10 @@ def score(x: set[int], paths: list[dict], criticality: dict[int, dict],
     # Early: denominator is |P|, NOT |intercepted|. See D20. Dividing by the
     # number of intercepted paths makes this a MEAN, which is non-monotone —
     # adding a late-intercepting decoy lowers it, verified by exhaustive
-    # enumeration in scripts/structure_check.py (16 monotonicity violations,
-    # 18 submodularity violations). A fixed |P| denominator is monotone and
+    # enumeration in scripts/structure_check.py (30 monotonicity violations,
+    # 57 submodularity violations on the frozen four-path instance; the 16/18
+    # once recorded here were the three-path instance's, stale since D21 added
+    # P4 -- see D24). A fixed |P| denominator is monotone and
     # submodular. Mean earliness is still reported separately as
     # `mean_stage_earliness` because it is the interpretable statistic.
     early = sum(1 - (stage / p["length"]) for i, stage in hits.items() for p in [paths[i]]) / n_paths if n_paths else 0.0

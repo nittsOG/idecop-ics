@@ -13,7 +13,7 @@ Master reference for every document produced in this thread. Updated each time a
 
 ## Project status
 
-Phase A (Foundation) is complete; Phase B (Detailed Design) is next. Full phase breakdown, exit criteria, and the original 12-item roadmap mapped against it: `00-project-phases.md`. That file is now the single tracker for project status — kept here too would mean two places that can drift out of sync, which is exactly what the naming/maintenance rules in `00-workflow-and-rules.md` exist to prevent.
+Current status lives only in `00-project-phases.md` — see its "Where we are right now" section. (D24 removed a status line from this file that had drifted to "Phase B is next" while Phase C's core build was already complete — exactly the failure the next sentence warns about.) Full phase breakdown, exit criteria, and the original 12-item roadmap mapped against it are there too. That file is now the single tracker for project status — kept here too would mean two places that can drift out of sync, which is exactly what the naming/maintenance rules in `00-workflow-and-rules.md` exist to prevent.
 
 ## File registry
 
@@ -38,7 +38,7 @@ formal-problem-definition.md
      └──▶ testbed-architecture.md ◀┘
                     │
                     ▼
-        02-data-model.md (next)
+        02-data-model.md
                     │
                     ▼
    02-optimization-formulation.md, 02-ai-role.md,

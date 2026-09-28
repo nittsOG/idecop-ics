@@ -123,12 +123,20 @@ def compute_criticality(g: nx.DiGraph, w1: float = 0.4, w2: float = 0.4,
     return result
 
 
-def write_computed_scores(g: nx.DiGraph, w1: float = 0.5, w2: float = 0.5, db_path: Path = DB_PATH) -> None:
+def write_computed_scores(g: nx.DiGraph, w1: float = 0.4, w2: float = 0.4, w3: float = 0.2,
+                          db_path: Path = DB_PATH) -> None:
     """Persists central_score and criticality back to assets, per data-model.md's
     'computed scores are stored, not just derivable' design principle. sl_aggregate
     and damage_score get written too, so it's visible in the DB that these are
-    placeholders, not silently missing."""
-    scores = compute_criticality(g, w1, w2)
+    placeholders, not silently missing.
+
+    D24: the weight defaults now match compute_criticality(). They had stayed at
+    the pre-D20 two-term values (0.5, 0.5) when D20 added the ConduitSL term, so
+    this function silently inherited w3 = 0.2 and wrote criticality with weights
+    summing to 1.2 -- different from what the optimizer computes. Nothing reads
+    the stored column (the optimizer and API compute criticality live), so no
+    result was affected; the stored values were simply wrong."""
+    scores = compute_criticality(g, w1, w2, w3)
     conn = sqlite3.connect(db_path)
     for asset_id, s in scores.items():
         conn.execute(
@@ -170,7 +178,7 @@ if __name__ == "__main__":
     g = load_graph()
     print(f"Graph: {g.number_of_nodes()} nodes, {g.number_of_edges()} edges")
     scores = compute_criticality(g)
-    print("\nCriticality by asset (w1=w2=0.5, placeholder SL/damage):")
+    print("\nCriticality by asset (w1=0.4, w2=0.4, w3=0.2; SL and damage are placeholders):")
     for s in sorted(scores.values(), key=lambda x: -x["criticality"]):
         print(f"  {s['name']:<24} SL={s['sl']:.2f}  Central={s['central']:.3f}  "
               f"Damage={s['damage']:.2f}  Crit={s['criticality']:.3f}")

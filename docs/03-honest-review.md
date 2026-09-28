@@ -4,6 +4,8 @@ Requested before implementing the A11/A22 changes. This is an adversarial read o
 
 **Method.** All structural claims below were tested empirically on the real instance by enumerating all 32 subsets of **L** and checking monotonicity and submodularity exhaustively — no sampling, no approximation. Script: `scripts/structure_check.py`. Results are reproducible in under a second.
 
+> 📌 **ARCHIVAL — read as a record of the iteration-13 instance, not of the current one.** This review was run against the **three-path** instance, before D21 added P4 and before D22/D22a re-derived the detectability values. Its violation counts (16 monotonicity / 18 submodularity for the Early mean; 18 for F) are therefore **superseded**: on the frozen four-path instance the same measurements are **30 and 57** for the Early mean and **78 / 57** for F(x) pre-D20. The numbers here are deliberately **not** rewritten, because they are what was measured at the time and the point of this document is the audit trail. **Every qualitative conclusion below survives re-measurement**, and one is now stronger: F's submodularity violations equal the Early mean's exactly on both instances (18 = 18 at three paths, 57 = 57 at four), so §D.3's claim that the Early mean was the sole cause is demonstrated rather than inferred. Section D.3's separate point — that no approximation guarantee was available — was resolved afterwards by **D23**, which adopts Distorted Greedy (`sources.md` #353); plain greedy still has none. Current figures: run `scripts/structure_check.py` and `scripts/sweep.py`. See **D24**.
+
 ---
 
 ## A. Verdict first

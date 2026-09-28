@@ -6,11 +6,11 @@ The full lifecycle of the M.Tech project, start to defense. This is the authorit
 
 ```
 A: Foundation ──▶ B: Detailed Design ──▶ C: Build ──▶ D: Evaluation ──▶ E: Writing ──▶ F: Defense
-   (complete)         (complete)            (next)                        ↑
+   (complete)         (complete)            (core done)                   ↑
                                                           can start early ─┘
 ```
 
-Six phases. A and B are done. C is next. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list.
+Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs are frozen, and it is gated on A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list.
 
 ## Phase A — Foundation ✅ Complete (one minor open item, doesn't block Phase B)
 
@@ -38,17 +38,21 @@ Takes each component named in Phase A's system diagram and specifies it in enoug
 
 The actual construction: standing up the 7 physical VMs, implementing the graph model and data store, the optimizer, the AI explanation layer, and the FastAPI/visualization frontend. Also includes the plausibility-scoring Colab notebook (D12) — genuinely separate from the rest, since it's a standalone script, not a service.
 
-**Started — Screen 3 slice complete and tested (see `phase-c-screen-3.zip`):** the actual SQLite database, built and verified against `02-data-model.md`'s schema (a real gap was found and fixed in the process — `edges`/`conduits` were never seeded, leaving zero graph connectivity; fixed and fed back into that document); a working FastAPI backend (`GET /assets`, `GET /candidates`, `POST /candidates/{id}/confirm`) tested with real requests including validation and error cases; a working React frontend for the plausibility-review screen, builds cleanly. Not yet built: graph_model, the optimizer, `/optimize`/`/runs`/`/explain`, Screens 1 and 2, the Colab notebook itself, and the physical VMs.
+**Historical (D14) — the first slice, Screen 3, complete and tested (see `phase-c-screen-3.zip`):** the actual SQLite database, built and verified against `02-data-model.md`'s schema (a real gap was found and fixed in the process — `edges`/`conduits` were never seeded, leaving zero graph connectivity; fixed and fed back into that document); a working FastAPI backend (`GET /assets`, `GET /candidates`, `POST /candidates/{id}/confirm`) tested with real requests including validation and error cases; a working React frontend for the plausibility-review screen, builds cleanly. Not yet built: graph_model, the optimizer, `/optimize`/`/runs`/`/explain`, Screens 1 and 2, the Colab notebook itself, and the physical VMs.
 
 **Suggested internal order:** the Colab notebook can happen first, independent of everything else — it only needs the asset/zone list, not a live testbed or database, and its output (confirmed values in `candidate_locations`) is needed before the optimizer has a real `L` to run against. Testbed VMs and graph model/data store next (these can proceed in parallel — the graph model doesn't need live VMs); optimizer after that (developable and testable against the graph alone, before the testbed is fully live — worth starting this early given weekend-hours constraints); AI explanation layer and UI integration last, once there's real optimizer output to explain and display.
 
-**Exit criteria:** all three methods (random, centrality, proposed) run end-to-end against the testbed and produce comparable output.
+**Status as of D24 (28 September 2026).** *Built and verified:* the SQLite database; `graph_model` (betweenness centrality; `Crit(v)` including `ConduitSL`, D20); the optimizer — five implementations sharing one `score()`: greedy, distorted greedy (D23), random, centrality and the exact MILP (corrected in D24); the FastAPI backend with nine endpoints; the React frontend's Screen 3 (plausibility review) and Screen 1 (single-run dashboard); and three scripts — `run_comparison.py`, `sweep.py` and `structure_check.py`. *Not yet built:* the explanation layer `/runs/{id}/explain` (A6, needs Ollama); Screen 2, the sensitivity-sweep comparison view; the Colab plausibility-scoring notebook (A20); and the physical VM testbed (A21, scope under A16).
+
+**Exit criteria:** every method (random, centrality, and the proposed method with its MILP validation — five implementations since D23) runs end-to-end against the testbed and produces comparable output. *Met against the modelled graph, not yet against a physical testbed* — whether that matters depends on A16 and on the evaluation design chosen under A12.
 
 **Realistic expectation:** the core build (testbed, optimizer, explanation layer, UI) is still very likely the single largest time cost in the whole project — the Colab notebook doesn't change that, it's a small, early, parallel-track item, not a schedule risk of its own. If the core build slips, everything after it slips with it — worth surfacing schedule problems here early rather than discovering them at Phase D.
 
 ## Phase D — Evaluation
 
-Run Methods 1–3 against P1–P3, collect Coverage / Early / CritProt / Risk / Cost / runtime for each, run the weight-sensitivity sweep from `formal-problem-definition.md` §5, produce the comparison tables and charts.
+Run every method against P1–P4 on the comparison grid held in `scripts/sweep.py` (D24), collect Coverage / Early / CritProt / Risk / Cost / runtime for each, run the weight-sensitivity sweep from `formal-problem-definition.md` §5, and produce the comparison tables and charts.
+
+**Inputs frozen (D20–D22a); evaluation code corrected (D23, D24). Gated on A12.** On this instance greedy equals the exhaustive optimum in every cell, so comparing methods on F alone is implied by optimality and cannot test whether F is a good objective. An evaluation criterion outside F must be chosen — held-out attack paths, input-perturbation robustness, synthetic larger instances or testbed attack simulation — and frozen before the campaign runs.
 
 **Original roadmap item covered:** 11
 **Exit criteria:** results speak to the primary research question in `formal-problem-definition.md` §8 — including honestly, if they don't support it as strongly as hoped. A negative or mixed result, reported honestly, is a valid thesis outcome; a result quietly reframed to look better than it is isn't.
@@ -69,4 +73,4 @@ Guide review cycles, viva preparation, formatting to NFSU's submission requireme
 
 ## Where we are right now
 
-Phase A and Phase B are both complete. Phase C is next, starting with Screen 3 (plausibility review) and the testbed VMs, per `02-prototype-architecture.md` §3's suggested build order.
+**As of D24 (28 September 2026).** Phases A and B are complete. Phase C's core computational build is complete and verified — database, graph model, all five optimizer implementations, the API and two of three screens — with the explanation layer, Screen 2, the Colab notebook and the physical testbed outstanding. Phase D's inputs are frozen (D20–D22a) and its evaluation code corrected (D23, D24); it is gated on A12, the research question's wording together with an evaluation criterion that is not F itself, and on A15 with the guide. TA-1 did not take place on 22 September and has not been rescheduled (A14). Phase E's literature-review and methodology chapters can be drafted now.

@@ -4,7 +4,9 @@ Schedule for the remainder of the project, from 14 September 2026 to final submi
 
 **Planning unit.** One *weekend-unit* (WU) = one productive Saturday plus Sunday, roughly 10–12 working hours. Weekday evenings are counted separately and only for tasks that genuinely fit into a 60–90 minute block — reference chasing, proofreading, small fixes. Substantial work does not fit in a weekday evening and is not scheduled there.
 
-**Known fixed date:** TA-1 submission, Monday 21 September 2026.
+> ⚠️ **STALE as of 28 September 2026 — do not schedule from this file until it is rebuilt.** It is anchored on TA-1 as a fixed date, and **TA-1 did not take place** (moved to 22 September, then not held because the guide was unavailable; not yet rescheduled). §1 and §6 are therefore superseded, the milestone table's "TA-1 + N weeks" intervals have no anchor, and several items it lists as open have since closed — the B1 normalisation decision, for example, was resolved by D20. The **sequencing and weekend-unit estimates** in §§2–5 still describe the order of work; the **dates** do not. Rebuild once A14 supplies the rescheduled TA-1 date, TA-2/TA-3 and final submission. Current position: `00-project-phases.md`.
+
+**Known fixed date (superseded):** TA-1 submission, Monday 21 September 2026 — did not take place.
 **Unknown, needs filling:** TA-2, TA-3 (if applicable), final thesis submission, viva. §6 lists these as the first thing to confirm with the guide.
 
 ---

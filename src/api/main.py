@@ -19,7 +19,7 @@ from pydantic import BaseModel, Field
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from src.graph_model import load_graph, compute_criticality, load_candidate_locations, load_attack_paths
-from src.optimizer.baselines import greedy, random_baseline, centrality_baseline
+from src.optimizer.baselines import greedy, random_baseline, centrality_baseline, distorted_greedy
 from src.optimizer.milp import solve_milp
 
 DB_PATH = Path(__file__).resolve().parents[2] / "data" / "deception_placement.db"
@@ -44,7 +44,7 @@ def get_db() -> sqlite3.Connection:
 
 
 VALID_SCORES = {"yes", "mostly", "no"}
-VALID_METHODS = {"random", "centrality", "proposed_greedy", "proposed_milp"}
+VALID_METHODS = {"random", "centrality", "proposed_greedy", "proposed_distorted_greedy", "proposed_milp"}
 
 
 class ConfirmPayload(BaseModel):
@@ -55,7 +55,7 @@ class ConfirmPayload(BaseModel):
 
 
 class OptimizePayload(BaseModel):
-    method: str = Field(..., description="random | centrality | proposed_greedy | proposed_milp")
+    method: str = Field(..., description="random | centrality | proposed_greedy | proposed_distorted_greedy | proposed_milp")
     alpha: float = 1.0
     beta: float = 1.0
     gamma: float = 1.0
@@ -161,7 +161,7 @@ def list_attack_paths():
 
 @app.post("/optimize")
 def optimize(payload: OptimizePayload):
-    """Runs one of the four methods against the live graph and confirmed
+    """Runs one of the five methods against the live graph and confirmed
     candidates, writes a placement_runs row + placements rows, returns the
     run_id. The frontend fetches the actual result via GET /runs/{id}
     afterward — deliberate, per 02-prototype-architecture.md §2, so nothing
@@ -190,6 +190,12 @@ def optimize(payload: OptimizePayload):
         x, metrics = centrality_baseline(candidates, central_scores, paths, criticality, detectability, payload.budget, weights)
     elif payload.method == "proposed_greedy":
         x, metrics = greedy(candidates, paths, criticality, detectability, payload.budget, weights)
+    elif payload.method == "proposed_distorted_greedy":
+        # The only method here carrying a worst-case approximation guarantee
+        # ((1 - 1/e), Harshaw et al. 2019). Exposed for the scalability argument,
+        # NOT as the better performer — it is measurably more conservative than
+        # plain greedy on this testbed. See distorted_greedy's docstring and D23.
+        x, metrics = distorted_greedy(candidates, paths, criticality, detectability, payload.budget, weights)
     else:  # proposed_milp
         x, metrics, _ = solve_milp(candidates, paths, criticality, detectability, payload.budget, weights)
     runtime = time.perf_counter() - start

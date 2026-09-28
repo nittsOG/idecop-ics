@@ -96,7 +96,7 @@ CREATE TABLE attack_path_steps (
 -- One row per optimizer run — supports §7's three-method comparison directly
 CREATE TABLE placement_runs (
     run_id           INTEGER PRIMARY KEY AUTOINCREMENT,
-    method           TEXT NOT NULL CHECK (method IN ('random','centrality','proposed_greedy','proposed_milp')),
+    method           TEXT NOT NULL CHECK (method IN ('random','centrality','proposed_greedy','proposed_distorted_greedy','proposed_milp')),   -- distorted greedy added in D23
     alpha REAL, beta REAL, gamma REAL, delta REAL, epsilon REAL,  -- §5 objective weights used this run
     budget           INTEGER NOT NULL,          -- B, §6
     coverage_score   REAL,                      -- Coverage(x)

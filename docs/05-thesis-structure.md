@@ -94,7 +94,7 @@ Six chapters. This is the standard shape for an M.Tech project report and maps c
 | 4.1 | Technology stack and rationale | `01-original-brief.md` §8 |
 | 4.2 | Data model and schema | `02-data-model.md` |
 | 4.3 | Graph model implementation | `src/graph_model/` |
-| 4.4 | Optimiser implementation — all four methods | `src/optimizer/` |
+| 4.4 | Optimiser implementation — all five methods, incl. distorted greedy (D23) | `src/optimizer/` |
 | 4.5 | API layer and contract | `src/api/main.py` |
 | 4.6 | User interface — three screens | `src/frontend/` |
 | 4.7 | Explanation layer | `02-ai-role.md` — pending build |
@@ -114,7 +114,7 @@ Six chapters. This is the standard shape for an M.Tech project report and maps c
 |---|---|
 | 5.1 | Experimental setup — testbed, paths, candidates, budget range |
 | 5.2 | Evaluation metrics and their definitions |
-| 5.3 | Comparative results across all four methods |
+| 5.3 | Comparative results across all five methods, on the declared grid (D24) |
 | 5.4 | Weight sensitivity sweep |
 | 5.5 | Optimality gap — greedy against the exact solver |
 | 5.6 | Explanation layer assessment |
