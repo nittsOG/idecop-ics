@@ -31,9 +31,11 @@ Everything created from here on uses the prefix. Next document (`data model`) wi
 ## File lifecycle rules
 
 1. **One canonical file per document.** Corrections and extensions happen in place, in the existing file. Never forked into a `-v2` or `-updated` copy — that's exactly the kind of confusion this whole setup is meant to prevent.
-2. **Every new or edited file gets presented** in the same turn it changes. A file that's written but not shown to you doesn't count as done.
-3. **Every source cited anywhere gets logged in `sources.md`** with a verification marker (🟢 verified / 🟡 named but unconfirmed / 🔴 needs a different access route), whether or not it ends up quoted in a specification document.
+2. **Every new or edited file is accounted for in the same turn it changes.** A repo file enters the running ledger that turn — exact path, one line on what changed — and is delivered with its batch at "end of logical session", per the session protocol in the Project instructions. Anything that is not a repo file — a Project Knowledge sync, a submission document, slides — is shown in that same turn. A file that's written but not accounted for doesn't count as done.
+3. **Every source cited anywhere gets logged in `sources.md`** with a verification marker (🟢 verified / 🟡 named but unconfirmed / 🔴 needs a different access route), whether or not it ends up quoted in a specification document. **Before any handover, every source number cited anywhere in the batch is checked against `sources.md`.** The rule alone did not stop a citation to a source number that does not exist (360, in `structure_check.py`) reaching GitHub in D23; the check is what found it. Write such references without the `#` prefix, so the check does not read them as citations.
 4. **Every new file's storage location gets stated explicitly when it's created** — Workspace (Project Knowledge) or local computer, per `00-local-storage-setup.md`. Not left implicit, not left for you to infer from the tier symbol alone.
+
+*Rules 2 and 3 amended 29 September 2026.* Rule 2 previously required every edited file to be presented in the same turn it changed, which contradicted the batching session protocol adopted later; the two are now one rule. Rule 3 gained the pre-handover check.
 
 ## Maintenance mechanism — what updates when
 
@@ -47,9 +49,20 @@ Everything created from here on uses the prefix. Next document (`data model`) wi
 
 ## What's automated vs. what needs you
 
-**Automated — I handle this without asking:** creating, editing, and organizing files within this conversation; web research and verification; citation logging; document drafting; keeping the index/log/action-items files current.
+**Automated — I handle this without asking:** creating, editing, and organizing files within this conversation; web research and verification; citation logging; document drafting; keeping the index/log/action-items files current; keeping the nine 📌 Project Knowledge docs identical to their GitHub versions (see *Project Knowledge sync* below).
 
-**Not automated — I'll flag it, you act:** anything outside this conversation. Adding files to Project Knowledge, institutional library access (NFSU credentials), confirming a decision with your guide, anything requiring physical access or an account only you hold. When this comes up, it goes in `00-action-items.md` in a consistent format — you'll never have to hunt through chat history for a manual step I mentioned once and moved on from.
+**Not automated — I'll flag it, you act:** anything outside this conversation. Institutional library access (NFSU credentials), confirming a decision with your guide, anything requiring physical access or an account only you hold. When this comes up, it goes in `00-action-items.md` in a consistent format — you'll never have to hunt through chat history for a manual step I mentioned once and moved on from.
+
+## Project Knowledge sync
+
+Project Knowledge holds read-only copies of the nine 📌 docs in `00-project-index.md`'s registry, so a chat in this Project has current context without cloning the repository. GitHub stays canonical; a copy is never edited on its own.
+
+- **When:** after every push you tell me about, I compare the nine against the pushed commit and replace every copy that changed, uploading directly from a fresh clone of that commit.
+- **How it is shown:** every sync is presented in the same turn as a table — Project Knowledge doc, the GitHub path it was copied from, the commit, and your action (normally none). A sync not shown to you does not count as done (rule 2 above).
+- **Never:** a silent write to Project Knowledge, or a copy taken from anything other than a pushed commit.
+- **`sources.md` is not in Project Knowledge** (💾 tier, too large); it is kept current in the repository, in the same batch as whatever cites a new source — including sources cited only in a chat reply.
+
+*Why this changed (29 September 2026).* This used to be your action, with mine being to flag it whenever a 📌 doc changed. I never flagged it. Three pushes — 17, 18 and 27 September — changed four of the nine, and Project Knowledge carried stale copies for 11 days, including a `formal-problem-definition.md` that for 10 of them still defined `Early(x)` in the form D20 had proved broken. A session can now write to Project Knowledge directly, so the sync moved to me, with presentation as the safeguard against it happening silently.
 
 ## Interaction model
 

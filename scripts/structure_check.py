@@ -160,7 +160,7 @@ for nm, f in [("F PRE-D20 (superseded)", F_pre_d20), ("F CURRENT (live)", F_curr
 
 print()
 print("=" * 66)
-print("GUARANTEE PRECONDITIONS  (f = g - c, Harshaw et al. 2019, sources.md #360)")
+print("GUARANTEE PRECONDITIONS  (f = g - c, Harshaw et al. 2019, sources.md #353)")
 print("=" * 66)
 gm, gs = test_monotone(g_current), test_submodular(g_current)
 g_nonneg = all(g_current(A) >= -1e-12 for A in ALL)

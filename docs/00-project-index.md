@@ -76,7 +76,7 @@ If a document upstream in this chain changes in a way that invalidates something
 
 Anthropic's own documentation states Project Knowledge allows unlimited files, capped only by total content fitting the context window (no fixed file-count limit, officially). In practice, though, a widely-reported behavior shift kicks in well before that: Project Knowledge has been observed switching from loading everything directly into context to a search-based retrieval mode at around a dozen files — sometimes at a small fraction of the raw token limit, not when the token budget is actually exhausted. That's a real-world report, not official Anthropic documentation, and these thresholds change — but it's reason enough to plan conservatively rather than assume "unlimited" means "load everything."
 
-**Policy: keep Project Knowledge to 10 files or fewer.** Currently 8, tagged 📌 above. That's deliberate headroom, not the max — leaves room to add one or two more before anything needs to be retired.
+**Policy: keep Project Knowledge to 10 files or fewer.** Currently 9, tagged 📌 above. That's deliberate headroom, not the max — leaves room to add one or two more before anything needs to be retired.
 
 **What earns a 📌 Project Knowledge slot:** files needed to orient *any* new conversation about this project, regardless of which specific task it's about — current phase and status, the rules governing how work gets done, why past decisions were made, and the core specification (the math problem, the threat model, the testbed) everything else builds on.
 

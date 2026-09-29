@@ -1,5 +1,7 @@
 # Local Storage Setup
 
+> 📌 **PARTLY SUPERSEDED (29 September 2026).** Written before the GitHub repository existed. Since then the repository is the canonical store and your clone of it is the local copy; zip bundles are no longer used; and Project Knowledge is kept in sync by Claude after every push and presented to you each time (`00-workflow-and-rules.md`, *Project Knowledge sync*), so the re-upload procedure below no longer applies. The two-tier model still holds: nine 📌 docs in Project Knowledge, everything else offline in the repository.
+
 Where every file lives right now, before the GitHub repo exists — "workspace" and "local computer" are the two real locations, and this is the first, one-time instruction for setting the second one up. Going forward, every new file gets its storage location stated explicitly when it's created — see the new rule in `00-workflow-and-rules.md`.
 
 ## The two locations
