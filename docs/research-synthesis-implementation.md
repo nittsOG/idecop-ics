@@ -1,5 +1,9 @@
 # Research Synthesis & Implementation Decisions — After 10 Iterations
 
+> 📌 **Read with later decisions (note added 29 September 2026).** This synthesis is the record of iterations 1–10 and stands as such, but two of its conclusions have since been overtaken:
+> 1. **The greedy guarantee** (*Confidence Assessment* and *Implementation Decisions → Optimization method*). The check this document asks for was done: F(x) is submodular but not monotone, so **plain greedy carries no approximation guarantee**; the (1−1/e) bound attaches to Distorted Greedy (Harshaw et al. 2019, `sources.md` #353). See D20, D23 and `formal-problem-definition.md` §7, which is authoritative.
+> 2. **The Refined Novelty Claim.** Iteration 13 found a granted Acalvio patent that discloses a placement method (US 9,853,999, `sources.md` #347). A granted patent is published work, so the claim no longer rests on the word "published"; per `03-commercial-prior-art-analysis.md` §4 it survives on a method-level distinction — the patent outputs a decoy *count* for a subnet, this project selects a *set of positions* under a composite objective. Final wording is A28, pending.
+
 309 sources logged, 10 research passes, roughly a dozen distinct source ecosystems (academic optimization literature, OT-deception academia, commercial vendors, US national labs, a decade of NPS theses, a federal analysis tool, EU-funded projects, an industry R&D consortium). This document does three things: states my actual confidence level and where it's shaky, synthesizes the whole picture into one mental model, and converts that into specific decisions for the project rather than a menu of options.
 
 ## Confidence Assessment

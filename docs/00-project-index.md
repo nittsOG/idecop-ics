@@ -86,8 +86,12 @@ Anthropic's own documentation states Project Knowledge allows unlimited files, c
 
 ## Keeping this available across conversations
 
+> 📌 **SUPERSEDED (29 September 2026).** The paragraph below told you to download the 📌 files and add them to Project Knowledge yourself, and still counts 8 of them. Under the *Project Knowledge sync* rule in `00-workflow-and-rules.md`, Claude keeps all nine 📌 docs identical to their GitHub versions, syncing after every push and showing you each sync as a table; you add nothing by hand. Files marked 💾 stay offline in the repository and are fetched from GitHub when a task needs them. Kept below as the original instruction.
+
 These files exist in this conversation. Since it's now inside a Project, other conversations in the same project can search and read this chat's content — but if you want a document available to me directly in a *new* conversation without re-deriving it, the reliable way is downloading it and adding it to this Project's knowledge base through Project settings. The 8 files tagged 📌 above are the ones worth adding; the "Context tier" section explains why the rest are better kept offline and provided when a specific task needs them.
 
 ## Next document
+
+> 📌 **SUPERSEDED (29 September 2026).** What comes next is tracked only in `00-project-phases.md`, under *Where we are right now*. This line pointed at a Phase B document that was finished long ago — the same drift as the status line removed from this file in D24. Kept below as the original entry.
 
 Per `00-project-phases.md` (Phase B): **`02-data-model.md`** — the SQLite schema for `G`, `L`, `P`, and computed scores, and how the FastAPI backend reads and writes it.
