@@ -108,7 +108,7 @@ That conflated **attacker intent** with **asset vulnerability**, and for OT it i
 
 **The cause was working from search fragments rather than the source.** The paper is open access under CC BY and was one fetch away. The rubric was built from four or five sentences visible in snippets, and the structural finding that overturned it sits in the summary of §4.9.
 
-**Effect on results.** Version 1 gave greedy 5 wins / 15 ties / 0 losses against the centrality baseline across 20 configurations. Version 2 gives **9 wins / 11 ties / 0 losses**. The corrected rubric happens to favour the proposed method more than the flawed one did — which is why the correction and its cause are documented here rather than quietly absorbed.
+**Effect on results.** Version 1 gave greedy 5 wins / 15 ties / 0 losses against the centrality baseline across 20 configurations. Version 2 gives **9 wins / 11 ties / 0 losses**. The corrected rubric happens to favour the proposed method more than the flawed one did — which is why the correction and its cause are documented here rather than quietly absorbed. *(Both figures were measured while Risk and Cost were divided by the budget. D25 replaced that divisor with a fixed K = 4 and left these risk values unchanged. The same grid now reads 5 / 15 / 0, for a different reason: the four decline wins disappear. See D25.)*
 
 ---
 

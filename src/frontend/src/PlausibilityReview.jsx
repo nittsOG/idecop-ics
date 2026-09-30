@@ -25,10 +25,15 @@ function CandidateCard({ candidate, onConfirm }) {
   async function submit() {
     setSaving(true);
     try {
+      // D25: send exactly what the card displays (see `effective` above):
+      // your edit, else the already-confirmed value, else the AI suggestion.
+      // This used to prefer the AI suggestion over a confirmed value, so a
+      // plain Confirm silently replaced a human override (the DMZ Jump Host's
+      // confirmed "no" on criterion 4 was re-sent as the AI's "mostly").
       const body = Object.fromEntries(
         CRITERIA.map(([key]) => [
           key,
-          edits[key] ?? candidate[`ai_suggested_${key}`] ?? candidate[`criterion_${key}`],
+          edits[key] ?? candidate[`criterion_${key}`] ?? candidate[`ai_suggested_${key}`],
         ])
       );
       const res = await fetch(`${API}/candidates/${candidate.asset_id}/confirm`, {

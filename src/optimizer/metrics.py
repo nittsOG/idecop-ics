@@ -6,6 +6,36 @@ is what actually keeps a MILP result and a greedy result comparable.
 """
 from dataclasses import dataclass
 
+# D25: Risk and Cost are divided by this FIXED constant, never by the budget B.
+#
+# Why not B (D20-D24 divided by B). B is a procurement cap — how many decoys
+# the site will deploy — and the adversary never observes it; detection risk
+# and operating burden come from the decoys actually deployed. Dividing by B
+# made the same decoy worth a different amount at different budgets: on the
+# frozen instance, DMZ Jump Host alone scored -0.063 at B=1 and +0.332 at
+# B=2, and under delta=3 greedy placed 0, 0, 1 and 4 decoys at B=1..4. It also
+# contradicted 02-optimization-formulation.md §2, which stops greedy early so
+# the evaluation can report "the method found K decoys sufficient".
+#
+# Why not |P| or |L|. Dividing by |P| halves every decoy's penalty when the
+# same threat is written with every path twice (the DMZ Jump Host alone goes
+# from 0.529 to 0.628); dividing by |L| makes every decoy cheaper when an
+# unused candidate is added. Both were tested (D25).
+#
+# What K is. Not a physical quantity: dividing by K is the same as scaling
+# delta and epsilon by 1/K, so K fixes the units in which those weights are
+# read. Why 4: when D25 chose it, 4 was the smallest constant that kept Risk
+# and Cost in [0,1] for every budget of the declared comparison grid (D20's
+# boundedness reason with the budget taken out). It is FROZEN from here, and
+# it is not re-derived if a grid changes: re-deriving it would move the budget
+# confound from the run to the grid. Changing it is an objective change and
+# needs its own decisions-log entry. For budgets above K, Risk and Cost can
+# exceed 1, which is harmless; modularity is the load-bearing property (D20;
+# a precondition of distorted greedy, D23), and any constant keeps it. A
+# different instance family (e.g. synthetic instances under A12) must fix its
+# own constant before its first run, never from the budget of a run.
+NORMALISER_K = 4
+
 
 @dataclass
 class Metrics:
@@ -16,7 +46,7 @@ class Metrics:
     cost: float
     f_score: float
     mean_stage_earliness: float = 0.0   # reported, not optimized. See D20.
-    raw_decoy_count: int = 0            # cost before /budget normalization
+    raw_decoy_count: int = 0            # cost before the /NORMALISER_K normalization
 
 
 def _intercepted_paths(x: set[int], paths: list[dict]) -> dict[int, int]:
@@ -34,16 +64,20 @@ def _intercepted_paths(x: set[int], paths: list[dict]) -> dict[int, int]:
 
 def score(x: set[int], paths: list[dict], criticality: dict[int, dict],
           detectability_risk: dict[int, float],
-          weights: tuple[float, float, float, float, float] = (1.0, 1.0, 1.0, 1.0, 0.1),
-          budget: int | None = None) -> Metrics:
+          weights: tuple[float, float, float, float, float] = (1.0, 1.0, 1.0, 1.0, 0.1)) -> Metrics:
     """weights = (alpha, beta, gamma, delta, epsilon), formal-problem-definition.md §5.
-    Default epsilon is deliberately smaller than the other four: coverage,
-    early, crit_prot, and risk are all 0-1 normalized, but cost is a raw
-    decoy count — equal weights would let cost dominate and make the
-    optimizer always prefer zero decoys. This default isn't a claimed
-    'correct' weighting — it's what makes the sensitivity sweep in
-    formal-problem-definition.md §5 meaningful to run at all; the sweep
-    itself is what actually justifies a final choice, not this default."""
+
+    There is deliberately no budget parameter (D25): the budget constrains how
+    many decoys a method may place, and never changes what a placement is worth.
+
+    Default epsilon is smaller than the other four. Before D20 Cost was a raw
+    decoy count, and equal weights would have let it dominate. It has been
+    normalised since then, and 0.1 is kept as a light, uniform per-decoy
+    charge, so that the detectability trade-off is carried mainly by delta.
+    This default isn't a claimed 'correct' weighting — it's what makes the
+    sensitivity sweep in formal-problem-definition.md §5 meaningful to run at
+    all; the sweep itself is what actually justifies a final choice, not this
+    default."""
     alpha, beta, gamma, delta, epsilon = weights
     n_paths = len(paths)
     hits = _intercepted_paths(x, paths)
@@ -75,14 +109,16 @@ def score(x: set[int], paths: list[dict], criticality: dict[int, dict],
     else:
         crit_prot = 0.0
 
-    # Risk and Cost: divided by budget so both land in [0,1] like the three
-    # gain terms. Both stay MODULAR, which matters — a union-probability form
+    # Risk and Cost: divided by the fixed NORMALISER_K (D25; D20-D24 divided by
+    # the budget). Both stay MODULAR, which matters — a union-probability form
     # of Risk would be submodular, and subtracting a submodular function would
     # break the submodularity that D20 restores. See formal-problem-definition
     # §5: Risk is normalized detectability exposure, not a probability.
-    denom = budget if budget and budget > 0 else max(len(x), 1)
-    risk = sum(detectability_risk.get(l, 0.0) for l in x) / denom
-    cost = len(x) / denom
+    # D25 also removed a fallback that divided by len(x) when no budget was
+    # passed: that is a MEAN, non-modular (D20's Early defect again), and it
+    # made Cost 1.0 for every non-empty placement. No caller reached it.
+    risk = sum(detectability_risk.get(l, 0.0) for l in x) / NORMALISER_K
+    cost = len(x) / NORMALISER_K
     f_score = alpha * coverage + beta * early + gamma * crit_prot - delta * risk - epsilon * cost
 
     return Metrics(coverage, early, crit_prot, risk, cost, f_score, mean_stage_earliness,

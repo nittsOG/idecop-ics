@@ -6,6 +6,7 @@ import sqlite3
 from src.graph_model import load_graph, compute_criticality, load_candidate_locations, load_attack_paths
 from src.optimizer.baselines import greedy, random_baseline, centrality_baseline, distorted_greedy
 from src.optimizer.milp import solve_milp
+from src.optimizer.metrics import NORMALISER_K
 
 g = load_graph()
 crit = compute_criticality(g)
@@ -34,7 +35,9 @@ x_m, m_m, milp_info = solve_milp(candidates, paths, crit, detectability, BUDGET,
 
 def fmt(x): return sorted(names[a] for a in x)
 
-print(f"Budget B = {BUDGET}, weights (a,b,g,d,e) = {WEIGHTS}\n")
+print(f"Budget B = {BUDGET}, weights (a,b,g,d,e) = {WEIGHTS}")
+print(f"Risk and Cost are divided by the fixed K = {NORMALISER_K}, not by B (D25)"
+      f"{' -- B exceeds K, so they can exceed 1 here' if BUDGET > NORMALISER_K else ''}\n")
 
 for label, x, m in [("GREEDY (proposed, primary)", x_g, m_g),
                     ("DISTORTED GREEDY (guaranteed)", x_d, m_d),

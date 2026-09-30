@@ -10,7 +10,7 @@ A: Foundation ──▶ B: Detailed Design ──▶ C: Build ──▶ D: Evalu
                                                           can start early ─┘
 ```
 
-Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs are frozen, and it is gated on A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list.
+Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs were frozen and are being corrected before any campaign: the objective's normalisation by D25, and the candidate set under A32. D is gated on A32 and then A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list.
 
 ## Phase A — Foundation ✅ Complete (one minor open item, doesn't block Phase B)
 
@@ -52,7 +52,7 @@ The actual construction: standing up the 7 physical VMs, implementing the graph 
 
 Run every method against P1–P4 on the comparison grid held in `scripts/sweep.py` (D24), collect Coverage / Early / CritProt / Risk / Cost / runtime for each, run the weight-sensitivity sweep from `formal-problem-definition.md` §5, and produce the comparison tables and charts.
 
-**Inputs frozen (D20–D22a); evaluation code corrected (D23, D24). Gated on A12.** On this instance greedy equals the exhaustive optimum in every cell, so comparing methods on F alone is implied by optimality and cannot test whether F is a good objective. An evaluation criterion outside F must be chosen — held-out attack paths, input-perturbation robustness, synthetic larger instances or testbed attack simulation — and frozen before the campaign runs.
+**Inputs frozen (D20–D22a); evaluation code corrected (D23, D24); two input defects corrected before any campaign — Risk and Cost now divided by a fixed K = 4 (D25), and the candidate set re-derived by §4's filters (A32, pending). Gated on A32, then A12.** On the seeded candidate set greedy equals the exhaustive optimum in every cell *by construction* (D25: every attack path meets exactly one candidate). Comparing methods on F alone is implied by optimality and cannot test whether F is a good objective. An evaluation criterion outside F must be chosen — held-out attack paths, input-perturbation robustness, synthetic larger instances or testbed attack simulation — and frozen before the campaign runs.
 
 **Original roadmap item covered:** 11
 **Exit criteria:** results speak to the primary research question in `formal-problem-definition.md` §8 — including honestly, if they don't support it as strongly as hoped. A negative or mixed result, reported honestly, is a valid thesis outcome; a result quietly reframed to look better than it is isn't.
@@ -73,4 +73,15 @@ Guide review cycles, viva preparation, formatting to NFSU's submission requireme
 
 ## Where we are right now
 
-**As of D24 (28 September 2026).** Phases A and B are complete. Phase C's core computational build is complete and verified — database, graph model, all five optimizer implementations, the API and two of three screens — with the explanation layer, Screen 2, the Colab notebook and the physical testbed outstanding. Phase D's inputs are frozen (D20–D22a) and its evaluation code corrected (D23, D24); it is gated on A12, the research question's wording together with an evaluation criterion that is not F itself, and on A15 with the guide. TA-1 did not take place on 22 September and has not been rescheduled (A14). Phase E's literature-review and methodology chapters can be drafted now.
+**As of D25 (30 September 2026).** Phases A and B are complete. Phase C's core computational build is complete and verified — database, graph model, all five optimizer implementations, the API and two of three screens — with the explanation layer, Screen 2, the Colab notebook and the physical testbed outstanding.
+
+Phase D's inputs were frozen (D20–D22a) and its evaluation code corrected (D23, D24). D25 then found two input defects before any campaign ran:
+- On the seeded candidate set, greedy is optimal by construction.
+- Risk and Cost were divided by the budget. They are now divided by a fixed K = 4.
+
+D25 also fixed in advance what the thesis may claim. Phase D is gated on:
+1. **A32** — re-deriving the candidate set through §4's filters for every asset (your confirmation in Screen 3), then re-running with the effect recorded.
+2. **A12** — the research question's wording together with an evaluation criterion that is not F itself.
+3. **A15** — agreement with the guide that a mixed result is acceptable.
+
+TA-1 did not take place on 22 September and has not been rescheduled (A14). Phase E's literature-review and methodology chapters can be drafted now.

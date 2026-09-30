@@ -18,10 +18,15 @@ project's testbed), solve once per possible coverage count k = 0..|P|,
 fixing sum(y_i) = k so the Early normalization (1/k) is a known constant,
 not a solver variable — then take the best result across all k. This is
 still exact, just run |P|+1 times instead of once.
+
+(History. D20 made the k-enumeration unnecessary: with Early divided by a
+fixed |P| the objective linearises directly, and `solve_milp` below is a
+single exact solve. The two paragraphs above record why the file looks the
+way it does; they no longer describe what it runs.)
 """
 from ortools.sat.python import cp_model
 
-from .metrics import score
+from .metrics import score, NORMALISER_K
 
 # D24: raised from 10_000. CP-SAT needs integer coefficients, so every term is
 # rounded, and each rounding can shift a placement's objective by up to half a
@@ -33,6 +38,16 @@ from .metrics import score
 # changes on any configuration tested. The margin matters beyond this testbed:
 # the exhaustive-enumeration cross-check in scripts/sweep.py exists only while
 # |L| is small, so on a larger instance rounding error would go unchecked.
+#
+# D25 re-measured after Risk and Cost moved to the fixed NORMALISER_K: the
+# smallest margin is 3,826 units on the declared grid (B=4, delta=3) and 413
+# across the 68 distinct configurations of `sweep.py --sens`, which include the
+# declared 20 (B=3, delta=0.75). One placement's objective sums at most
+# 3|P| + B rounded terms, each off by at most half a unit, so rounding can move
+# the comparison of two placements by at most 3|P| + B units -- 16 on the
+# declared grid, 17 at the sample's B=5: far inside both margins. The MILP
+# matched exhaustive enumeration in all 68. sweep.py now computes the margins
+# and raises if one falls within the rounding bound.
 SCALE = 1_000_000
 
 
@@ -88,9 +103,11 @@ def _solve_for_fixed_coverage(candidates, paths, criticality, detectability_risk
     if k is not None:
         model.Add(sum(y.values()) == k)
 
-    # D20: Risk and Cost are now /budget, so scale the penalty accordingly.
+    # D25: Risk and Cost are divided by the fixed NORMALISER_K, exactly as in
+    # metrics.score. D20-D24 divided by the budget here; the budget now enters
+    # only as the cardinality constraint above.
     for l in candidates:
-        penalty = int(round((delta * SCALE * detectability_risk.get(l, 0.0) + epsilon * SCALE) / budget))
+        penalty = int(round((delta * SCALE * detectability_risk.get(l, 0.0) + epsilon * SCALE) / NORMALISER_K))
         obj_terms.append(-penalty * x[l])
 
     model.Maximize(sum(obj_terms))
@@ -117,8 +134,8 @@ def solve_milp(candidates: list[int], paths: list[dict], criticality: dict,
     result = _solve_for_fixed_coverage(candidates, paths, criticality, detectability_risk,
                                        budget, weights, None, time_limit_seconds)
     if result is None:
-        empty = score(set(), paths, criticality, detectability_risk, weights, budget)
+        empty = score(set(), paths, criticality, detectability_risk, weights)
         return set(), empty, {"status": "INFEASIBLE", "wall_time": 0.0, "solves": 1}
     x_star, wall_time = result
-    metrics = score(x_star, paths, criticality, detectability_risk, weights, budget)
+    metrics = score(x_star, paths, criticality, detectability_risk, weights)
     return x_star, metrics, {"status": "OPTIMAL", "wall_time": wall_time, "solves": 1}

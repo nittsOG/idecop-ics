@@ -132,7 +132,7 @@ ai_suggested_useful_signal, ai_suggested_reliable_indicator,
 ai_reasoning, human_confirmed, confirmed_at
 ```
 
-The real `criterion_decoy_exists`, `criterion_attacker_reach`, `criterion_useful_signal`, `criterion_reliable_indicator` columns — the ones `passes_plausibility` and ultimately `L` get computed from — only get written when `human_confirmed = 1`. An unconfirmed AI suggestion has no path into the optimizer's input. This is the same structural pattern as explanation's safety property in §6, applied to a component that's advisory rather than purely descriptive: the model can be wrong without anything downstream trusting it by default.
+The real `criterion_decoy_exists`, `criterion_attacker_reach`, `criterion_useful_signal`, `criterion_reliable_indicator` columns — the ones `passes_plausibility` and ultimately `L` get computed from — only get written when `human_confirmed = 1`. An unconfirmed AI suggestion has no path into the optimizer's input. *(D25: `data/seed.sql` sets `is_candidate` = 1 directly on three rows that were never confirmed, which bypasses this gate; A32 re-derives the candidate set through it.)* This is the same structural pattern as explanation's safety property in §6, applied to a component that's advisory rather than purely descriptive: the model can be wrong without anything downstream trusting it by default.
 
 ### 9. The prompt
 

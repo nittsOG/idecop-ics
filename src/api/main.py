@@ -161,8 +161,10 @@ def list_attack_paths():
 
 @app.post("/optimize")
 def optimize(payload: OptimizePayload):
-    """Runs one of the five methods against the live graph and confirmed
-    candidates, writes a placement_runs row + placements rows, returns the
+    """Runs one of the five methods against the live graph and the current
+    candidate set (rows with is_candidate = 1 -- which, D25 found, the seed also
+    sets on three rows no human confirmed; A32), writes a placement_runs row +
+    placements rows, returns the
     run_id. The frontend fetches the actual result via GET /runs/{id}
     afterward — deliberate, per 02-prototype-architecture.md §2, so nothing
     displayed didn't come from a durably stored row."""
@@ -173,7 +175,7 @@ def optimize(payload: OptimizePayload):
     criticality = compute_criticality(g)
     candidates = load_candidate_locations(DB_PATH)
     if not candidates:
-        raise HTTPException(400, "No confirmed candidate locations — nothing for the optimizer to search over. Confirm at least one via /candidates/{id}/confirm first.")
+        raise HTTPException(400, "No candidate locations (is_candidate = 1) — nothing for the optimizer to search over. Confirm at least one via /candidates/{id}/confirm first.")
     paths = load_attack_paths(DB_PATH)
     weights = (payload.alpha, payload.beta, payload.gamma, payload.delta, payload.epsilon)
 

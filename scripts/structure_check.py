@@ -1,13 +1,20 @@
 """
-Empirical structural test of F(x): monotonicity and submodularity,
-for the CURRENT objective and the PROPOSED one (iteration-13 candidate).
+Empirical structural test of F(x): monotonicity, submodularity and modularity,
+for the LIVE objective (what src/optimizer/metrics.py computes) and the
+superseded PRE-D20 one, kept so D20's before/after stays reproducible.
 
 |L| = 5 so all 32 subsets enumerate instantly. No approximation, no sampling.
+
+D25: Risk and Cost in the live objective are divided by the fixed
+NORMALISER_K, not by the budget; B below is used only as the cardinality
+constraint of the exhaustive optimum. The script also asserts that its own F
+equals metrics.score on every subset, so the two cannot drift apart silently,
+and reports whether the gain part g is modular (D25's claim rule).
 """
 import sys, itertools
 sys.path.insert(0, '.')
 from src.graph_model import load_graph, compute_criticality, load_candidate_locations, load_attack_paths
-from src.optimizer.metrics import _intercepted_paths
+from src.optimizer.metrics import _intercepted_paths, score, NORMALISER_K
 
 g = load_graph()
 crit = compute_criticality(g)
@@ -23,7 +30,7 @@ CRIT = {k: v["criticality"] for k, v in crit.items()}
 TOTAL_CRIT = sum(CRIT.values())
 TARGET_CRIT = sum(CRIT[p["asset_sequence"][-1]] for p in paths)
 NP = len(paths)
-B = 3
+B = 3          # cardinality constraint for the EXHAUSTIVE OPTIMUM section only (D25)
 
 names = {n: d["name"] for n, d in g.nodes(data=True)}
 
@@ -49,7 +56,7 @@ def critprot_proposed(x):                  # normalised by PATH TARGET criticali
     return sum(CRIT[paths[i]["asset_sequence"][-1]] for i in h) / TARGET_CRIT
 
 def risk_current(x):  return sum(RISK[l] for l in x)          # unnormalised sum
-def risk_proposed(x): return sum(RISK[l] for l in x) / B      # bounded, modular
+def risk_proposed(x): return sum(RISK[l] for l in x) / NORMALISER_K   # D25: fixed K, not B
 def cost(x):          return len(x)
 
 W = (1.0, 1.0, 1.0, 1.0, 0.1)
@@ -64,7 +71,7 @@ def F_pre_d20(x):
 def F_current(x):
     a,b,c,d,e = W
     return (a*coverage(x) + b*early_proposed(x) + c*critprot_proposed(x)
-            - d*risk_proposed(x) - e*(cost(x)/B))
+            - d*risk_proposed(x) - e*(cost(x)/NORMALISER_K))
 
 # ---------- the aggregates the Harshaw et al. guarantee is stated over ----------
 # The guarantee is for f = g - c. Its preconditions are properties of the
@@ -78,7 +85,7 @@ def g_current(x):
 
 def c_current(x):
     _,_,_,d,e = W
-    return d*risk_proposed(x) + e*(cost(x)/B)
+    return d*risk_proposed(x) + e*(cost(x)/NORMALISER_K)
 
 # ---------- structural tests ----------
 def subsets(items):
@@ -126,6 +133,16 @@ def test_modular(f):
                 bad.append((set(A), e, round(base,6), round(f(A | {e}) - f(A),6)))
     return bad
 
+# D25: this script re-implements F rather than calling metrics.score, so the two
+# could drift apart unnoticed. Assert they agree on every subset before any
+# structural result is printed.
+_drift = [A for A in ALL
+          if abs(F_current(A) - score(set(A), paths, crit, RISK, W).f_score) > 1e-12]
+if _drift:
+    raise SystemExit(
+        f"INVARIANT VIOLATED: structure_check's F disagrees with metrics.score on "
+        f"{len(_drift)} subsets. Fix the definitions above before reading any result.")
+
 print("=" * 66)
 print("COMPONENT-LEVEL STRUCTURE")
 print("=" * 66)
@@ -136,7 +153,7 @@ comps = [
     ("CritProt (PRE-D20)",    critprot_current),
     ("CritProt (LIVE)",       critprot_proposed),
     ("Risk (PRE-D20, sum)",   risk_current),
-    ("Risk (LIVE, /B)",       risk_proposed),
+    ("Risk (LIVE, /K)",       risk_proposed),
     ("Cost",                  cost),
 ]
 for nm, f in comps:
@@ -177,6 +194,16 @@ _ok = (not gm) and (not gs) and g_nonneg and (not cmod) and c_nonneg
 print()
 print(f"  ==> preconditions {'ALL SATISFIED' if _ok else 'NOT satisfied'} on this instance"
       f"{' -- gamma = 1, bound (1 - 1/e) ~ 0.632' if _ok else ''}")
+
+# D25 claim rule. If g is itself MODULAR, F = g - c is modular and greedy is
+# optimal by construction, so no method comparison on this instance can say
+# anything about search quality. The guarantee's preconditions still hold (a
+# modular function is trivially submodular); what is lost is any EMPIRICAL
+# test of the guarantee or of greedy.
+gmod = test_modular(g_current)
+print()
+print(f"{'g modular? (D25 claim rule)':<34} "
+      f"{'YES -- greedy is optimal BY CONSTRUCTION on this instance' if not gmod else 'NO (' + str(len(gmod)) + ' violations) -- the instance is non-trivial'}")
 
 print()
 print("READ THIS BEFORE CITING ANY GUARANTEE.")

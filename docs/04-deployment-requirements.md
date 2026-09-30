@@ -23,7 +23,7 @@ This is the real barrier, and it is worth putting first. Every software dependen
 | `Damage(v)` | Share of process load the asset is responsible for | A control engineer, not a security team | Moderate — requires process knowledge the security function does not hold |
 | `P` — attack paths | Plausible attack scenarios against this specific architecture | Threat modelling against MITRE ATT&CK for ICS | Moderate. Quality of output depends directly on quality of P |
 | Plausibility scores | The four-criterion rubric applied per candidate asset | Security analyst, optionally AI-assisted first pass | Easy but manual |
-| `B` — budget | How many decoys the site will actually deploy | Management decision, constrained by licence cost and operational appetite | Easy |
+| `B` — budget | How many decoys the site will actually deploy. It caps the placement and never changes what a placement is worth (D25) | Management decision, constrained by licence cost and operational appetite | Easy |
 | `α…ε` — weights | Relative importance of coverage, earliness, criticality, risk, cost | Sensitivity sweep plus a policy decision by the asset owner | Moderate — the sweep is mechanical, the choice is not |
 
 **The honest summary of this table:** a site that already has an accurate asset inventory and a completed IEC 62443 risk assessment can supply these inputs in days. A site that has neither is looking at a multi-month prerequisite project that has nothing to do with deception.
@@ -59,11 +59,11 @@ Current prototype stack. All open source, no paid dependency — the original br
 
 ## 3. Hardware
 
-**For the optimizer** — negligible. **[verified]** at this project's scale (11 nodes, 5 candidates, 3 paths) both greedy and the CP-SAT validator complete in under a second on a laptop. Any modern machine runs it.
+**For the optimizer** — negligible. **[verified]** at this project's scale (11 nodes, 5 candidates, 4 paths — P4 added by D21) greedy completes in well under a millisecond and the CP-SAT validator in about 20 ms, measured in the D25 session. Any modern machine runs it.
 
 **Scaling is the open question.** **[unverified]** — behaviour at plant scale has not been tested. Reasoning, not measurement:
 - Greedy cost grows with budget × candidate count × cost of evaluating F(x), and **[likely]** stays tractable into the hundreds of candidates.
-- The MILP validator is the part that will not scale. The formulation solves once per coverage count, and exact methods on NP-hard placement problems degrade sharply with instance size. Comparable published work places MILP tractability at testbed scale, not plant scale.
+- The MILP validator is the part that will not scale. Since D20 it is a single exact solve rather than one solve per coverage count, but exact methods on NP-hard placement problems degrade sharply with instance size. Comparable published work places MILP tractability at testbed scale, not plant scale.
 - **Practical consequence:** at real scale the MILP becomes a validation tool for a sampled sub-problem, not a whole-network validator. That is a design change, not a parameter change, and it is genuine future work.
 
 **For local inference, if the AI components are used**
@@ -119,7 +119,7 @@ Listed separately so they are not mistaken for setup tasks.
 2. **Topology drift** — the model is static; real networks are not. No incremental re-optimisation exists.
 3. **Validation methodology** — nobody runs Industroyer2 against a live substation. Real validation means a red team in a maintenance window, or a digital twin. This project validates against modelled attack paths, which is appropriate for a thesis and insufficient for a deployment claim.
 4. **`Damage(v)` elicitation at scale** — workable for 11 assets by asking an engineer; unclear for 800.
-5. **Detectability scoring is currently qualitative** — applied as a downward adjustment by reasoning, not computed from measurable signatures. A deployment would want it measured.
+5. **Detectability scoring is rubric-based, not measured.** Since D22/D22a each value is derived by a stated three-factor rubric grounded in a fingerprinting review (#352), so it is reproducible, but it is still not computed from signatures measured at the site. A deployment would want it measured.
 6. **Safety analysis of decoys on live control segments** — not addressed here at all.
 
 ---

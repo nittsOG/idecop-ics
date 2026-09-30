@@ -1,6 +1,6 @@
 # Testbed Architecture
 
-Maps `G = (V, E)` from `formal-problem-definition.md` onto an actual build, and verifies it against every asset type touched by P1/P2/P3 in `threat-attack-model.md`. Follows the synthesis recommendation directly: keep the physically-deployed VM count modest, let the modeled graph be somewhat richer.
+Maps `G = (V, E)` from `formal-problem-definition.md` onto an actual build, and verifies it against every asset type touched by P1–P4 in `threat-attack-model.md`. Follows the synthesis recommendation directly: keep the physically-deployed VM count modest, let the modeled graph be somewhat richer.
 
 ## Design principle
 
@@ -13,13 +13,15 @@ Two layers, not one:
 
 | VM | Software | Zone | Purdue Level | Role in threat model |
 |---|---|---|---|---|
-| Attacker | Kali Linux | External | — | Entry point for all three paths |
-| OT Firewall | pfSense | Perimeter | 3.5 (DMZ boundary) | Conduit c(External, DMZ) |
-| DMZ Jump Host | Linux, minimal services | OT DMZ | 3.5 | P2 step 1–2; also a natural historian/patch-relay stand-in |
-| Engineering WS | Windows 10/11 or Linux, engineering software installed | Supervisory | 3 | P1 step 1–3 |
-| HMI | Node-RED dashboard | Supervisory | 2–3 | P1 step 5; P3 step 2 |
-| PLC-01 | OpenPLC | Control | 1–2 | P1 step 4; P2 step 3–5 |
+| Attacker | Kali Linux | External | — | Origin of the network-borne paths (P2, P3); not itself a step of any seeded path. P1 and P4 begin on the engineering workstation (removable media, supply chain) |
+| OT Firewall | pfSense | Perimeter | 3.5 (DMZ boundary) | Conduit c(External, DMZ); P3 step 1 |
+| DMZ Jump Host | Linux, minimal services | OT DMZ | 3.5 | P2 step 1; also a natural historian/patch-relay stand-in |
+| Engineering WS | Windows 10/11 or Linux, engineering software installed | Supervisory | 3 | P1 steps 1–2; P4 steps 1 and 3 (D21) |
+| HMI | Node-RED dashboard | Supervisory | 2–3 | P1 step 5 (P3 step 2 moved to Engineering WS-2 by D19) |
+| PLC-01 | OpenPLC | Control | 1–2 | P1 steps 3–4. The seeded P2 runs through PLC-03, not PLC-01 |
 | PLC-02 | OpenPLC | Control | 1–2 | Redundant control target — gives the optimizer a second asset of comparable criticality, so "which PLC" is a real decision |
+
+*Role column corrected in D25 to match the seeded paths in `data/seed.sql`; it had drifted after D19 and D21.*
 
 VMware host-only/internal networks enforce the zone boundaries; pfSense rules encode the conduits. This is the original brief's proposed skeleton essentially unchanged — it was already well-scoped, and the research process didn't surface a reason to expand the physical footprint.
 
@@ -62,6 +64,15 @@ Running Section 4's two-filter process against this specific graph — included 
 - **Excluded by the plausibility filter:** the OT Firewall itself. There's no realistic "decoy firewall" — a firewall is functional infrastructure an attacker routes through, not a target it interacts with the way it interacts with a workstation or PLC. This is the filter doing real work, not passing everything through.
 - **Passes plausibility, down-weighted by detectability:** a decoy placed directly in the OT DMZ. It's a legitimate target, but it's also the most externally-scanned zone, and per the detectability findings in `sources.md` (#262, #263), a decoy that's trivially fingerprinted at a heavily-probed position is worth less than the same decoy deeper in the network. Model this as a lower effective `Risk`-adjusted value for DMZ-zone candidates, not a hard exclusion.
 
+> ⚠️ **The seeded candidate set does not follow this example (D25).**
+> - The example passes a decoy Engineering WS. `data/seed.sql` seeds Engineering WS-2 instead and gives Engineering WS no row. The example's decoy PLC mimics PLC-01/02, but PLC-01 has no row either.
+> - Three of the five seeded candidates (Historian, HMI, PLC-02) were never scored through the plausibility filter.
+> - The other two confirmations are demo-data transcriptions, and the DMZ Jump Host's confirmed `no` on criterion 4 fails the only implemented rule — although the example above passes a DMZ decoy.
+> - Engineering WS-2 is modelled here as a real workstation, but its stored plausibility reasoning calls it "a parallel decoy workstation".
+> - One consequence: every attack path meets exactly one seeded candidate, which makes greedy optimal by construction.
+>
+> A32 re-derives the candidate set through both filters for every asset. It first states what a decoy at `l` means physically and how the four scores combine.
+
 ## Verification against the threat model
 
 | Path | Every step has a corresponding node? |
@@ -73,7 +84,7 @@ Running Section 4's two-filter process against this specific graph — included 
 
 No gaps. If a fifth path is added later, check it against this table before assuming the current build supports it.
 
-**Note on PLC-02 (added D21).** PLC-02 is a confirmed candidate location but appears on no path in **P**, so no method can ever select it — it contributes cost and detectability risk with zero coverage gain. This is recorded as a deliberate position rather than fixed. Its stated purpose in this document is to make "which PLC" a real decision, and it serves that purpose as *search-space richness*: it is a plausible decoy site the optimiser must evaluate and correctly reject. Manufacturing a fifth attack path solely to make it selectable would be fitting the threat model to the search space rather than to documented adversary behaviour. If a future path legitimately traverses PLC-02, it becomes live at no cost.
+**Note on PLC-02 (added D21).** PLC-02 is a seeded candidate location — never scored through the plausibility filter (D25) — and appears on no path in **P**, so no method can ever select it — it contributes cost and detectability risk with zero coverage gain. This is recorded as a deliberate position rather than fixed. Its stated purpose in this document is to make "which PLC" a real decision, and it serves that purpose as *search-space richness*: it is a plausible decoy site the optimiser must evaluate and correctly reject. Manufacturing a fifth attack path solely to make it selectable would be fitting the threat model to the search space rather than to documented adversary behaviour. If a future path legitimately traverses PLC-02, it becomes live at no cost.
 
 ## Where the optimizer and AI layer sit
 

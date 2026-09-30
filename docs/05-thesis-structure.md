@@ -116,12 +116,16 @@ Six chapters. This is the standard shape for an M.Tech project report and maps c
 | 5.2 | Evaluation metrics and their definitions |
 | 5.3 | Comparative results across all five methods, on the declared grid (D24) |
 | 5.4 | Weight sensitivity sweep |
-| 5.5 | Optimality gap — greedy against the exact solver |
+| 5.5 | Optimality gap — greedy against the exact solver (what it may show is fixed by D25's claim rule) |
 | 5.6 | Explanation layer assessment |
 | 5.7 | Discussion — what the results do and do not support |
 | 5.8 | Threats to validity |
 
 **Two things to settle before writing.** First, the primary research question asks whether the proposed method achieves higher coverage and criticality protection than the baselines. Current output shows it winning on the composite objective while covering fewer paths, because the objective charges for risk and cost that the baselines ignore. Either the question is rephrased to ask about the objective-defined tradeoff, or the normalisation issues in the risk and criticality terms are resolved first. Second, §5.8 must exist. A results chapter without a threats-to-validity section invites the examiner to supply one.
+
+> *Updated by D25.*
+> - **The first point is overtaken.** D20 rephrased §8 and fixed the normalisation. D25 then fixed the Risk/Cost divisor at K = 4 instead of the budget.
+> - **§5.3 and §5.5 are bounded by D25's claim rule.** If every attack path meets exactly one candidate, the optimality gap shows only that the implementation is correct, not that the search is good. Whether that still holds is settled by A32. The evaluation criterion beyond F is A12's.
 
 ---
 

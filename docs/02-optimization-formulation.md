@@ -61,7 +61,7 @@ Coverage(x) = (1/|P|) Σ_p y_p
 CritProt(x) = (1/norm) Σ_p y_p · Crit(target(p))
 ```
 
-**Cost and Risk** — already linear, no auxiliary variables needed: `Cost(x) = Σ_l x_l`; `Risk(x) = Σ_l risk(l) · x_l` under the independent-contribution model from §1.
+**Cost and Risk** — already linear, no auxiliary variables needed: `Cost(x) = Σ_l x_l`; `Risk(x) = Σ_l risk(l) · x_l` under the independent-contribution model from §1. *(As implemented, both are divided by a constant: D20 introduced a divisor, and D25 fixed it at K = 4 instead of the budget. That leaves them linear, so nothing in this linearisation changes.)*
 
 **Early linearization** — the real work. For each path `p` with steps `1..len(p)`, introduce `s_p` (continuous, `0 ≤ s_p ≤ 1`) representing `(1 − stage_intercepted/len(p))`, and binary `z_{p,i}` for "path p is first intercepted at step i":
 ```

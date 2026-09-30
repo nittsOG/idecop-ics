@@ -7,7 +7,7 @@ discusses at length.
 """
 import random as _random
 
-from .metrics import score
+from .metrics import score, NORMALISER_K
 
 
 def greedy(candidates: list[int], paths: list[dict], criticality: dict,
@@ -18,16 +18,16 @@ def greedy(candidates: list[int], paths: list[dict], criticality: dict,
     remaining = set(candidates)
     while len(x) < budget and remaining:
         best_l, best_gain = None, 0.0
-        current = score(x, paths, criticality, detectability_risk, weights, budget).f_score
+        current = score(x, paths, criticality, detectability_risk, weights).f_score
         for l in remaining:
-            gain = score(x | {l}, paths, criticality, detectability_risk, weights, budget).f_score - current
+            gain = score(x | {l}, paths, criticality, detectability_risk, weights).f_score - current
             if gain > best_gain:
                 best_gain, best_l = gain, l
         if best_l is None:
             break
         x.add(best_l)
         remaining.discard(best_l)
-    return x, score(x, paths, criticality, detectability_risk, weights, budget)
+    return x, score(x, paths, criticality, detectability_risk, weights)
 
 
 def random_baseline(candidates: list[int], paths: list[dict], criticality: dict,
@@ -41,7 +41,7 @@ def random_baseline(candidates: list[int], paths: list[dict], criticality: dict,
     for _ in range(trials):
         x = set(rng.sample(candidates, k))
         placements.append(x)
-        results.append(score(x, paths, criticality, detectability_risk, weights, budget))
+        results.append(score(x, paths, criticality, detectability_risk, weights))
     mean_f = sum(r.f_score for r in results) / trials
     variance = sum((r.f_score - mean_f) ** 2 for r in results) / trials
     return placements, results, {"mean_f": mean_f, "std_f": variance ** 0.5}
@@ -54,7 +54,7 @@ def centrality_baseline(candidates: list[int], central_scores: dict[int, float],
     default per D4 — no repetition needed."""
     ranked = sorted(candidates, key=lambda l: central_scores.get(l, 0.0), reverse=True)
     x = set(ranked[:budget])
-    return x, score(x, paths, criticality, detectability_risk, weights, budget)
+    return x, score(x, paths, criticality, detectability_risk, weights)
 
 
 def distorted_greedy(candidates: list[int], paths: list[dict], criticality: dict,
@@ -99,9 +99,15 @@ def distorted_greedy(candidates: list[int], paths: list[dict], criticality: dict
     "Greedy Performs Arbitrarily Poorly", constructs an instance on which
     standard greedy's ratio is unbounded. The failure mode is a "bad element"
     with the highest immediate gain g(e) - c_e, which once taken drives every
-    remaining marginal gain below its cost, so greedy halts early. Our own
-    testbed shows this shape of behaviour at delta=3, so it is not hypothetical
-    here. NOTE ON CONFIDENCE: the unbounded-ratio claim and the appendix title
+    remaining marginal gain below its cost, so greedy halts early. (Corrected
+    in D25: this docstring used to say the testbed "shows this shape of
+    behaviour at delta=3". It does not. Greedy's early stops there matched the
+    exhaustive optimum, so they were correct declines, not the failure mode —
+    and they came from dividing Risk and Cost by the budget. On the frozen
+    candidate set the gain part is modular, so greedy is optimal by
+    construction and the failure mode cannot occur. The risk is real on
+    larger, overlapping instances, which is where the guarantee earns its
+    place.) NOTE ON CONFIDENCE: the unbounded-ratio claim and the appendix title
     are verified; an earlier version of this docstring asserted a specific
     O(1/k) rate and a theorem number ("Theorem 3"), neither of which the primary
     text confirmed. Both were removed rather than restated more cautiously. The
@@ -122,16 +128,18 @@ def distorted_greedy(candidates: list[int], paths: list[dict], criticality: dict
     combinatorial and, as visible below, short. §7 records this.
 
     MEASURED BEHAVIOUR ON THIS TESTBED, AND A WARNING AGAINST "FIXING" IT.
-    Distorted greedy is *beaten by plain greedy* in 2 of the 20 cells of the
-    comparison grid (scripts/sweep.py) — 34.2% below the exhaustive optimum at
-    B=2 under default weights, and 11.4% at B=4 under delta=3 — while plain
-    greedy attains the exact optimum in all 20. This is correct behaviour, not a
-    defect. Each of the k iterations applies
+    Distorted greedy is *beaten by plain greedy* in 3 of the 20 cells of the
+    comparison grid (scripts/sweep.py), all under delta=3 — 17.1% below the
+    exhaustive optimum at B=2, 25.4% at B=3 and 11.4% at B=4 — while plain
+    greedy attains the exact optimum in all 20. (Under D20-D24's /budget
+    normalisation it was 2 cells: 34.2% at B=2 default, 11.4% at B=4 delta=3.
+    D25 changed the normalisation; the algorithm is unchanged.) This is correct
+    behaviour, not a defect. Each of the k iterations applies
     its own acceptance test, and an iteration that declines is NOT retried, so
     when the early distortion factor pushes every candidate's distorted value
-    below zero the algorithm permanently forfeits that slot. At B=2 the i=0
-    distortion of 0.5 halves every gain, nothing is accepted, and only one decoy
-    is placed against a budget of two.
+    below zero the algorithm permanently forfeits that slot. At B=2 under
+    delta=3 the i=0 distortion of 0.5 halves every gain, nothing is accepted,
+    and only one decoy is placed against a budget of two.
 
     Do NOT "fix" this by looping until the budget is filled, by relaxing the
     acceptance test, or by restarting declined iterations. The per-iteration
@@ -154,12 +162,14 @@ def distorted_greedy(candidates: list[int], paths: list[dict], criticality: dict
     GAMMA = 1.0
 
     def g_of(S: set[int]) -> float:
-        m = score(S, paths, criticality, detectability_risk, weights, budget)
+        m = score(S, paths, criticality, detectability_risk, weights)
         return alpha * m.coverage + beta * m.early + gamma_w * m.crit_prot
 
     def c_of_element(l: int) -> float:
-        # modular, so the cost of an element is independent of the set
-        return (delta * detectability_risk.get(l, 0.0) + epsilon) / budget
+        # modular, so the cost of an element is independent of the set. Divided
+        # by the fixed NORMALISER_K exactly as metrics.score does (D25; D20-D24
+        # divided by the budget).
+        return (delta * detectability_risk.get(l, 0.0) + epsilon) / NORMALISER_K
 
     S: set[int] = set()
     g_S = g_of(S)
@@ -183,4 +193,4 @@ def distorted_greedy(candidates: list[int], paths: list[dict], criticality: dict
             S.add(best_e)
             g_S = best_g
 
-    return S, score(S, paths, criticality, detectability_risk, weights, budget)
+    return S, score(S, paths, criticality, detectability_risk, weights)
