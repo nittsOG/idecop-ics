@@ -98,7 +98,7 @@ Six chapters. This is the standard shape for an M.Tech project report and maps c
 | 4.5 | API layer and contract | `src/api/main.py` |
 | 4.6 | User interface — three screens | `src/frontend/` |
 | 4.7 | Explanation layer | `02-ai-role.md` — pending build |
-| 4.8 | Plausibility-scoring assist | `02-ai-role.md` — pending build |
+| 4.8 | Plausibility-scoring assist | `02-ai-role.md`; `notebooks/plausibility_scoring.ipynb` — written in D26, not yet run |
 | 4.9 | Testbed deployment | Pending build |
 | 4.10 | Verification and issues encountered | `00-decisions-log.md` D14–D19 |
 

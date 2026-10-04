@@ -147,11 +147,88 @@ def write_computed_scores(g: nx.DiGraph, w1: float = 0.4, w2: float = 0.4, w3: f
     conn.close()
 
 
-def load_candidate_locations(db_path: Path = DB_PATH) -> list[int]:
-    """L — asset_ids currently marked is_candidate=1."""
+class CandidateSetError(RuntimeError):
+    """The candidate set did not come through formal-problem-definition.md §4's
+    filters, so no result computed on it may be reported (D26)."""
+
+
+def load_candidate_locations(db_path: Path = DB_PATH, allow_legacy: bool = False) -> list[int]:
+    """L — asset_ids marked is_candidate=1, after checking how they got there.
+
+    D25 found that the seed had put assets into L that no human had scored.
+    D26 makes that impossible to miss. The loader raises CandidateSetError when
+    a member of L:
+    - was never confirmed by a human in Screen 3, or whose four recorded answers
+      do not pass Filter 1 when recomputed, path rule included. The stored flags
+      alone are not trusted. This is the D25 bypass. It is allowed only with allow_legacy=True, which
+      exists to reproduce numbers recorded before D26 from
+      data/legacy/d25_candidate_set.sql;
+    - has no Filter 2 (D22a) detectability score. This is never allowed,
+      because the optimiser used to read a missing score silently as 0.0, i.e.
+      as a perfectly safe decoy.
+
+    An empty list means the A32 review has not produced any candidate yet."""
+    from src.plausibility import passes, RubricError, KEYS   # local import: plausibility is a sibling package
+
     conn = sqlite3.connect(db_path)
-    ids = [r[0] for r in conn.execute("SELECT asset_id FROM candidate_locations WHERE is_candidate=1")]
+    rows = conn.execute(f"""
+        SELECT cl.asset_id, a.name, cl.human_confirmed, cl.passes_plausibility, cl.detectability_risk,
+               {", ".join("cl.criterion_" + k for k in KEYS)},
+               (SELECT COUNT(DISTINCT s.path_id) FROM attack_path_steps s WHERE s.asset_id = cl.asset_id)
+        FROM candidate_locations cl JOIN assets a ON a.asset_id = cl.asset_id
+        WHERE cl.is_candidate = 1 ORDER BY cl.asset_id""").fetchall()
     conn.close()
+
+    def reviewed(r):
+        # The stored flags are not trusted alone: the Filter 1 result is recomputed
+        # from the four recorded answers, path rule included, and must agree.
+        _, _, confirmed, passed, _, *answers, n_paths = r
+        try:
+            recomputed = passes(dict(zip(KEYS, answers)), n_paths)
+        except RubricError:
+            return False
+        return bool(confirmed) and bool(passed) and recomputed
+
+    unreviewed = [r[1] for r in rows if not reviewed(r)]
+    if unreviewed and not allow_legacy:
+        raise CandidateSetError(
+            "These candidates did not come through Filter 1's human review: " + ", ".join(unreviewed)
+            + ". To reproduce a number recorded before D26, load data/legacy/d25_candidate_set.sql into a "
+              "freshly built database and pass --legacy-d25 to the script. Otherwise rebuild the database from "
+              "schema.sql and seed.sql, and restore the review with scripts/review_io.py.")
+    unscored = [r[1] for r in rows if r[4] is None]
+    if unscored:
+        raise CandidateSetError(
+            "These candidates have no Filter 2 (D22a) detectability score: " + ", ".join(unscored)
+            + ". A32 step 4 adds one for every asset that passes Filter 1 (02-detectability-rubric.md).")
+    return [r[0] for r in rows]
+
+
+def legacy_flag(argv: list[str]) -> bool:
+    """Shared by the three scripts: strip --legacy-d25 from argv and report whether
+    it was given. If it was, print the banner that marks the output as historical."""
+    if "--legacy-d25" not in argv:
+        return False
+    argv.remove("--legacy-d25")
+    print("=" * 78)
+    print("LEGACY D25 CANDIDATE SET — reproduces numbers recorded before D26.")
+    print("This set did not come through §4's filters (D25, Finding 2).")
+    print("Nothing below is an evaluation result.")
+    print("=" * 78)
+    return True
+
+
+def candidates_or_exit(db_path: Path = DB_PATH, allow_legacy: bool = False) -> list[int]:
+    """For the scripts: load L, or explain why there is nothing to run on, and exit."""
+    try:
+        ids = load_candidate_locations(db_path, allow_legacy=allow_legacy)
+    except CandidateSetError as e:
+        raise SystemExit(f"Refusing to run: {e}")
+    if not ids:
+        raise SystemExit(
+            "No candidate set yet. L is empty until the A32 review in Screen 3 confirms at least one asset "
+            "(formal-problem-definition.md §4, D26). To reproduce a number recorded before D26, load "
+            "data/legacy/d25_candidate_set.sql into the database and pass --legacy-d25.")
     return ids
 
 

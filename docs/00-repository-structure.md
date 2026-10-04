@@ -12,9 +12,11 @@ The full file/folder layout for when the GitHub repo gets created at the start o
   03-*.md          evaluation — methodology, results write-up
   05-*.md          thesis chapter drafts
 /references        PDFs of papers cited in sources.md
-/src               code — graph model, optimizer, AI explanation layer, API, frontend
+/src               code — graph model, optimizer, plausibility rules (D26), AI explanation layer, API, frontend
+/scripts           evaluation and data-handling scripts (comparison, sweep, structure check, notebook import, review record)
+/notebooks         the Colab plausibility-scoring notebook (D26)
 /testbed           VM configs, pfSense export, OpenPLC programs, Node-RED flows
-/data              SQLite database, seed data, migrations
+/data              SQLite schema and seed; legacy/ (the pre-D26 candidate set, for reproducing old numbers); review/ (the committed Filter 1 review and the notebook's outputs, D26)
 /results           Phase D outputs — logs, CSVs, generated charts
 /submission        final formatted thesis document, once truly final
 ```
@@ -30,6 +32,8 @@ No `04-*` in `/docs` — the implementation roadmap lives entirely in `00-projec
 | Code for the optimizer, graph model, API | `/src`, in the relevant subfolder (standard Python/module naming, not the `00-`/`01-` scheme — that convention is specific to `/docs`) |
 | VM configs, pfSense export, OpenPLC programs | `/testbed` |
 | The SQLite database, seed/fixture data | `/data` |
+| The exported Filter 1 review and the scoring notebook's two output files | `/data/review` (committed: the database itself is not tracked) |
+| A Colab notebook | `/notebooks` |
 | Evaluation logs, CSVs, generated charts | `/results` |
 | The final formatted thesis | `/submission` |
 

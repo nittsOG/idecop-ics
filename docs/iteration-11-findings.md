@@ -4,6 +4,8 @@ Resumes the research trail after D9 closed open-ended searching at iteration 10.
 
 **Sources added:** #328–331. **Documents changed:** `formal-problem-definition.md` §4. **Claims dropped:** one. **Model gaps opened:** one, unresolved.
 
+*Correction (D26, 3 October 2026): "source 53" in this document means Valeros et al., "Decoys Cannot Go Everywhere", which is #40 in `sources.md`. #53 is an unrelated IEC 62443 paper.*
+
 ---
 
 ## 1. Why this iteration happened at all

@@ -54,7 +54,11 @@ export default function Dashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ method, budget: 2 }),
       });
-      if (!optRes.ok) throw new Error(`optimize returned ${optRes.status}`);
+      // D26: the API explains why it refuses (empty or unreviewed candidate set), so show that text.
+      if (!optRes.ok) {
+        const data = await optRes.json().catch(() => ({}));
+        throw new Error(data.detail ?? `optimize returned ${optRes.status}`);
+      }
       const { run_id } = await optRes.json();
       const runRes = await fetch(`${API}/runs/${run_id}`);
       if (!runRes.ok) throw new Error(`runs/${run_id} returned ${runRes.status}`);

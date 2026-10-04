@@ -15,6 +15,7 @@ IEC 62443 SL vectors (source #267, standards-grounded) multiplied by a network-c
 **D3 — Candidate locations are filtered, not the full asset list**
 Two filters applied in sequence: a four-criterion plausibility rubric adapted from source #53 (can a decoy exist here / would an attacker reach it / does it yield signal / is it a reliable malice indicator), then a detectability check (sources #262, #263) excluding or down-weighting positions that are trivially fingerprintable. Demonstrated concretely in `testbed-architecture.md` — the OT Firewall fails the plausibility filter; OT-DMZ-zone candidates pass but get risk-adjusted downward for detectability.
 *[D25: the seeded candidate set was not produced by these filters. Three of its five members (Historian, HMI, PLC-02) have no criterion scores, three assets on attack paths (Engineering WS, PLC-01, PLC-03) were never assessed, and the seed departs from the worked example cited here. The three confirmed rows are transcriptions from demo data, and the DMZ Jump Host's confirmed scores fail the only implemented Filter 1 rule. Re-deriving the set by these filters is A32, before Phase D.]*
+*[D26: "source #53" above should read #40. #53 is an unrelated IEC 62443 paper. §4 now states how the four scores combine, and the seed no longer pre-judges the set.]*
 *Status: confirmed. Reference: `formal-problem-definition.md` §4, `testbed-architecture.md`.*
 
 **D4 — Baseline is betweenness centrality specifically, named as such**
@@ -52,10 +53,16 @@ The original brief (§9) named this as a *possible* AI use, not a committed one.
 
 **D12 — AI role expanded: plausibility-scoring assist added, interactive Q&A deferred**
 Weighed three directions for giving AI a more substantial role than a single post-run explanation: (a) an interactive Q&A layer over completed runs, (b) AI-assisted first-pass scoring of formal-problem-definition.md §4's plausibility rubric with human confirmation, (c) replacing the optimizer itself with an AI-driven decision — rejected outright, since it would move the project out of the specific novelty gap ten research iterations found and into the crowded RL/game-theoretic placement literature, and would require an entirely different, much less certain evaluation methodology this late in the specification. Between (a) and (b): (b) chosen. Lower implementation cost, lower guardrail risk (single-shot per-asset scoring vs. open-ended multi-turn conversation), and it strengthens a real, currently-manual step already in the formal spec rather than adding a new demo-facing feature. Runs on Google Colab (Qwen3 14B) rather than local Ollama, since it's a disconnected one-time batch step, not part of the live system — see D6's local/no-paid-API constraint, which this doesn't violate since Colab's free tier is being used for a step that doesn't touch OT topology data at deployment time, only during offline testbed setup.
+*[D26: the route stands, an AI first pass with a human reviewing every card, with safeguards against anchoring. D26 also corrects one claim in its documentation: a free Colab T4 cannot run Qwen3 14B unquantised. It needs 4-bit weights.]*
 *Status: confirmed. Reference: `02-ai-role.md` Part B, `02-data-model.md`'s `candidate_locations` table, `formal-problem-definition.md` §4.*
 
 **D13 — Three UI screens, not one; single write-path through the API**
 The interface walkthrough left open how many distinct screens the prototype actually needs. Resolved as three, because they serve different moments (live demo, evaluation-data generation, one-time setup), not different views of the same data: a single-run dashboard, a sensitivity-sweep comparison view, and a plausibility-review screen. Build order given weekend hours: review screen first (nothing else works without confirmed candidates), dashboard second (most demo value, most already specified), comparison view last (simplest to build, only meaningful once Phase D generates multiple runs). Separately: only the `/api` module has database write access — `graph_model` and `optimizer` are libraries it calls, not independent services — keeping every write auditable at one layer, consistent with how AI-component writes are already gated in D12.
+*[D26: the principle holds for the running system, but four offline setup steps also write to the database:*
+*- the notebook import (`ai_*` columns only, as `02-prototype-architecture.md` §4 specified in Phase B);*
+*- `scripts/review_io.py restore`, which replays a committed review through the API's rules;*
+*- the legacy SQL, which reproduces historical numbers and which the loader refuses without `--legacy-d25`;*
+*- `graph_model`'s `write_computed_scores`, when run as a script.]*
 *Status: confirmed. Reference: `02-prototype-architecture.md` §1, §3.*
 
 **D14 — Phase C started: Screen 3 built and tested, one spec gap found and fixed in the process**
@@ -123,9 +130,9 @@ Four changes, made together because all four are normalisation defects in the sa
 
 **Effect, measured across 20 budget/weight configurations.** The Historian is now selected in **16 of 20** — it has become a genuine competitor rather than dead weight. Coverage now moves in quarters rather than thirds. Greedy beats or ties the centrality baseline in all 20 and loses none; the ties concentrate at B=3 and B=4, where the small candidate set saturates and both methods reach the same placement. At B=1 under δ=3 greedy still places nothing while centrality scores −1.473, which remains the clearest single illustration of the operational-risk term doing work. *[Superseded by D25: the decline came from dividing Risk and Cost by B, not from the risk term alone.]*
 
-**PLC-02 is not fixed, and is not being fixed.** It remains on no path. Documented in `testbed-architecture.md` as search-space richness — a plausible decoy site the optimiser must evaluate and correctly reject. Manufacturing a fifth path solely to make it selectable would be fitting the threat model to the search space rather than to documented adversary behaviour, which is the error this entry exists to avoid.
+**PLC-02 is not fixed, and is not being fixed.** It remains on no path. Documented in `testbed-architecture.md` as search-space richness — a plausible decoy site the optimiser must evaluate and correctly reject. Manufacturing a fifth path solely to make it selectable would be fitting the threat model to the search space rather than to documented adversary behaviour, which is the error this entry exists to avoid. *[D26: under §4's path rule an off-path asset scores No on Interaction, so PLC-02 cannot pass Filter 1 and leaves the candidate set. The search-space-richness position stands only as history.]*
 
-**Freeze status.** Attack paths are now final for Phase D unless a documented defect emerges. Remaining unfrozen input: the detectability values in `candidate_locations`, still hand-assigned (A23).
+**Freeze status.** Attack paths are now final for Phase D unless a documented defect emerges. *[D27: one did. The Backup Control Switch's stated purpose, the two-route test, was never modelled, and ATT&CK for ICS treats switches as targets. P5 was added.]* Remaining unfrozen input: the detectability values in `candidate_locations`, still hand-assigned (A23).
 *Status: confirmed, implemented, re-verified. Reference: `threat-attack-model.md` P4, `data/seed.sql`, `testbed-architecture.md` verification table.*
 
 **D22 — Filter 2 detectability values derived by a stated rubric, not judgement. The change made the headline result worse, and it stays.**
@@ -343,4 +350,160 @@ Modelling either one needs a non-modular cost, which forfeits distorted greedy's
 4. Every score counts only after the user confirms it in Screen 3. New candidates receive D22a detectability scores.
 5. The set is frozen, every check is re-run, and the effect is stated against this entry's numbers, in its own entry, before Phase D.
 
+*[D26 settles steps 1 and 3 and completes step 2.]*
+
 *Status: confirmed, implemented, verified against exhaustive enumeration. Reference: `src/optimizer/metrics.py`, `src/optimizer/milp.py`, `src/optimizer/baselines.py`, `scripts/sweep.py`, `scripts/structure_check.py`, `scripts/run_comparison.py`, `formal-problem-definition.md` §4, §5, §7 and §8, `README.md`, `00-action-items.md` A12, A15 and A32, `testbed-architecture.md`, `04-deployment-requirements.md`, `02-optimization-formulation.md`, `00-project-phases.md`, `02-system-flow.md`, `02-detectability-rubric.md`, `05-thesis-structure.md`, `02-ai-role.md`, `src/api/main.py`, `src/frontend/src/PlausibilityReview.jsx`.*
+
+**D26 — Filter 1 is defined before any scoring: what a candidate is, how the four scores combine, #40's four-level scale, and the scoring route. The seed no longer pre-judges the candidate set, so L is empty until the A32 review.**
+A32's steps 1 and 3 were the user's calls. They were made between 1 and 3 October 2026, after #40 had been re-read in full from a printout the user supplied. No evaluation campaign has run, and no Filter 1 score existed when these rules were fixed. #40 follows the same order ("we fixed the decision rules before scoring").
+
+**1. What a candidate means.** `x_l = 1` places a decoy imitating `type(l)` in `zone(l)`, on the same segment and behind the same conduits, so that attack paths through `l` pass where it sits. It does not change the real asset. Whether an attacker would interact with the decoy is what criterion 2 scores; the definition does not assume it. This is D25's proposed wording, tightened.
+
+**2. Combination rule: an asset passes Filter 1 only if all four criteria are answered and none is No. Mostly No passes.** User's choice, on Claude's recommendation.
+- #40 defines "admits a decoy" by Feasibility alone. None of its 80 admitted techniques scored No on a later criterion (Interaction 34/24/22/0, Intelligence Yield 71/8/1/0, Malice Fidelity 30/44/6/0, where the last zero is by arithmetic because the printout truncates that column), so the paper never had to decide what a later No means. "Exclude on any No" therefore contradicts no result in the paper.
+- The objective counts every interception as a detection and has no false-positive term. Without the rule, it would credit detections that the rubric says will not happen (Interaction No) or cannot be told apart from routine activity (Malice fidelity No).
+- *Alternative considered:* #40's literal rule, where only a Feasibility No excludes. Rejected: implausible and off-path sites would stay in L. The random and centrality baselines draw from L, so such sites would hand them picks that gain nothing.
+- Intelligence yield gates too, for simplicity. #40 found it almost never limiting.
+
+**3. Scale: #40's four-point forced choice (Yes / Mostly Yes / Mostly No / No) with Table 1's level definitions, reproduced unchanged.** User's choice, on Claude's recommendation.
+- *Two further rules from #40:* ties between adjacent levels go to the lower level, and the first No ends the evaluation.
+- *One adaptation:* each criterion is scored for "the best case a well-instrumented decoy could plausibly produce" (#40), but at the actual network position, not in principle.
+- *What the old scale did:* yes / mostly / no merged #40's two middle levels. The prompt's "if you are genuinely unsure, say mostly" re-introduced the neutral default #40 removes by design.
+- *Effect at the boundary:* pass or fail depends only on No under either scale. What changes is the boundary: a tie between No and Mostly No now goes to No, where "unsure, say mostly" sent it to a pass.
+- *Licence:* Table 1 is reproduced with credit under CC BY-NC-SA 4.0 (#368). Licence reading, not legal advice.
+
+**4. Interaction is judged against the paths as modelled.** Each path is named, and the encounter is called a Sweep or a Seek.
+- An asset in no path's asset sequence scores No, because the model cannot credit it with an interception. Consequence known now: PLC-02 and the Backup Control Switch cannot pass, so PLC-02, a member of D25's set, leaves L unless the threat model changes. *[D27: only PLC-02 now, kept off-path as option (a). P5 runs through the switch.]*
+- An asset on several paths is scored per path, and the lowest level is recorded ("weakest path decides"). A best-case score would credit paths the rubric says the attacker would not take that way. The reviewer gives each path's level in the required reason. Only Engineering WS (P1, P4) is affected.
+- The path rule's No needs no written reason: the rule is the reason. The API, Screen 3, the restore script and the candidate loader all enforce it.
+
+**5. Malice fidelity names the routine benign activity at the position before it is scored.** This is #40's own proposed refinement. The OT examples are this project's.
+
+**6. Route A: D12's route, an AI first pass with a human reviewing every card.** The user's choice. Recorded in full because Claude recommended otherwise. Four routes were considered:
+- **A**, this one;
+- **B**, the user scores alone with no AI, which is the cheapest but leaves the AI assist unevaluated;
+- **C**, the user scores every card blind and then compares with the AI;
+- **D**, Claude scores. D was rejected outright: it would replace the expert rather than support them, which #40 advises against, and the scorer would be the system's builder.
+- *Claude's recommendation was route C:* the user scores every card before seeing the AI's answer, and the two are then compared. The evidence closest to this setting found that reviewers move toward an LLM's suggestion even when they review it:
+  - #362: overlap with the LLM's labels rose from about 40% to 81–87%, and evaluating the LLM against the assisted labels inflated its F1 from .47 to .79;
+  - #363: requiring a corrected value reduced corrections.
+- *Claude's own earlier correction went too far.* On 30 September Claude had called this anchoring argument overstated, on the strength of #359–#361. Those studies are linguistic annotation with accurate taggers, and the two closer studies point the other way.
+- *The user chose A* to keep the reviewer's work low, and because the AI's value at plant scale is exactly that reduction.
+- *The safeguards adopted:*
+  - **Three blind cards.** They are drawn at random, before any AI output exists, from the eight assets on a modelled path. They are scored before their AI answers are shown, and give the one unanchored agreement measure. Their first answers are written once, to their own columns, and never change. The final answers may still be revised, with a reason. Draw: `random.Random(20261003).sample(population, 3)` under CPython 3.11, where the population is DMZ Jump Host, Engineering WS, Engineering WS-2, HMI, Historian, OT Firewall, PLC-01 and PLC-03 (RTU), sorted by name. Result: **DMZ Jump Host, Historian, PLC-03 (RTU)**.
+  - **A written reason** on a blind card, on a card with no AI suggestion, after changing any AI answer, and for any Mostly No or No.
+  - **No fallback to the AI's answer.** The confirm endpoint used to fill a blank with the AI's suggestion.
+  - **Each card shows the asset's attack-path steps.** The design-time rationale text, which pre-judged outcomes, is no longer shown.
+- *Fallback route:* if the notebook produces no suggestions within two weekends of the blind cards being finished, the remaining cards are scored directly (route B), with reasons.
+- *Model:* Qwen3-14B per D12, in 4-bit, because 16-bit weights do not fit a 16 GB T4 (#364–#366). With the embeddings and output layer left at 16-bit the total is about 10 GB (#376). Qwen3-8B is pre-declared as the fallback if 14B cannot load. Decoding is non-thinking and greedy, for reproducibility. That departs from the model card's sampling recommendation (#364), and the departure is declared.
+- *What the thesis may say:* the acceptance rate on the seven pre-filled cards is reported as a limitation, not as evidence that the AI is accurate. The blind cards give the agreement measure, reported as counts.
+- *At plant scale (thesis design, not built):* the AI scores everything, and humans review an exception queue: boundary answers, answers the AI flags as unsure, and a random audit sample.
+
+**Deferred, not decided:**
+- The user's idea of presenting Screen 3 as a network view, with cards in a side panel (A34).
+- The K wording for further instance families (A12).
+- Closing A18.
+
+**Corrections made in this batch.**
+- `02-ai-role.md` §7 said a free Colab T4 runs Qwen3 14B "at full speed with room to spare". It cannot: 14.8B parameters are about 29.6 GB at 16-bit, against 16 GB, and Colab does not guarantee any GPU (#364–#366).
+- §8 said confirmation means the model "can be wrong without anything downstream trusting it by default". That overstated what review achieves (#362, #363).
+- §10's evaluation by match rate would have been inflated by design. It is replaced by the blind-card measure.
+- `formal-problem-definition.md` §4, D3 and #329 cited "source 53" for the rubric, which is an unrelated IEC 62443 paper. The source is #40.
+- `00-glossary.md` still said "Applying it to the ICS matrix is new to this project". That claim was dropped at iteration 11.
+
+**Implemented.**
+- `src/plausibility/` holds the rubric rules: the sequence, path, combination and reason rules, and "weakest path". It also holds the AI prompt, the parser and the scoring loop. The API, both scripts and the notebook all use them, so no second copy of a rule exists.
+- Schema: four-level `CHECK` constraints, plus `blind_first`, the write-once `blind_*` columns, `human_reason` and `ai_model`. `detectability_risk` is now NULL when unscored, not 0.0.
+- Seed: rows for all ten non-Attacker assets, all unscored, none in L. `data/demo_ai_suggestions.sql` was removed: its values were written by Claude, so loading it would have made the first pass Claude-drafted, which is route D.
+- `load_candidate_locations` refuses an unreviewed candidate and a candidate without a D22a score. It recomputes each candidate's Filter 1 result from the four recorded answers, path rule included, rather than trusting the stored flags.
+- `notebooks/plausibility_scoring.ipynb` (A20).
+- `scripts/import_plausibility_scores.py`, specified in `02-prototype-architecture.md` §4 since Phase B but never built.
+- `scripts/review_io.py`: the committed review record. An export taken while a blind card is open leaves that card's AI fields blank.
+- The import never changes or clears an AI suggestion already stored on a confirmed card.
+- Screen 3 rebuilt: blind cards first, path steps, four levels, the reason box, no AI fallback.
+
+**Independent review, and what it changed.** A separate agent reviewed the batch before handover. It had not seen the work produced, as D25's review had not. Its findings were fixed before handover:
+- *High:* a confirmed blind card could be re-confirmed after its AI answer had been shown, overwriting the one unanchored measure. Fixed with the write-once `blind_*` columns.
+- *Medium, in four places:*
+  - the path rule was enforced only for AI suggestions, so a human could have passed PLC-02;
+  - the loader trusted stored flags, so the legacy SQL loaded over a reviewed database would have been accepted;
+  - a null reason in the model's output would have crashed the notebook run;
+  - an export taken mid-review would have written open blind cards' AI answers.
+- *Lower:*
+  - error messages that could hint at a blind card's AI level;
+  - a stale suggestion surviving a failed re-run;
+  - gaps in the parser (duplicate path entries, "Neither", echoed path names, a dash read as a level);
+  - the notebook's restart advice, dtype and version pinning;
+  - the 4-bit memory figure, about 10 GB rather than 7.4 GB.
+- *Stale text, corrected in place:*
+  - thesis-facing text that still claimed the rubric was applied to "the ICS matrix" (`05-front-matter-pack.md`, `01-thesis-citation-shortlist.md`), a claim dropped at iteration 11;
+  - PLC-02's "search-space richness" position (D21, A13, `testbed-architecture.md`), which §4's path rule overtakes;
+  - D13's single-write-path rule, which needed a note on the offline setup scripts.
+
+**Effect on results.** No evaluation result exists, and none changes.
+- D25's numbers stay reproducible. With `data/legacy/d25_candidate_set.sql` loaded and `--legacy-d25` passed, `run_comparison.py`, `sweep.py --sens` and `structure_check.py` print output identical to commit `1a93af9`'s, apart from a five-line banner. Verified 3 October.
+- By default L is empty, and every script and `POST /optimize` refuse to run, with the reason.
+- Known in advance: PLC-02 and the Backup Control Switch cannot pass Filter 1. Everything else depends on the review. *[D27: the switch now lies on P5; only PLC-02 remains.]*
+
+*Status: confirmed and implemented. Verified, after the review's fixes:*
+- *the confirm rules through the API: sequence, path rule, reason rule, blind hiding, write-once blind answers, and refusal of unscored or unreviewed candidates, including the legacy SQL loaded over a reviewed database;*
+- *an import → review → export → rebuild → restore round trip that reproduced the database exactly;*
+- *the frontend build;*
+- *Screen 3, driven in Chromium through the blind, import and review steps;*
+- *the legacy reproduction.*
+
+*The notebook's model-loading and generation cells are untested: neither a GPU nor Hugging Face is reachable from this environment. Its prompt, parsing and loop run locally against a stand-in model. The first Colab run is the test of the rest.*
+
+*Reference: `formal-problem-definition.md` §4, `02-ai-role.md` §7–10, `02-data-model.md`, `02-prototype-architecture.md` §1–4, `02-system-flow.md`, `02-detectability-rubric.md`, `testbed-architecture.md`, `threat-attack-model.md`, `00-glossary.md`, `00-project-phases.md`, `00-repository-structure.md`, `00-action-items.md` A13, A18, A20, A26, A29, A32, A33 and A34, D3, D12, D13, D21 and D25 (pointer notes), `05-front-matter-pack.md`, `05-thesis-structure.md`, `01-thesis-citation-shortlist.md`, `iteration-11-findings.md`, `04-deployment-requirements.md`, `README.md`, `.gitignore`, `data/schema.sql`, `data/seed.sql`, `data/legacy/d25_candidate_set.sql`, `src/plausibility/`, `src/graph_model/__init__.py`, `src/api/main.py`, `src/optimizer/baselines.py` (docstring), `src/frontend/src/PlausibilityReview.jsx`, `src/frontend/src/Dashboard.jsx`, `src/frontend/src/App.css`, `scripts/`, `notebooks/plausibility_scoring.ipynb`, `sources.md` #40, #319, #328, #329, #357, #359–#376.*
+
+**D27 — A fifth attack path, P5, runs through the Backup Control Switch, and PLC-02 stays off every path by the user's choice. Both decided on 4 October 2026, before any Filter 1 score existed.**
+The user objected to D26's stated consequence that the Backup Control Switch "cannot pass": "we will not out a single asset … backup control switch even not connected play important part, and is subject to exploit".
+
+**Claude's framing was wrong, and this is the correction.** D26 presented the switch's exclusion as a property of the asset. It was a gap in **P**.
+- The switch is connected: DMZ Jump Host → switch → PLC-01 and PLC-02.
+- `testbed-architecture.md` gives it exactly one purpose: "a second conduit tests whether your placement covers both routes to the same target". No path ever used it.
+- ATT&CK for ICS lists **A0015 Switch** as an asset that 33 techniques target (#377, #378). VPNFilter is documented malware that sniffed ICS traffic from inside network devices (#379, #380).
+
+**Why simply keeping the switch on the list would not have worked.** F credits only interceptions on modelled paths. A decoy on the switch would earn nothing, so the optimiser would never choose it. Random and centrality placement could choose it and score nothing for it, which would unfairly favour the proposed method. It would be included in name only.
+
+**1. P5 is added (the user's choice, on Claude's recommendation).**
+
+| Step | Asset | Tactic | Technique | Grounding |
+|---|---|---|---|---|
+| 1 | DMZ Jump Host | Initial Access | T0822 External Remote Services | #383; the 2015 Ukraine attack entered through the control-system VPN |
+| 2 | Backup Control Switch | Lateral Movement | T0866 Exploitation of Remote Services | #382; Switch is a targeted asset |
+| 3 | Backup Control Switch | Discovery | T0842 Network Sniffing | #381; VPNFilter "monitors ICS traffic" (#380) |
+| 4 | PLC-01 | Impair Process Control | T0836 Modify Parameter | P1's verified step at the same PLC |
+
+- *Route:* the testbed's existing edges.
+- *Target:* PLC-01, because P1 reaches it by the primary route and the switch exists to test both routes to the same target.
+- *Composition:* P5 combines documented techniques rather than replaying one campaign, as P3 does. That is stated in `threat-attack-model.md`.
+- *T0855 Unauthorized Command Message* would fit step 4, but its page could not be fetched (#384), so the verified T0836 is used instead.
+
+**Why D21 permits this.** D21 froze the paths "unless a documented defect emerges". The defect is documented twice over: the testbed's stated purpose was never modelled, and MITRE treats switches as targets.
+
+**Why this is not D21's error in reverse.** D21 refused to add a path "solely to make [PLC-02] selectable". P5 does make the switch selectable, but as a consequence. The reasons are the documented ones above, and the choice of target follows the same stated purpose rather than any asset's selectability.
+
+**2. PLC-02 stays off every path: option (a), the user's choice on Claude's recommendation.** PLC-02 is scored like every asset. Its Interaction is No because no modelled attack reaches it, and the thesis reports it as a plausible decoy site the modelled threats never reach: a finding about the threat model's coverage, not a silent removal.
+- *(b) Include it anyway* was rejected. It would earn zero credit and unfairly favour the proposed method over the baselines.
+- *(c) Give it a path* was rejected. No documented attack targets PLC-02 specifically, so a path would repeat D21's error.
+
+**Effects, stated before any scoring.**
+- |P| goes from 4 to 5.
+- Three assets now lie on two paths each: the DMZ Jump Host (P2, P5), PLC-01 (P1, P5) and Engineering WS (P1, P4). D26's reason rule asks their reviewer for each path's level.
+- P5 can meet up to three candidates, and two of them also sit on other paths. So the gain part of F is unlikely to stay modular, and greedy is unlikely to remain optimal by construction. That is a side effect, not the motive, and whether it holds depends on the review.
+- The blind draw stands. It was made over the eight assets then on a path, before any scoring or AI output. P5 later put the switch on a path. Redrawing would create a second draw to choose between, which is worse than a recorded population that changed afterwards.
+- `data/legacy/d25_candidate_set.sql` now removes P5 as well, because the pre-D26 numbers were measured on P1–P4. Those numbers still reproduce exactly.
+- No evaluation result exists, and none changes.
+
+**Implemented:**
+- `data/seed.sql`: P5 and its four steps.
+- `data/legacy/d25_candidate_set.sql`.
+- `threat-attack-model.md`: the P5 section.
+- `testbed-architecture.md`: the role and verification tables, and the PLC-02 and D26 notes.
+- `formal-problem-definition.md` §3–4.
+- `00-glossary.md`, `00-project-phases.md`, `02-system-flow.md`, `02-data-model.md`, `04-deployment-requirements.md`, and `00-action-items.md` A32.
+- Pointer notes on D21 and D26.
+- `sources.md` #377–#384.
+
+*Status: confirmed, implemented and verified. With P5 removed, the legacy reproduction is identical to commit `1a93af9`'s output. The API lists P5's steps, and asks for per-path reasons on the three two-path assets. The prompt contexts show P5. All scratch test suites and the browser test pass.*

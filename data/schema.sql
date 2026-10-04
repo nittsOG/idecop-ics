@@ -39,19 +39,35 @@ CREATE TABLE edges (
 
 CREATE TABLE candidate_locations (
     asset_id                     INTEGER PRIMARY KEY REFERENCES assets(asset_id),
-    criterion_decoy_exists       TEXT CHECK (criterion_decoy_exists IN ('yes','mostly','no')),
-    criterion_attacker_reach     TEXT CHECK (criterion_attacker_reach IN ('yes','mostly','no')),
-    criterion_useful_signal      TEXT CHECK (criterion_useful_signal IN ('yes','mostly','no')),
-    criterion_reliable_indicator TEXT CHECK (criterion_reliable_indicator IN ('yes','mostly','no')),
-    passes_plausibility          INTEGER NOT NULL CHECK (passes_plausibility IN (0,1)),
-    detectability_risk           REAL DEFAULT 0.0,
-    is_candidate                 INTEGER NOT NULL CHECK (is_candidate IN (0,1)),
-    rationale                    TEXT,
-    ai_suggested_decoy_exists       TEXT CHECK (ai_suggested_decoy_exists IN ('yes','mostly','no')),
-    ai_suggested_attacker_reach     TEXT CHECK (ai_suggested_attacker_reach IN ('yes','mostly','no')),
-    ai_suggested_useful_signal      TEXT CHECK (ai_suggested_useful_signal IN ('yes','mostly','no')),
-    ai_suggested_reliable_indicator TEXT CHECK (ai_suggested_reliable_indicator IN ('yes','mostly','no')),
+    -- Filter 1 (formal-problem-definition.md §4, D26): four-level scale from
+    -- sources.md #40, scored in order. The first 'no' ends the card, so the
+    -- criteria after it stay NULL. Only a human confirmation writes these.
+    criterion_decoy_exists       TEXT CHECK (criterion_decoy_exists IN ('yes','mostly_yes','mostly_no','no')),
+    criterion_attacker_reach     TEXT CHECK (criterion_attacker_reach IN ('yes','mostly_yes','mostly_no','no')),
+    criterion_useful_signal      TEXT CHECK (criterion_useful_signal IN ('yes','mostly_yes','mostly_no','no')),
+    criterion_reliable_indicator TEXT CHECK (criterion_reliable_indicator IN ('yes','mostly_yes','mostly_no','no')),
+    passes_plausibility          INTEGER NOT NULL DEFAULT 0 CHECK (passes_plausibility IN (0,1)),
+    -- Filter 2 (D22a): 0 (safe) to 1 (trivially fingerprinted). NULL means not yet
+    -- scored; the candidate loader refuses a candidate without a score (D26).
+    detectability_risk           REAL,
+    is_candidate                 INTEGER NOT NULL DEFAULT 0 CHECK (is_candidate IN (0,1)),
+    rationale                    TEXT,   -- design-time note only; not shown during review (D26)
+    blind_first                  INTEGER NOT NULL DEFAULT 0 CHECK (blind_first IN (0,1)),  -- D26 blind card
+    -- D26: a blind card's FIRST confirmed answers, written once and never changed,
+    -- so the AI-agreement measure cannot be overwritten after the AI's answer is shown.
+    blind_decoy_exists           TEXT CHECK (blind_decoy_exists IN ('yes','mostly_yes','mostly_no','no')),
+    blind_attacker_reach         TEXT CHECK (blind_attacker_reach IN ('yes','mostly_yes','mostly_no','no')),
+    blind_useful_signal          TEXT CHECK (blind_useful_signal IN ('yes','mostly_yes','mostly_no','no')),
+    blind_reliable_indicator     TEXT CHECK (blind_reliable_indicator IN ('yes','mostly_yes','mostly_no','no')),
+    blind_reason                 TEXT,
+    blind_confirmed_at           TEXT,
+    ai_suggested_decoy_exists       TEXT CHECK (ai_suggested_decoy_exists IN ('yes','mostly_yes','mostly_no','no')),
+    ai_suggested_attacker_reach     TEXT CHECK (ai_suggested_attacker_reach IN ('yes','mostly_yes','mostly_no','no')),
+    ai_suggested_useful_signal      TEXT CHECK (ai_suggested_useful_signal IN ('yes','mostly_yes','mostly_no','no')),
+    ai_suggested_reliable_indicator TEXT CHECK (ai_suggested_reliable_indicator IN ('yes','mostly_yes','mostly_no','no')),
     ai_reasoning                    TEXT,
+    ai_model                        TEXT,   -- model id and revision behind the suggestion (D26)
+    human_reason                    TEXT,   -- the reviewer's reason (D26)
     human_confirmed                 INTEGER NOT NULL DEFAULT 0 CHECK (human_confirmed IN (0,1)),
     confirmed_at                    TEXT
 );

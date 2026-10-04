@@ -51,26 +51,40 @@ CREATE TABLE edges (
     weight           REAL DEFAULT 1.0
 );
 
--- Candidate locations — L. The two-filter output from §4.
+-- Candidate locations — L. The two-filter output from §4. Rewritten by D26:
+-- four-level scale, blind cards, the reviewer's reason, the AI model's identity,
+-- and a NULL (not 0.0) detectability score when Filter 2 has not been applied.
 CREATE TABLE candidate_locations (
     asset_id                     INTEGER PRIMARY KEY REFERENCES assets(asset_id),
-    criterion_decoy_exists       TEXT CHECK (criterion_decoy_exists IN ('yes','mostly','no')),
-    criterion_attacker_reach     TEXT CHECK (criterion_attacker_reach IN ('yes','mostly','no')),
-    criterion_useful_signal      TEXT CHECK (criterion_useful_signal IN ('yes','mostly','no')),
-    criterion_reliable_indicator TEXT CHECK (criterion_reliable_indicator IN ('yes','mostly','no')),
-    passes_plausibility          INTEGER NOT NULL CHECK (passes_plausibility IN (0,1)),  -- Filter 1
-    detectability_risk           REAL DEFAULT 0.0,  -- Filter 2, 0 (safe) to 1 (trivially fingerprinted)
-    is_candidate                 INTEGER NOT NULL CHECK (is_candidate IN (0,1)),  -- final L membership
-    rationale                    TEXT,
-    -- AI-suggested first pass (02-ai-role.md §7-10) — advisory only. The four
-    -- criterion_* columns above are the ones the optimizer reads, and only
-    -- get written once human_confirmed = 1. An unconfirmed suggestion here
-    -- has no path into L.
-    ai_suggested_decoy_exists       TEXT CHECK (ai_suggested_decoy_exists IN ('yes','mostly','no')),
-    ai_suggested_attacker_reach     TEXT CHECK (ai_suggested_attacker_reach IN ('yes','mostly','no')),
-    ai_suggested_useful_signal      TEXT CHECK (ai_suggested_useful_signal IN ('yes','mostly','no')),
-    ai_suggested_reliable_indicator TEXT CHECK (ai_suggested_reliable_indicator IN ('yes','mostly','no')),
+    -- Filter 1 (formal-problem-definition.md §4, D26): four-level scale from
+    -- sources.md #40, scored in order. The first 'no' ends the card, so the
+    -- criteria after it stay NULL. Only a human confirmation writes these.
+    criterion_decoy_exists       TEXT CHECK (criterion_decoy_exists IN ('yes','mostly_yes','mostly_no','no')),
+    criterion_attacker_reach     TEXT CHECK (criterion_attacker_reach IN ('yes','mostly_yes','mostly_no','no')),
+    criterion_useful_signal      TEXT CHECK (criterion_useful_signal IN ('yes','mostly_yes','mostly_no','no')),
+    criterion_reliable_indicator TEXT CHECK (criterion_reliable_indicator IN ('yes','mostly_yes','mostly_no','no')),
+    passes_plausibility          INTEGER NOT NULL DEFAULT 0 CHECK (passes_plausibility IN (0,1)),
+    -- Filter 2 (D22a): 0 (safe) to 1 (trivially fingerprinted). NULL means not yet
+    -- scored; the candidate loader refuses a candidate without a score (D26).
+    detectability_risk           REAL,
+    is_candidate                 INTEGER NOT NULL DEFAULT 0 CHECK (is_candidate IN (0,1)),
+    rationale                    TEXT,   -- design-time note only; not shown during review (D26)
+    blind_first                  INTEGER NOT NULL DEFAULT 0 CHECK (blind_first IN (0,1)),  -- D26 blind card
+    -- D26: a blind card's FIRST confirmed answers, written once and never changed,
+    -- so the AI-agreement measure cannot be overwritten after the AI's answer is shown.
+    blind_decoy_exists           TEXT CHECK (blind_decoy_exists IN ('yes','mostly_yes','mostly_no','no')),
+    blind_attacker_reach         TEXT CHECK (blind_attacker_reach IN ('yes','mostly_yes','mostly_no','no')),
+    blind_useful_signal          TEXT CHECK (blind_useful_signal IN ('yes','mostly_yes','mostly_no','no')),
+    blind_reliable_indicator     TEXT CHECK (blind_reliable_indicator IN ('yes','mostly_yes','mostly_no','no')),
+    blind_reason                 TEXT,
+    blind_confirmed_at           TEXT,
+    ai_suggested_decoy_exists       TEXT CHECK (ai_suggested_decoy_exists IN ('yes','mostly_yes','mostly_no','no')),
+    ai_suggested_attacker_reach     TEXT CHECK (ai_suggested_attacker_reach IN ('yes','mostly_yes','mostly_no','no')),
+    ai_suggested_useful_signal      TEXT CHECK (ai_suggested_useful_signal IN ('yes','mostly_yes','mostly_no','no')),
+    ai_suggested_reliable_indicator TEXT CHECK (ai_suggested_reliable_indicator IN ('yes','mostly_yes','mostly_no','no')),
     ai_reasoning                    TEXT,
+    ai_model                        TEXT,   -- model id and revision behind the suggestion (D26)
+    human_reason                    TEXT,   -- the reviewer's reason (D26)
     human_confirmed                 INTEGER NOT NULL DEFAULT 0 CHECK (human_confirmed IN (0,1)),
     confirmed_at                    TEXT
 );
@@ -131,6 +145,13 @@ CREATE TABLE explanations (
 
 Populated directly from `testbed-architecture.md`'s 11-node graph and `threat-attack-model.md`'s three paths, so this schema is testable the moment it's created rather than needing data invented later.
 
+> ⚠️ **`data/seed.sql` is the canonical seed, and parts of this section are stale.** This section is the Phase B transcription. It was not kept in step with three later changes:
+> - D19 moved P3's step 2 from the HMI to Engineering WS-2;
+> - D21 added P4, and D27 added P5;
+> - D22/D22a replaced the detectability values.
+>
+> D26 brought the `candidate_locations` block back into line. The other differences remain, and `seed.sql` holds the current values.
+
 ```sql
 INSERT INTO zones (name, purdue_level) VALUES
     ('External', '—'),
@@ -171,14 +192,34 @@ INSERT INTO attack_path_steps (path_id, step_order, asset_id, tactic, technique_
     (3, 1, (SELECT asset_id FROM assets WHERE name='OT Firewall'),    'Initial Access', NULL, 'External scan / perimeter probe'),
     (3, 2, (SELECT asset_id FROM assets WHERE name='HMI'),            'Discovery', NULL, 'Network and remote system enumeration');
 
--- Candidate locations — the worked example from testbed-architecture.md, not every asset
-INSERT INTO candidate_locations (asset_id, passes_plausibility, detectability_risk, is_candidate, rationale) VALUES
-    ((SELECT asset_id FROM assets WHERE name='Engineering WS-2'), 1, 0.2, 1, 'Standard deception target, precedent in HoneyPLC/Conpot'),
-    ((SELECT asset_id FROM assets WHERE name='PLC-02'),           1, 0.2, 1, 'Standard deception target'),
-    ((SELECT asset_id FROM assets WHERE name='HMI'),              1, 0.3, 1, 'Standard deception target'),
-    ((SELECT asset_id FROM assets WHERE name='Historian'),        1, 0.3, 1, 'Collection-tactic relevance'),
-    ((SELECT asset_id FROM assets WHERE name='OT Firewall'),      0, 0.0, 0, 'Fails plausibility — no realistic "decoy firewall"'),
-    ((SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),    1, 0.7, 1, 'Passes plausibility, down-weighted — most externally-scanned zone');
+-- Candidate locations (D26). One row per asset except the Attacker node, so
+-- that Screen 3 lists every asset (A32). Every row starts unscored and outside
+-- L: Filter 1 scores come only from a human review in Screen 3, and nothing
+-- here sets is_candidate. Until that review, L is empty and the scripts refuse
+-- to run. To reproduce numbers recorded before D26, see
+-- data/legacy/d25_candidate_set.sql.
+--
+-- detectability_risk holds Filter 2 scores (02-detectability-rubric.md, D22a)
+-- where they exist. NULL means not yet scored: A32 step 4 scores every asset
+-- that passes Filter 1. The OT Firewall's former 0.0 was a placeholder for
+-- "fails plausibility", not a D22a score, so it is NULL now.
+--
+-- blind_first marks the three blind cards, drawn before any AI output existed:
+-- random.Random(20261003).sample over the eight non-Attacker assets on a
+-- modelled path, sorted by name (CPython 3.11). Result: DMZ Jump Host,
+-- Historian, PLC-03 (RTU). See D26. The draw predates P5 (D27), which put the
+-- Backup Control Switch on a path; it stands, as D27 explains.
+INSERT INTO candidate_locations (asset_id, detectability_risk, blind_first) VALUES
+    ((SELECT asset_id FROM assets WHERE name='OT Firewall'),           NULL, 0),
+    ((SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),         0.69, 1),
+    ((SELECT asset_id FROM assets WHERE name='Historian'),             0.69, 1),
+    ((SELECT asset_id FROM assets WHERE name='Engineering WS'),        NULL, 0),
+    ((SELECT asset_id FROM assets WHERE name='Engineering WS-2'),      0.56, 0),
+    ((SELECT asset_id FROM assets WHERE name='HMI'),                   0.62, 0),
+    ((SELECT asset_id FROM assets WHERE name='PLC-01'),                NULL, 0),
+    ((SELECT asset_id FROM assets WHERE name='PLC-02'),                0.62, 0),
+    ((SELECT asset_id FROM assets WHERE name='PLC-03 (RTU)'),          NULL, 1),
+    ((SELECT asset_id FROM assets WHERE name='Backup Control Switch'), NULL, 0);
 
 -- Conduits and edges — added after a genuine gap was found while building the
 -- actual database: this section didn't exist before, and without it the
@@ -213,7 +254,8 @@ INSERT INTO edges (source_asset_id, target_asset_id, protocol, weight) VALUES
 | Endpoint | Method | Purpose |
 |---|---|---|
 | `/graph` | GET | Full `G` — assets + edges as JSON, for the Cytoscape.js/React Flow frontend |
-| `/candidates` | GET | `L` with filter scores — what the optimizer actually searches over |
+| `/candidates` | GET | Every asset's Filter 1 review state, with its attack-path steps. On an unconfirmed blind card the AI's answer is withheld (D26). `L` is the confirmed subset that passes Filter 1 and has a Filter 2 score |
+| `/candidates/{id}/confirm` | POST | The reviewer's four answers and reason; applies the rules in `src/plausibility` (D26) |
 | `/attack-paths` | GET | `P` with all steps |
 | `/assets/{id}/damage-score` | PUT | Set `Damage(v)` manually during testbed design (§2 — elicited, not computed) |
 | `/optimize` | POST | Body: `{method, alpha..epsilon, budget}`. Runs the optimizer, writes a `placement_runs` row + `placements` rows, returns the result |

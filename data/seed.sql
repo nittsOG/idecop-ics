@@ -1,5 +1,7 @@
--- Seed data — transcribed exactly from 02-data-model.md's "Seed data" section.
--- The real 11-node testbed and 3 attack paths, not placeholders.
+-- Seed data. Originally transcribed from 02-data-model.md's "Seed data" section;
+-- this file has been canonical since D19, and that section carries a note on
+-- what it has not tracked.
+-- The real 11-node testbed and 5 attack paths (P4 added by D21, P5 by D27), not placeholders.
 
 INSERT INTO zones (name, purdue_level) VALUES
     ('External', '—'),
@@ -25,7 +27,8 @@ INSERT INTO attack_paths (name, description) VALUES
     ('P1', 'Stuxnet-class: engineering-workflow-mediated physical sabotage'),
     ('P2', 'Industroyer2-class: protocol-specific direct grid impact'),
     ('P3', 'Reconnaissance-only: early-detection stress test'),
-    ('P4', 'Dragonfly-class: ICS data collection for later operations');
+    ('P4', 'Dragonfly-class: ICS data collection for later operations'),
+    ('P5', 'Backup-conduit: network-device compromise, alternate route to PLC-01');
 
 INSERT INTO attack_path_steps (path_id, step_order, asset_id, tactic, technique_id, technique_name) VALUES
     (1, 1, (SELECT asset_id FROM assets WHERE name='Engineering WS'), 'Initial Access', 'T1091', 'Replication Through Removable Media'),
@@ -45,18 +48,47 @@ INSERT INTO attack_path_steps (path_id, step_order, asset_id, tactic, technique_
     -- reference documents, wiring diagrams and panel layouts.
     (4, 1, (SELECT asset_id FROM assets WHERE name='Engineering WS'), 'Initial Access', 'T0862', 'Supply Chain Compromise'),
     (4, 2, (SELECT asset_id FROM assets WHERE name='Historian'),      'Collection', 'T0811', 'Data from Information Repositories'),
-    (4, 3, (SELECT asset_id FROM assets WHERE name='Engineering WS'), 'Collection', 'T0811', 'Data from Information Repositories');
+    (4, 3, (SELECT asset_id FROM assets WHERE name='Engineering WS'), 'Collection', 'T0811', 'Data from Information Repositories'),
+    -- P5 added by D27. Every technique verified at attack.mitre.org on 4 October 2026
+    -- (sources.md 377-383). The route follows the testbed's own edges, and the
+    -- target is PLC-01 because the backup switch exists to test "both routes to
+    -- the same target" (testbed-architecture.md); P1 reaches PLC-01 the primary way.
+    (5, 1, (SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),         'Initial Access', 'T0822', 'External Remote Services'),
+    (5, 2, (SELECT asset_id FROM assets WHERE name='Backup Control Switch'), 'Lateral Movement', 'T0866', 'Exploitation of Remote Services'),
+    (5, 3, (SELECT asset_id FROM assets WHERE name='Backup Control Switch'), 'Discovery', 'T0842', 'Network Sniffing'),
+    (5, 4, (SELECT asset_id FROM assets WHERE name='PLC-01'),                'Impair Process Control', 'T0836', 'Modify Parameter');
 
 -- detectability_risk values derived by the Filter 2 rubric (D22), not assigned
 -- by judgement. risk = 0.4*Exposure + 0.3*ProbingDepth + 0.3*ArtifactSurface.
 -- Per-candidate factor scores and their sources: docs/02-detectability-rubric.md
-INSERT INTO candidate_locations (asset_id, passes_plausibility, detectability_risk, is_candidate, rationale) VALUES
-    ((SELECT asset_id FROM assets WHERE name='Engineering WS-2'), 1, 0.56, 1, 'Standard deception target, precedent in HoneyPLC/Conpot'),
-    ((SELECT asset_id FROM assets WHERE name='PLC-02'),           1, 0.62, 1, 'Standard deception target'),
-    ((SELECT asset_id FROM assets WHERE name='HMI'),              1, 0.62, 1, 'Standard deception target'),
-    ((SELECT asset_id FROM assets WHERE name='Historian'),        1, 0.69, 1, 'Collection-tactic relevance'),
-    ((SELECT asset_id FROM assets WHERE name='OT Firewall'),      0, 0.0, 0, 'Fails plausibility — no realistic "decoy firewall"'),
-    ((SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),    1, 0.69, 1, 'Passes plausibility, down-weighted — most externally-scanned zone');
+-- Candidate locations (D26). One row per asset except the Attacker node, so
+-- that Screen 3 lists every asset (A32). Every row starts unscored and outside
+-- L: Filter 1 scores come only from a human review in Screen 3, and nothing
+-- here sets is_candidate. Until that review, L is empty and the scripts refuse
+-- to run. To reproduce numbers recorded before D26, see
+-- data/legacy/d25_candidate_set.sql.
+--
+-- detectability_risk holds Filter 2 scores (02-detectability-rubric.md, D22a)
+-- where they exist. NULL means not yet scored: A32 step 4 scores every asset
+-- that passes Filter 1. The OT Firewall's former 0.0 was a placeholder for
+-- "fails plausibility", not a D22a score, so it is NULL now.
+--
+-- blind_first marks the three blind cards, drawn before any AI output existed:
+-- random.Random(20261003).sample over the eight non-Attacker assets on a
+-- modelled path, sorted by name (CPython 3.11). Result: DMZ Jump Host,
+-- Historian, PLC-03 (RTU). See D26. The draw predates P5 (D27), which put the
+-- Backup Control Switch on a path; it stands, as D27 explains.
+INSERT INTO candidate_locations (asset_id, detectability_risk, blind_first) VALUES
+    ((SELECT asset_id FROM assets WHERE name='OT Firewall'),           NULL, 0),
+    ((SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),         0.69, 1),
+    ((SELECT asset_id FROM assets WHERE name='Historian'),             0.69, 1),
+    ((SELECT asset_id FROM assets WHERE name='Engineering WS'),        NULL, 0),
+    ((SELECT asset_id FROM assets WHERE name='Engineering WS-2'),      0.56, 0),
+    ((SELECT asset_id FROM assets WHERE name='HMI'),                   0.62, 0),
+    ((SELECT asset_id FROM assets WHERE name='PLC-01'),                NULL, 0),
+    ((SELECT asset_id FROM assets WHERE name='PLC-02'),                0.62, 0),
+    ((SELECT asset_id FROM assets WHERE name='PLC-03 (RTU)'),          NULL, 1),
+    ((SELECT asset_id FROM assets WHERE name='Backup Control Switch'), NULL, 0);
 
 INSERT INTO conduits (zone_a_id, zone_b_id, description) VALUES
     ((SELECT zone_id FROM zones WHERE name='External'),    (SELECT zone_id FROM zones WHERE name='OT DMZ'),      'Firewall rules'),

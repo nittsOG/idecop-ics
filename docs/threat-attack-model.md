@@ -52,8 +52,23 @@ Grounded in Dragonfly / Dragonfly 2.0, whose documented behaviour was accessing 
 
 **Why the entry point is the engineering workstation and not the DMZ jump host.** Both were drafted. The jump-host version was rejected on two grounds: it is less faithful to Dragonfly, whose documented initial access was supply-chain and watering-hole rather than perimeter intrusion; and it left the Historian contributing nothing, since a decoy at the jump host would intercept P4 at step 1 and make the Historian redundant. The supply-chain version is both historically accurate and structurally useful. The order in which those two facts were established is recorded in D21 rather than presented as a single clean decision.
 
+## P5 — Backup-conduit: network-device compromise, alternate route to PLC-01
+
+Added at D27, before the evaluation campaign and before any Filter 1 score existed. The testbed includes a Backup Control LAN switch for one stated purpose: "a second conduit tests whether your placement covers both routes to the same target, not just the obvious one" (`testbed-architecture.md`). No path ever used it. ATT&CK for ICS lists **A0015 Switch** as an asset that 33 techniques target (#378), and VPNFilter is documented malware that sniffed ICS traffic from inside network devices (#380). The user raised the gap. D21 froze the paths "unless a documented defect emerges", and this is one.
+
+P5 combines documented techniques rather than replaying one named campaign, as P3 does. It follows the testbed's own edges (DMZ Jump Host → Backup Control Switch → PLC-01). It targets **PLC-01** because P1 reaches PLC-01 by the primary route, so the two paths test both routes to the same target.
+
+| Step | Asset (`v ∈ V`) | Tactic | Technique | Notes |
+|---|---|---|---|---|
+| 1 | DMZ Jump Host | Initial Access | **T0822 — External Remote Services** | Verified at attack.mitre.org/techniques/T0822/ (#383). Initial Access; its targeted assets include Jump Host. The 2015 Ukraine attack is a procedure example: Sandworm used valid credentials to reach the control-system VPN |
+| 2 | Backup Control Switch | Lateral Movement | **T0866 — Exploitation of Remote Services** | Verified (#382). Tactics Initial Access and Lateral Movement; its targeted assets include Switch |
+| 3 | Backup Control Switch | Discovery | **T0842 — Network Sniffing** | Verified (#381). Discovery; its targeted assets include Switch. VPNFilter is a procedure example: its sniffer "monitors ICS traffic" (#380) |
+| 4 | PLC-01 | Impair Process Control | **T0836 — Modify Parameter** | The same step P1 takes at PLC-01, already verified for P1. The more specific T0855 Unauthorized Command Message could not be fetched (#384), so it is not used |
+
+**Why this is not D21's error in reverse.** D21 refused to add a path "solely to make [PLC-02] selectable". P5 does make the switch selectable, but that is a consequence, not the reason. The reasons are documented ones: the testbed's stated purpose for the switch, ATT&CK for ICS's treatment of switches as targets, and VPNFilter's recorded behaviour. The target follows the same stated purpose. PLC-02 still lies on no path, and stays there (D27, option (a)).
+
 ## How this feeds the rest of the specification
 
-- **`L` (candidate locations, Section 4 of the formal problem definition):** the plausibility rubric should be run against the specific asset types these three paths actually touch (Engineering WS, HMI, PLC/RTU, OT DMZ, Jump Server) — not the full asset list in the abstract.
+- **`L` (candidate locations, Section 4 of the formal problem definition):** the plausibility rubric should be run against the specific asset types these three paths actually touch (Engineering WS, HMI, PLC/RTU, OT DMZ, Jump Server) — not the full asset list in the abstract. *(D26: overtaken. There are now five paths (P5 added by D27), and A32 scores every asset except the Attacker node, so that an asset off every path is excluded by a recorded rule rather than by omission.)*
 - **Testbed architecture (next step):** every asset type named in the tables above needs a corresponding node in the VMware/Kali/pfSense build. If a step can't be physically realized in the testbed (e.g., a true IEC-104 RTU), note where a modeled/simulated node substitutes for a physical one, per the "richer graph than physical build" recommendation in the synthesis document.
-- **Baseline comparison:** all methods get evaluated against the same **P = {P1, P2, P3, P4}** — the comparison is only meaningful if every method faces identical attack scenarios.
+- **Baseline comparison:** all methods get evaluated against the same **P = {P1, P2, P3, P4, P5}** (P5 added by D27) — the comparison is only meaningful if every method faces identical attack scenarios.

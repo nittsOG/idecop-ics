@@ -18,7 +18,8 @@ from pydantic import BaseModel, Field
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from src.graph_model import load_graph, compute_criticality, load_candidate_locations, load_attack_paths
+from src.graph_model import load_graph, compute_criticality, load_candidate_locations, load_attack_paths, CandidateSetError
+from src.plausibility import KEYS, check_answers, passes, reason_required, RubricError
 from src.optimizer.baselines import greedy, random_baseline, centrality_baseline, distorted_greedy
 from src.optimizer.milp import solve_milp
 
@@ -43,15 +44,19 @@ def get_db() -> sqlite3.Connection:
     return conn
 
 
-VALID_SCORES = {"yes", "mostly", "no"}
 VALID_METHODS = {"random", "centrality", "proposed_greedy", "proposed_distorted_greedy", "proposed_milp"}
 
 
 class ConfirmPayload(BaseModel):
-    decoy_exists: str | None = Field(None, description="yes/mostly/no — omit to accept AI suggestion")
-    attacker_reach: str | None = None
-    useful_signal: str | None = None
-    reliable_indicator: str | None = None
+    """The reviewer's four answers, in criterion order. D26: yes / mostly_yes /
+    mostly_no / no. After the first 'no' the remaining answers must be blank
+    (sequential rule). There is no fallback to the AI's suggestion: a blank is a
+    blank, never 'accept the AI'."""
+    decoy_exists: str | None = Field(None, description="Feasibility")
+    attacker_reach: str | None = Field(None, description="Interaction")
+    useful_signal: str | None = Field(None, description="Intelligence yield")
+    reliable_indicator: str | None = Field(None, description="Malice fidelity")
+    reason: str | None = Field(None, description="Required on a blind card, with no AI suggestion, after changing an AI answer, or for any Mostly No / No answer")
 
 
 class OptimizePayload(BaseModel):
@@ -94,50 +99,110 @@ def list_assets():
 
 @app.get("/candidates")
 def list_candidates():
+    """Every asset in Screen 3's review (all except the Attacker node, A32), with
+    the attack-path steps it sits on.
+
+    D26: on a blind card the AI's answer stays hidden until the reviewer has
+    confirmed their own. The design-time `rationale` text is no longer sent,
+    because it pre-judged the outcome."""
     conn = get_db()
     rows = conn.execute("""
-        SELECT a.asset_id, a.name, a.asset_type,
+        SELECT a.asset_id, a.name, a.asset_type, a.purdue_level, z.name AS zone,
             cl.criterion_decoy_exists, cl.criterion_attacker_reach,
             cl.criterion_useful_signal, cl.criterion_reliable_indicator,
-            cl.passes_plausibility, cl.detectability_risk, cl.is_candidate, cl.rationale,
+            cl.passes_plausibility, cl.detectability_risk, cl.is_candidate, cl.blind_first,
+            cl.blind_decoy_exists, cl.blind_attacker_reach, cl.blind_useful_signal,
+            cl.blind_reliable_indicator, cl.blind_reason, cl.blind_confirmed_at,
             cl.ai_suggested_decoy_exists, cl.ai_suggested_attacker_reach,
             cl.ai_suggested_useful_signal, cl.ai_suggested_reliable_indicator,
-            cl.ai_reasoning, cl.human_confirmed, cl.confirmed_at
-        FROM candidate_locations cl JOIN assets a ON a.asset_id = cl.asset_id ORDER BY a.asset_id
+            cl.ai_reasoning, cl.ai_model, cl.human_reason, cl.human_confirmed, cl.confirmed_at
+        FROM candidate_locations cl
+        JOIN assets a ON a.asset_id = cl.asset_id
+        JOIN zones z ON z.zone_id = a.zone_id
+        ORDER BY a.asset_id
+    """).fetchall()
+    steps = conn.execute("""
+        SELECT s.asset_id, p.name AS path, s.step_order, s.tactic, s.technique_id, s.technique_name,
+               (SELECT COUNT(*) FROM attack_path_steps s2 WHERE s2.path_id = s.path_id) AS path_length
+        FROM attack_path_steps s JOIN attack_paths p ON p.path_id = s.path_id
+        ORDER BY p.path_id, s.step_order
     """).fetchall()
     conn.close()
-    return [dict(r) for r in rows]
+
+    by_asset = {}
+    for st in steps:
+        by_asset.setdefault(st["asset_id"], []).append({k: st[k] for k in st.keys() if k != "asset_id"})
+    out = []
+    for r in rows:
+        d = dict(r)
+        d["path_steps"] = by_asset.get(d["asset_id"], [])
+        d["n_paths"] = len({st["path"] for st in d["path_steps"]})
+        d["ai_hidden"] = bool(d["blind_first"] and not d["blind_confirmed_at"])
+        if d["ai_hidden"]:
+            for k in KEYS:
+                d[f"ai_suggested_{k}"] = None
+            d["ai_reasoning"] = None
+            d["ai_model"] = None
+        out.append(d)
+    return out
 
 
 @app.post("/candidates/{asset_id}/confirm")
 def confirm_candidate(asset_id: int, payload: ConfirmPayload):
+    """Writes the reviewer's answers and applies Filter 1's rules from
+    src/plausibility (D26), the same rules the import and restore scripts use:
+    - the sequential rule (the first 'no' ends the card);
+    - the path rule (an asset on no modelled path has Interaction No);
+    - the reason rule (see ConfirmPayload.reason);
+    - the combination rule (pass only if all four are answered and none is 'no').
+
+    A blind card's first confirmation is also stored, once, in the blind_*
+    columns, which the AI-agreement measure reads.
+
+    is_candidate follows the Filter 1 result. A candidate still needs a Filter 2
+    score before the optimiser will accept it; load_candidate_locations checks that."""
     conn = get_db()
     row = conn.execute("SELECT * FROM candidate_locations WHERE asset_id = ?", (asset_id,)).fetchone()
     if row is None:
         conn.close()
         raise HTTPException(404, f"No candidate_locations row for asset_id {asset_id}")
 
-    def resolve(override, ai_value, field_name):
-        value = override if override is not None else ai_value
-        if value is not None and value not in VALID_SCORES:
-            raise HTTPException(422, f"{field_name} must be one of {VALID_SCORES}, got {value!r}")
-        return value
+    n_paths = conn.execute("SELECT COUNT(DISTINCT path_id) FROM attack_path_steps WHERE asset_id = ?",
+                           (asset_id,)).fetchone()[0]
+    answers = {k: getattr(payload, k) for k in KEYS}
+    try:
+        ordered = check_answers(answers, n_paths)
+        passed = passes(answers, n_paths)
+        # Blind card: the AI's answer is not compared here, so a validation
+        # message cannot reveal whether the reviewer agreed with it.
+        ai = None if row["blind_first"] else {k: row[f"ai_suggested_{k}"] for k in KEYS}
+        needs_reason = reason_required(answers, ai, bool(row["blind_first"]), n_paths)
+    except RubricError as e:
+        conn.close()
+        raise HTTPException(422, str(e))
+    reason = (payload.reason or "").strip()
+    if needs_reason and not reason:
+        conn.close()
+        raise HTTPException(422, "A reason is required: " + "; ".join(needs_reason))
 
-    decoy_exists = resolve(payload.decoy_exists, row["ai_suggested_decoy_exists"], "decoy_exists")
-    attacker_reach = resolve(payload.attacker_reach, row["ai_suggested_attacker_reach"], "attacker_reach")
-    useful_signal = resolve(payload.useful_signal, row["ai_suggested_useful_signal"], "useful_signal")
-    reliable_indicator = resolve(payload.reliable_indicator, row["ai_suggested_reliable_indicator"], "reliable_indicator")
-    values = [decoy_exists, attacker_reach, useful_signal, reliable_indicator]
-    passes = all(v is not None and v != "no" for v in values)
-
+    now = datetime.now(timezone.utc).isoformat()
     conn.execute("""
         UPDATE candidate_locations SET
             criterion_decoy_exists=?, criterion_attacker_reach=?,
             criterion_useful_signal=?, criterion_reliable_indicator=?,
-            passes_plausibility=?, is_candidate=?, human_confirmed=1, confirmed_at=?
+            human_reason=?, passes_plausibility=?, is_candidate=?, human_confirmed=1, confirmed_at=?
         WHERE asset_id=?
-    """, (decoy_exists, attacker_reach, useful_signal, reliable_indicator,
-          int(passes), int(passes), datetime.now(timezone.utc).isoformat(), asset_id))
+    """, (*ordered, reason or None, int(passed), int(passed), now, asset_id))
+    if row["blind_first"] and not row["blind_confirmed_at"]:
+        # D26: the first confirmation of a blind card is recorded once and never
+        # changed. The final answers above may still change later, with a reason;
+        # the agreement measure reads these columns.
+        conn.execute("""
+            UPDATE candidate_locations SET
+                blind_decoy_exists=?, blind_attacker_reach=?, blind_useful_signal=?,
+                blind_reliable_indicator=?, blind_reason=?, blind_confirmed_at=?
+            WHERE asset_id=?
+        """, (*ordered, reason, now, asset_id))
     conn.commit()
     updated = conn.execute("SELECT * FROM candidate_locations WHERE asset_id = ?", (asset_id,)).fetchone()
     conn.close()
@@ -162,9 +227,8 @@ def list_attack_paths():
 @app.post("/optimize")
 def optimize(payload: OptimizePayload):
     """Runs one of the five methods against the live graph and the current
-    candidate set (rows with is_candidate = 1 -- which, D25 found, the seed also
-    sets on three rows no human confirmed; A32), writes a placement_runs row +
-    placements rows, returns the
+    candidate set, writes a placement_runs row and its placements rows, and
+    returns the
     run_id. The frontend fetches the actual result via GET /runs/{id}
     afterward — deliberate, per 02-prototype-architecture.md §2, so nothing
     displayed didn't come from a durably stored row."""
@@ -173,9 +237,14 @@ def optimize(payload: OptimizePayload):
 
     g = load_graph(DB_PATH)
     criticality = compute_criticality(g)
-    candidates = load_candidate_locations(DB_PATH)
+    # D26: the API never runs on a candidate set that bypassed Filter 1's review
+    # or lacks a Filter 2 score. There is no legacy switch here.
+    try:
+        candidates = load_candidate_locations(DB_PATH)
+    except CandidateSetError as e:
+        raise HTTPException(409, str(e))
     if not candidates:
-        raise HTTPException(400, "No candidate locations (is_candidate = 1) — nothing for the optimizer to search over. Confirm at least one via /candidates/{id}/confirm first.")
+        raise HTTPException(400, "No candidate locations yet: L is empty until the A32 review in Screen 3 confirms at least one asset that passes Filter 1 (formal-problem-definition.md §4, D26).")
     paths = load_attack_paths(DB_PATH)
     weights = (payload.alpha, payload.beta, payload.gamma, payload.delta, payload.epsilon)
 

@@ -103,8 +103,8 @@ def distorted_greedy(candidates: list[int], paths: list[dict], criticality: dict
     in D25: this docstring used to say the testbed "shows this shape of
     behaviour at delta=3". It does not. Greedy's early stops there matched the
     exhaustive optimum, so they were correct declines, not the failure mode —
-    and they came from dividing Risk and Cost by the budget. On the frozen
-    candidate set the gain part is modular, so greedy is optimal by
+    and they came from dividing Risk and Cost by the budget. On the legacy
+    D25 candidate set the gain part is modular, so greedy is optimal by
     construction and the failure mode cannot occur. The risk is real on
     larger, overlapping instances, which is where the guarantee earns its
     place.) NOTE ON CONFIDENCE: the unbounded-ratio claim and the appendix title

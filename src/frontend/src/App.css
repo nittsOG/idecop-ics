@@ -1,6 +1,6 @@
 * { box-sizing: border-box; }
 body { margin: 0; background: #f6f7f8; color: #1a1a1a; font-family: -apple-system, "Segoe UI", sans-serif; }
-.app { max-width: 640px; margin: 0 auto; padding: 24px 16px 64px; }
+.app { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; text-align: left; }
 h1 { font-size: 22px; margin-bottom: 4px; }
 .subtitle { color: #666; font-size: 14px; margin-top: 0; margin-bottom: 20px; }
 .error { color: #b3261e; }
@@ -18,3 +18,31 @@ h1 { font-size: 22px; margin-bottom: 4px; }
 .badge-select { font-size: 12px; padding: 3px 6px; border-radius: 6px; border: 1px solid #d6d6d6; background: #f3f3f3; }
 
 .reasoning { font-size: 13px; color: #555; line-height: 1.5; margin: 0; }
+
+/* Screen 3 — D26 review card */
+h2 { font-size: 15px; margin: 24px 0 10px; color: #333; }
+.rules { font-size: 13px; color: #555; line-height: 1.5; margin: -8px 0 8px; }
+.meta { font-size: 12px; color: #777; margin: 2px 0 0; }
+.card-blind { border-color: #c9b3f0; }
+.chip { font-size: 11px; padding: 3px 8px; border-radius: 999px; white-space: nowrap; border: 1px solid #ddd; background: #f6f6f6; color: #555; }
+.chip.ok { border-color: #1d9e75; background: #eafbf4; color: #0f6e56; }
+.chip.out { border-color: #b3261e; background: #fdeeee; color: #8c1d18; }
+.chip.blind { border-color: #7a52c7; background: #f3eefc; color: #5a3a99; }
+.chip.ai { border-color: #2b6cb0; background: #ebf4fd; color: #1f4f82; }
+.chip.wait { border-color: #b98900; background: #fff8e6; color: #8a6600; }
+.paths { font-size: 12px; color: #444; margin: 0 0 10px; padding-left: 18px; line-height: 1.6; }
+.paths.none { padding-left: 0; color: #8a6600; }
+.criteria { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; margin-bottom: 10px; }
+.criterion { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+.criterion-name { color: #333; font-weight: 600; }
+.criterion-off { opacity: 0.45; }
+.ai-block { background: #f7f9fc; border: 1px solid #e3e9f2; border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; }
+.ai-label { font-size: 11px; color: #1f4f82; margin: 0 0 4px; font-weight: 600; }
+.agreement { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 6px; font-size: 11px; }
+.agree { color: #0f6e56; }
+.disagree { color: #b3261e; font-weight: 600; }
+.reason { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #444; margin-bottom: 10px; }
+.reason textarea { font: inherit; font-size: 13px; padding: 6px 8px; border: 1px solid #d6d6d6; border-radius: 6px; resize: vertical; }
+.card-footer { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
+.hint { font-size: 12px; color: #8a6600; margin: 0 0 8px; }
+.card-footer .hint, .card-footer .error { margin: 0; font-size: 12px; margin-right: auto; }

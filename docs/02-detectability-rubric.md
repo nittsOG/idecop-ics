@@ -76,6 +76,8 @@ Which of A1, A4, A5, A7, A8 a decoy at this position must get right, weighted by
 | HMI | Supervisory | 0.5 | 0.7 (P1–P2) | 0.7 | **0.62** | Web-endpoint structure checks identify emulated dashboards early (§4.4) |
 | PLC-02 | Control | 0.2 | **0.9 (P1)** | 0.9 | **0.62** | Deepest zone, so rarely reached — but trivially identified once it is |
 
+*D26: Engineering WS, PLC-01, PLC-03 (RTU), the Backup Control Switch and the OT Firewall have no score yet. Any of them that passes Filter 1 is scored here at A32 step 4, before the candidate set is frozen. The OT Firewall's former 0.0 in the seed was a placeholder for "fails plausibility", not a score, and is now NULL. The candidate loader refuses any candidate without a score.*
+
 ### What the correction changed
 
 Under version 1, PLC-02 scored 0.59 on the reasoning that deep probing was needed to expose it. **That was backwards.** The paper shows ICS protocol assets are the *easiest* to fingerprint — one Nmap scan, or one Modbus request plus a TTL check. Its exposure is genuinely low, but its identifiability once touched is the highest of any candidate, and the corrected factors express that.

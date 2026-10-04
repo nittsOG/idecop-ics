@@ -4,7 +4,6 @@
 data/*.db
 !data/schema.sql
 !data/seed.sql
-!data/demo_ai_suggestions.sql
 .env
 *.key
 __pycache__/

@@ -14,15 +14,25 @@ These are ordinary words doing technical work.
 
 **Rubric** — a fixed scoring guide: a set of stated criteria, applied identically to every item being scored, so that two people scoring the same item get the same answer. The word comes from educational assessment. A rubric is the opposite of case-by-case judgement; the criteria are written down *before* scoring begins and do not change between items.
 
-**Plausibility rubric** — this project's specific four-criterion rubric, applied to each asset to decide whether it belongs in the candidate set. Each criterion is scored yes / mostly / no:
-1. Can a defender-controlled decoy plausibly exist at this asset type?
-2. Would an attacker following one of the defined attack paths plausibly reach or interact with it?
-3. Does that interaction yield useful signal?
-4. Is the interaction a reliable indicator of malicious intent — i.e. is it unlikely to fire on legitimate activity?
+**Plausibility rubric** — this project's four-criterion rubric (Filter 1), applied to every asset except the Attacker node to decide whether it belongs in the candidate set. Adapted from Valeros et al. 2026 (`sources.md` #40), which scores the enterprise ATT&CK techniques. Here it is applied to asset positions in one zone-structured network (`formal-problem-definition.md` §4). The criteria, scored in this order:
+1. **Feasibility** — can a defender build and control a convincing decoy of this asset type at this position?
+2. **Interaction** — would an attacker following one of the modelled attack paths interact with it?
+3. **Intelligence yield** — would that interaction tell the defender something useful?
+4. **Malice fidelity** — when the decoy is touched, is that reliably an attacker rather than routine benign activity?
 
-Adapted from a published critique of decoy placement originally written for the enterprise ATT&CK matrix. Applying it to the ICS matrix is new to this project.
+Each is scored on four levels: **Yes / Mostly Yes / Mostly No / No**. There is no neutral middle, and ties go to the lower level. The first No ends the scoring. An asset passes only if all four are answered and none is No (D26). *Before D26 the scale was yes / mostly / no.* *This entry also used to say that applying the rubric to the ICS matrix is new to this project. That claim was dropped at iteration 11 (`formal-problem-definition.md` §4).*
 
-**Detectability** — how easily an attacker can tell a decoy is a decoy, from outside. Real, demonstrated attacker capability: passive signatures such as TTL values, open-port counts and response timing can expose a honeypot without the attacker ever touching it. In this project it is the **second filter** on candidate locations. A decoy in a heavily scanned segment is worth less than the same decoy deeper in the network, because it is more likely to be fingerprinted before it can do its job.
+**Sweep and Seek** — the only two ways an attacker meets a decoy (#40):
+- **Sweep:** the attacker moves through everything in range and touches the decoy incidentally.
+- **Seek:** the attacker looks for a specific kind of asset and interacts with a fabricated one.
+
+A decoy that fits neither goes untouched.
+
+**Blind card** — one of three assets scored in Screen 3 before the AI's answer is shown (D26), so that the AI can be compared with a judgement it did not influence. Drawn at random before any AI output existed.
+
+**Anchoring** — the tendency to move toward a suggestion one has already seen, even when free to change it. Measured for LLM suggestions in annotation by #362 and #363. It is the reason for the blind cards, and for the written reason the review requires on boundary answers and changed answers.
+
+**Detectability** — how easily an attacker can tell a decoy is a decoy, from outside. Real, demonstrated attacker capability: passive signatures such as TTL values, open-port counts and response timing can expose a honeypot without the attacker ever touching it. In this project it is the **second filter** on candidate locations. A decoy in a heavily scanned segment is worth less than the same decoy deeper in the network, because it is more likely to be fingerprinted before it can do its job. *Not to be confused with* the same word in Asset Criticality Analysis (#336), where detectability means how far in advance a *failure* can be detected. Here it is always the attacker identifying a decoy (A26).
 
 **Conduit** — an IEC 62443 term, not a general networking one. A conduit is the *permitted communication channel between two zones*, plus the controls on it. Formally, in this project, the set of edges that cross a given zone boundary. A zone is a group of assets with a shared security requirement; a conduit is how zones are allowed to talk. Note the collision risk in prose: "conduit" also means a physical pipe for cabling in plant engineering, so the standard's meaning should be stated on first use.
 
@@ -109,6 +119,8 @@ Adapted from a published critique of decoy placement originally written for the 
 **Industroyer2-class** — an attack that enters at the perimeter and speaks an industrial protocol directly to field equipment for fast, unsubtle impact. Modeled as P2.
 
 **Reconnaissance-only path** — an attack path that scans and enumerates but stops before impact. Modeled as P3, deliberately, because it is the path that most directly tests whether a placement detects an attacker *early* rather than eventually.
+
+**Backup-conduit path** — P5, added by D27. The adversary enters at the DMZ jump host, compromises the backup control-LAN switch, sniffs control traffic from it, and modifies parameters on PLC-01. It reaches the same PLC as P1, but by the alternate route, which is the test the backup switch was built into the testbed for. The step techniques are documented in ATT&CK for ICS, including VPNFilter's sniffing of ICS traffic from network devices.
 
 ---
 
@@ -204,7 +216,7 @@ Adapted from a published critique of decoy placement originally written for the 
 
 **Phi-4-mini** — the small local model used for explanation. Chosen to fit available VRAM.
 
-**Qwen3 14B** — the larger model used for the one-time, offline plausibility-scoring assist, run on Google Colab because it does not fit locally. Not part of the live system.
+**Qwen3 14B** — the larger model used for the one-time, offline plausibility-scoring assist, run on Google Colab because it does not fit locally. Not part of the live system. At 14.8B parameters it does not fit a 16 GB T4 at 16-bit, so the notebook loads it in 4-bit. Qwen3 8B is the pre-declared fallback (D26).
 
 **iDECOP-ICS** — the prototype's name: *intelligent Deception Planning and Placement Optimization for Industrial Control Systems*. Names the artifact only — repository, application, UI header, Implementation chapter shorthand. The thesis title is unchanged. Lowercase `i` is deliberate, to avoid the string reading as IDEC, a Japanese PLC and HMI manufacturer.
 

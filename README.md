@@ -21,8 +21,10 @@ Everything below is real, executed code. The database is initialised and queried
 | `src/optimizer/` | `metrics.py` (F(x) and its five components), `baselines.py` (greedy, distorted greedy, random, centrality), `milp.py` (exact validator) |
 | `src/api/` | FastAPI backend — nine endpoints |
 | `src/frontend/` | React + Vite interface |
-| `data/` | Schema, seed data, demo AI suggestions |
-| `scripts/` | `run_comparison.py` — runs all five methods at one budget; `sweep.py` — the declared 20-cell grid behind every comparative number (D24); `structure_check.py` — exhaustive monotonicity/submodularity/modularity tests, including whether the gain part is modular (D25's claim rule) |
+| `src/plausibility/` | Filter 1's rules (sequence, combination, reason) and the AI first-pass prompt, shared by the API, the scripts and the notebook (D26) |
+| `notebooks/` | `plausibility_scoring.ipynb` — the Colab AI first pass for Filter 1 (A20) |
+| `data/` | Schema and seed data; `legacy/` holds the pre-D26 candidate set for reproducing old numbers; `review/` will hold the committed Filter 1 review |
+| `scripts/` | `run_comparison.py` — runs all five methods at one budget; `sweep.py` — the declared 20-cell grid behind every comparative number (D24); `structure_check.py` — exhaustive monotonicity/submodularity/modularity tests, including whether the gain part is modular (D25's claim rule); `import_plausibility_scores.py` and `review_io.py` — the notebook import and the review's committed record (D26) |
 
 ---
 
@@ -34,17 +36,20 @@ Everything below is real, executed code. The database is initialised and queried
 - `src/graph_model/` — loads the real graph, computes betweenness centrality (genuinely computed, not placeholder) and `Crit(v)`. SL and damage values are still placeholders pending real elicitation; the module docstring explains why.
 - `src/optimizer/` — all five methods, scored by a single shared `score()` so results stay comparable.
 - `src/api/main.py` — `GET /health`, `/graph`, `/assets`, `/candidates`, `/attack-paths`, `/runs`, `/runs/{id}`; `POST /optimize`, `/candidates/{asset_id}/confirm`.
-- `src/frontend/` — Screen 3 (plausibility review) and Screen 1 (single-run dashboard).
+- `src/frontend/` — Screen 3 (plausibility review, rebuilt in D26: blind cards, path steps, four levels, reasons) and Screen 1 (single-run dashboard).
+- `src/plausibility/`, `scripts/import_plausibility_scores.py`, `scripts/review_io.py` — Filter 1's rules in one place, the notebook import, and the review's committed record (D26).
 
 **Not built yet**
 
-Explanation layer (`/runs/{id}/explain` — needs a live Ollama instance), Screen 2 (sensitivity-sweep comparison), the Colab plausibility-scoring notebook, and the physical VM testbed.
+Explanation layer (`/runs/{id}/explain` — needs a live Ollama instance), Screen 2 (sensitivity-sweep comparison), and the physical VM testbed. The Colab plausibility-scoring notebook is written (D26) but has not been run; it needs a GPU.
+
+**The candidate set is empty until the A32 review (D26).** The seed no longer pre-judges which assets are decoy sites, so every script and `POST /optimize` refuse to run until Screen 3's review confirms at least one asset that passes Filter 1 and has a Filter 2 score.
 
 ---
 
 ## Current comparison — read the caveats, not just the numbers
 
-Budget = 3, five seeded candidates (three of them never scored through §4's plausibility filter, the other two only through demo data — D25), **four** attack paths (P4 added in D21), default weights (α=β=γ=δ=1, ε=0.1). Risk and Cost are divided by the fixed constant K = 4, not by the budget (D25). Produced by `scripts/run_comparison.py`.
+**These numbers come from the legacy D25 candidate set. They are not evaluation results.** Reproduce them with `data/legacy/d25_candidate_set.sql` and `--legacy-d25` (see *Running it*). Budget = 3, five seeded candidates (three of them never scored through §4's plausibility filter, the other two only through demo data — D25), **four** attack paths (P4 added in D21), default weights (α=β=γ=δ=1, ε=0.1). Risk and Cost are divided by the fixed constant K = 4, not by the budget (D25). Produced by `scripts/run_comparison.py`.
 
 | Method | Placement | F(x) | Coverage | Early | CritProt | Risk | Cost |
 |---|---|---|---|---|---|---|---|
@@ -103,19 +108,41 @@ pip install -r requirements.txt
 python3 -c "
 import sqlite3
 conn = sqlite3.connect('data/deception_placement.db')
-for f in ['data/schema.sql','data/seed.sql','data/demo_ai_suggestions.sql']:
+for f in ['data/schema.sql','data/seed.sql']:
     conn.executescript(open(f).read())
 conn.commit()
 "
 
-python3 scripts/run_comparison.py               # the comparison above (B=3; pass a budget to change it)
-python3 scripts/sweep.py --sens                 # the 20-cell comparison grid, plus grid sensitivity
-python3 scripts/structure_check.py              # monotonicity, submodularity, modularity — exhaustive
 python3 -m uvicorn src.api.main:app --reload    # backend
-cd src/frontend && npm install && npm run dev   # frontend
+cd src/frontend && npm install && npm run dev   # frontend; Screen 3 is the Filter 1 review
 ```
 
-`node_modules/`, `dist/` and `*.db` are not tracked — regenerate with the commands above. **After pulling any change to `data/schema.sql`, delete `data/deception_placement.db` and rebuild it:** SQLite does not retrofit table constraints, so an old database keeps the old ones (D23 added a method name to a `CHECK` constraint; an unrebuilt database rejects that method's runs with HTTP 500).
+**The Filter 1 review (A32, D26), in order.**
+1. In Screen 3, score the three blind cards: DMZ Jump Host, Historian and PLC-03 (RTU).
+2. Run `notebooks/plausibility_scoring.ipynb` in Colab with a GPU (A20). Then run `python3 scripts/import_plausibility_scores.py ai_suggestions.csv`.
+3. Review the other seven cards in Screen 3.
+4. Run `python3 scripts/review_io.py export --require-complete`, then commit `data/review/` with the notebook's two output files.
+
+`python3 scripts/review_io.py restore data/review/plausibility_review.csv` rebuilds the review on a fresh database.
+
+**The evaluation scripts** run once the review has produced candidates with Filter 2 scores:
+
+```bash
+python3 scripts/run_comparison.py               # all five methods at one budget (B=3; pass a budget to change it)
+python3 scripts/sweep.py --sens                 # the 20-cell comparison grid, plus grid sensitivity
+python3 scripts/structure_check.py              # monotonicity, submodularity, modularity — exhaustive
+```
+
+**To reproduce a number recorded before D26,** load the legacy set into a freshly built database, then pass the flag:
+
+```bash
+python3 -c "import sqlite3; c=sqlite3.connect('data/deception_placement.db'); c.executescript(open('data/legacy/d25_candidate_set.sql').read()); c.commit()"
+python3 scripts/sweep.py --sens --legacy-d25    # likewise run_comparison.py, structure_check.py
+```
+
+The output is identical to commit `1a93af9`'s, apart from a banner marking it as historical. The API never accepts the legacy set.
+
+`node_modules/`, `dist/` and `*.db` are not tracked — regenerate with the commands above. **After pulling any change to `data/schema.sql`, delete `data/deception_placement.db` and rebuild it:** SQLite does not retrofit table constraints, so an old database keeps the old ones. D23 added a method name to a `CHECK` constraint, and an unrebuilt database rejects that method's runs with HTTP 500. **D26 changed the candidate table's constraints and columns, so rebuild after pulling it.** Export your review first if you have started one.
 
 ---
 

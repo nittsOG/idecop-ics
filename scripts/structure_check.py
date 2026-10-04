@@ -3,7 +3,8 @@ Empirical structural test of F(x): monotonicity, submodularity and modularity,
 for the LIVE objective (what src/optimizer/metrics.py computes) and the
 superseded PRE-D20 one, kept so D20's before/after stays reproducible.
 
-|L| = 5 so all 32 subsets enumerate instantly. No approximation, no sampling.
+|L| is small (5 on the legacy D25 set), so every subset enumerates
+instantly. No approximation, no sampling.
 
 D25: Risk and Cost in the live objective are divided by the fixed
 NORMALISER_K, not by the budget; B below is used only as the cardinality
@@ -13,12 +14,13 @@ and reports whether the gain part g is modular (D25's claim rule).
 """
 import sys, itertools
 sys.path.insert(0, '.')
-from src.graph_model import load_graph, compute_criticality, load_candidate_locations, load_attack_paths
+from src.graph_model import load_graph, compute_criticality, load_attack_paths, candidates_or_exit, legacy_flag
 from src.optimizer.metrics import _intercepted_paths, score, NORMALISER_K
 
 g = load_graph()
 crit = compute_criticality(g)
-cands = load_candidate_locations()
+LEGACY = legacy_flag(sys.argv)          # D26
+cands = candidates_or_exit(allow_legacy=LEGACY)
 paths = load_attack_paths()
 
 import sqlite3

@@ -59,7 +59,7 @@ Current prototype stack. All open source, no paid dependency — the original br
 
 ## 3. Hardware
 
-**For the optimizer** — negligible. **[verified]** at this project's scale (11 nodes, 5 candidates, 4 paths — P4 added by D21) greedy completes in well under a millisecond and the CP-SAT validator in about 20 ms, measured in the D25 session. Any modern machine runs it.
+**For the optimizer** — negligible. **[verified]** at this project's scale (11 nodes, 5 candidates — the legacy D25 set; D26 empties the candidate set until the A32 review — 4 paths, P4 added by D21; D27 has since added P5) greedy completes in well under a millisecond and the CP-SAT validator in about 20 ms, measured in the D25 session. Any modern machine runs it.
 
 **Scaling is the open question.** **[unverified]** — behaviour at plant scale has not been tested. Reasoning, not measurement:
 - Greedy cost grows with budget × candidate count × cost of evaluating F(x), and **[likely]** stays tractable into the hundreds of candidates.

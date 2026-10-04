@@ -121,7 +121,7 @@
 *What's drawn from it:* the nearest Indian-institution prior art (IIT Kanpur's C3i Center) — SOAR-triggered dynamic honeypot deployment, enterprise IT rather than OT, and not placement-optimization. Cited for committee context: this project extends an existing Indian research line toward OT and toward a formal placement objective, rather than working in isolation from national research activity.
 
 **33. Valeros, V., et al. (2026).** "Decoys Cannot Go Everywhere: Mapping the Deception Surface in MITRE ATT&CK." arXiv:2606.27966. [#40]
-*What's drawn from it:* both a gap-confirmation and a methodological source (see §VI) — its four-criterion feasibility rubric, applied to the Enterprise ATT&CK matrix, found only 32% of techniques admit a plausible decoy. Directly adapted (not copied) as this project's own Filter 1 rubric, extended to the ICS matrix for the first time.
+*What's drawn from it:* both a gap-confirmation and a methodological source (see §VI) — its four-criterion feasibility rubric, applied to the Enterprise ATT&CK matrix, found only 32% of techniques admit a plausible decoy. Adapted as this project's Filter 1 rubric, applied to asset positions in one zone-structured network rather than to techniques. Its level definitions (Table 1) are reproduced unchanged, with credit, under its CC BY-NC-SA 4.0 licence (D26). *(Corrected in D26: this entry said "not copied" and "extended to the ICS matrix for the first time". The second claim was dropped at iteration 11.)*
 
 ---
 

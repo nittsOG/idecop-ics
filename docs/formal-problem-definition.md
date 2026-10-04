@@ -39,34 +39,92 @@ A finite set of attack scenarios **P = {p₁, …, p_m}** is defined, each **p�
 
 At minimum, include one reconnaissance-heavy path, one credential-theft/lateral-movement path (Stuxnet-class), and one direct-impact path (Industroyer/Ukraine-2015-class) — this range is what the comparable literature (sources 12, 45–46) validates against.
 
+The current set is P1–P5 (`threat-attack-model.md`). D21 added P4, and D27 added P5, the backup-conduit path.
+
 ## 4. Candidate Deception Locations
 
-Not every **v ∈ V** is a valid decoy site. Define **L ⊆ V** by applying two filters in sequence:
+Not every **v ∈ V** is a valid decoy site. Define **L ⊆ V** by applying two filters in sequence. Everything in this section up to Filter 2 was fixed by D26 **before any scoring took place**, which is the order the source itself follows ("we fixed the decision rules before scoring", #40).
 
-**Filter 1 — Plausibility rubric** (adapted from source 53). For each candidate, score four criteria (yes/mostly/no):
-1. Can a defender-controlled decoy plausibly exist at `type(v)`?
-2. Would an attacker following a path in **P** plausibly reach or interact with it?
-3. Does that interaction yield useful signal?
-4. Is the interaction a reliable indicator of malicious intent (low false-positive risk)?
+**What a candidate means.** **x_l = 1** places a decoy imitating `type(l)` in `zone(l)`, on the same network segment and behind the same conduits as `l`. Attack paths through `l` pass where it sits. It is not a change to the real asset. Whether an attacker on a path would actually interact with the decoy is not assumed here: criterion 2 scores it.
 
-**What is adapted, stated precisely (revised at iteration 11).** Source 53 applies these four criteria to *ATT&CK techniques*, asking of each technique whether it admits a decoy anywhere. This project applies them to *assets in a specific architecture* — asking, of each `v ∈ V` in a zone-structured topology, whether a decoy at that position is plausible given the paths in **P** that actually traverse it. The unit of analysis changes from technique to network position, and the output is a filtered search space for an optimizer rather than a coverage map of a matrix.
+**Filter 1 — Plausibility rubric** (adapted from #40, Valeros et al. 2026). Each asset except the Attacker node is scored on four criteria, in this order:
+
+| # | Criterion (#40's name) | Plain question | Database column |
+|---|---|---|---|
+| 1 | Feasibility | Can a defender build and control a convincing decoy of this asset type at this position? | `criterion_decoy_exists` |
+| 2 | Interaction | Would an attacker following a modelled path through this position interact with the decoy? | `criterion_attacker_reach` |
+| 3 | Intelligence yield | Would that interaction tell the defender something useful about the attacker? | `criterion_useful_signal` |
+| 4 | Malice fidelity | When the decoy is touched, is that reliably an attacker rather than routine benign activity? | `criterion_reliable_indicator` |
+
+**Scale.** Every criterion uses #40's four-point forced choice with no neutral midpoint: **Yes / Mostly Yes / Mostly No / No**. The level definitions are #40's Table 1, reproduced unchanged below. *(Before D26 this section used yes / mostly / no. That scale's "mostly" merged #40's two middle levels and, with the prompt's instruction "if you are genuinely unsure, say mostly", re-introduced the neutral default #40 removes by design.)*
+
+**Combination rule (D26).** An asset passes Filter 1 only if all four criteria are answered and none is **No**. Mostly No passes.
+- #40 defines "admits a decoy" by Feasibility alone. But none of its 80 admitted techniques scored No on a later criterion, so the paper never had to decide what a later No means. *(For Malice fidelity the zero is by arithmetic, 80 − 30 − 44 − 6, because the printout truncates that column; #40.)* Its conclusion speaks of a decoy "that the attacker could plausibly reach".
+- This project's objective counts every interception as a detection and has no false-positive term. An asset that scores No on Interaction would be credited with interceptions the rubric says will not happen. One that scores No on Malice fidelity would be credited with detections the rubric says cannot be told apart from routine activity. Exclusion is the smallest rule that keeps F consistent with the rubric.
+- Intelligence yield is the one criterion the objective does not strictly need to gate, since F credits detection, not intelligence. It is kept in the rule for simplicity. #40 found it almost never limiting: one Mostly No, and no No, among 80 techniques.
+- This is a declared adaptation, not #40's own rule.
+
+**Scoring conventions (D26), fixed before scoring:**
+1. **Order.** Score the criteria in order. The first No ends the evaluation, and the criteria after it stay blank (#40).
+2. **Ties.** Where the evidence fits two adjacent levels equally, choose the lower one, closer to No (#40).
+3. **Best case, actual position.** Score each criterion for "the best case a well-instrumented decoy could plausibly produce" (#40), but at this position in this network. #40 scores what is possible in principle; this project scores one deployment.
+4. **Interaction is judged only against the paths in P, as modelled.** For each path, name it and say whether the encounter is a **Sweep** or a **Seek** (see below). The card lists the steps.
+   - An asset that appears in no path's asset sequence scores **No**, because the model cannot credit it with any interception. The API and Screen 3 enforce this for human answers, and the notebook's code for the AI's. In the current testbed it applies only to PLC-02. *(D26 also named the Backup Control Switch here. D27 added P5 through it.)* Because the rule imposes this No, it needs no written reason. An asset excluded this way is still scored, and the thesis reports it as a plausible decoy site outside the modelled threats (D27, option (a)). It is not silently dropped.
+   - An asset on more than one path is scored per path, and the lowest per-path level is recorded (**weakest path decides**). The objective credits an interception on every path through a chosen site, so a single best-case score would credit paths the rubric says the attacker would not take that way. The reviewer gives each path's level in the required reason. Since D27 this applies to three assets: Engineering WS (P1, P4), the DMZ Jump Host (P2, P5) and PLC-01 (P1, P5).
+5. **Malice fidelity names the benign activity first.** Before scoring, write down the routine benign activity that reaches this position. In OT networks that includes asset-inventory and monitoring scans, historian polling and data collection, engineering-software and vendor maintenance sessions, backup jobs and time synchronisation. #40's own expert study asks for this ("make Malice Fidelity more explicit about benign administrative activity"); the list of examples is this project's.
+
+**Level definitions — #40, Table 1, reproduced unchanged.** In this project the unit is an asset position, so read "the technique" as "the attack-path steps at this position". That reading note is ours, not part of the table.
+
+| Score | Feasibility | Interaction | Intelligence Yield | Malice Fidelity |
+|---|---|---|---|---|
+| **Yes** | The defender can fully fabricate and control the target asset as a decoy, and it responds convincingly to attacker actions. | The technique naturally leads attackers to the decoy. Interaction follows as a direct consequence of the technique. | Interaction directly yields strategic, operational, tactical, or technical intelligence attributable to the decoy. | Legitimate interaction is not expected by design. The only plausible trigger is an attacker action, so the false-positive rate is near zero. |
+| **Mostly Yes** | The target asset can be mimicked but it is hard to make convincing. May not withstand close scrutiny. | Interaction is likely but not certain, depending on the decoy’s positioning, configuration, or the attacker’s tools. | Interaction yields intelligence, but only after correlation with other data, added context, or further analysis. | Interaction strongly indicates malice. A small set of benign activities could trigger it, but these cases are identifiable and filterable. |
+| **Mostly No** | The target asset can only be partially mimicked as a decoy. It is difficult to simulate convincingly and only works in limited conditions. | Interaction is possible but unlikely, requiring attacker-specific knowledge, unusual timing, or atypical choices. | Interaction produces some data, but it is too generic or ambiguous to be meaningful without significant further analysis. | Interaction may indicate malice, but many triggers are benign or ambiguous. Telling them apart is complex, so the signal is useful but not standalone. |
+| **No** | The technique has no defender-controllable target asset that can be fabricated and operated as a decoy. | No plausible attacker path to the decoy exists. An attacker following the technique would not be expected to interact with this decoy. | No intelligence yield. The observable data gives no insight into the attacker’s behavior, identity, or intent. | Benign activity routinely triggers this decoy. Interaction does not distinguish an attacker. |
+
+*Source: Valeros, Lisý, Catania and Griffioen (2026), "Decoys Cannot Go Everywhere: Mapping the Deception Surface in MITRE ATT&CK", arXiv:2606.27966, Table 1 (#40). Licence [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) (#368). No changes made.*
+
+**What is adapted, stated precisely (revised at iteration 11, extended by D26).** #40 applies its criteria to *ATT&CK techniques*, asking of each technique whether it admits a decoy anywhere, and scores what is possible in principle. This project applies them to *assets in a specific architecture*, asking of each `v ∈ V` in a zone-structured topology whether a decoy at that position is plausible, given the paths in **P** that actually traverse it.
+- The unit of analysis changes from technique to network position.
+- The output is a filtered search space for an optimiser, rather than a coverage map of a matrix.
+- #40 names an asset-centred assessment as future work. This is one deployment-specific form of it.
+- D26 adds three things: the combination rule, convention 3's restriction to the actual position, and conventions 4 and 5. The scale, the order rule, the tie rule and the best-case wording are #40's own.
 
 *This replaces an earlier and weaker claim* that the project is "the first to apply the rubric to ICS ATT&CK." That claim was dropped at iteration 11 rather than defended: MITRE Engage has published mappings for ATT&CK for ICS since 2024, and while those map techniques to engagement *activities* rather than applying this rubric, the distinction is definitional and not worth the argument it would invite. The claim above is narrower, is specific to this formulation, and does not depend on what any adjacent mapping does or does not contain. See `iteration-11-findings.md`.
 
-**Sweep–Seek refinement of criterion 2 (added at iteration 11).** Source 53's full text supplies a sharper operational form of criterion 2 than "would an attacker plausibly reach it." A decoy is encountered under exactly one of two conditions: **Sweep** — the attacker moves broadly through assets in range and meets the decoy incidentally; or **Seek** — the attacker is looking for a specific asset type and interacts with a fabricated instance of it. A candidate satisfying neither goes untouched regardless of how plausible it looks in isolation. Score criterion 2 by naming which of the two applies, and to which path in **P**. This maps directly onto the attack path set: P3 is a sweep, P1 is a seek, and a candidate that can be justified under neither should not be in **L**.
+**Sweep–Seek refinement of criterion 2 (added at iteration 11).** #40's full text supplies a sharper operational form of criterion 2 than "would an attacker plausibly reach it." A decoy is encountered under exactly one of two conditions: **Sweep** — the attacker moves broadly through assets in range and meets the decoy incidentally; or **Seek** — the attacker is looking for a specific asset type and interacts with a fabricated instance of it. A candidate satisfying neither goes untouched regardless of how plausible it looks in isolation. Score criterion 2 by naming which of the two applies, and to which path in **P**. This maps directly onto the attack path set: P3 is a sweep, P1 is a seek, and a candidate that can be justified under neither should not be in **L**. *(Corrected 3 October 2026, D26: this paragraph and the one above it cited "source 53", which is an unrelated IEC 62443 paper. The rubric's source is #40.)*
 
 **Available external input.** MITRE Engage's ATT&CK for ICS mappings are a curated, defensible source for criteria 2 and 3 and should be cited where they inform a score, rather than every score being derived from scratch.
 
-**Filter 2 — Detectability check** (new synthesis from sources 262, 263, 290, 278): exclude or down-weight candidates that would be trivially fingerprintable at that network position (e.g., a heavily-externally-scanned segment where port-count or TTL heuristics reliably expose decoys).
+**How the scores are produced (D26, route A).** The process has seven steps.
+1. An AI first pass suggests a level and a one-line reason per criterion. It runs once, in `notebooks/plausibility_scoring.ipynb` (A20). The model is Qwen3-14B, loaded in 4-bit. Qwen3-8B is the pre-declared fallback if 14B cannot load.
+2. A human reviews every asset in Screen 3 and confirms or changes each answer. Only confirmed answers count.
+3. **Three blind cards:** DMZ Jump Host, Historian and PLC-03 (RTU).
+   - They were drawn at random, before any AI output existed, from the eight assets that lie on a modelled path. The draw is recorded in D26.
+   - They are scored before their AI answers are shown.
+   - Their first answers are stored once and never change, even if the final answers are later revised with a reason.
+   - They give the one unanchored measure of how often the AI agrees with independent judgement.
+4. **A written reason** is required:
+   - on a blind card;
+   - on a card with no AI suggestion;
+   - after changing any AI answer;
+   - for any Mostly No or No.
+5. **No fallback to the AI's answer.** A blank stays blank.
+6. **Fallback route.** If the notebook produces no suggestions within two weekends of the blind cards being finished, the remaining cards are scored directly (route B), with reasons.
+7. **The review is committed.** It is exported to `data/review/plausibility_review.csv` and committed, because the database is not tracked. That file is the frozen Filter 1 input.
+
+This is D12's route: an AI first pass, then human confirmation. People shown an LLM's suggestion drift toward it even when they review it (#362, #363), so D26 adds the safeguards above. The risk that remains is stated as a limitation in `02-ai-role.md` §10. The alternatives considered are recorded in D26.
+
+**Filter 2 — Detectability check** (new synthesis from sources 262, 263, 290, 278): exclude or down-weight candidates that would be trivially fingerprintable at that network position (e.g., a heavily-externally-scanned segment where port-count or TTL heuristics reliably expose decoys). Implemented as the D22a rubric (`02-detectability-rubric.md`). **Every asset that passes Filter 1 needs a D22a score before the optimiser will run on it.** The candidate loader refuses a candidate set in which any member lacks one (D26). Before D26 the optimiser silently read a missing score as 0.0, i.e. as a perfectly safe decoy.
 
 **L** is the surviving set after both filters — this is the actual search space for the optimizer, not **V** itself.
 
-> ⚠️ **Not yet true of the seeded data (D25).**
-> - **Filter 2 was applied to all five seeded candidates; Filter 1 was not.** Three (Historian, HMI, PLC-02) have no criterion scores but are marked as candidates. The other two confirmations come from demo data. The DMZ Jump Host's confirmed criterion 4 is `no`, which fails the only implemented rule.
-> - **Three assets on attack paths** (Engineering WS, PLC-01, PLC-03) were never assessed.
-> - **This section never states how the four scores combine into a pass.** That rule, and what `x_l = 1` means physically, must be stated before A32 re-derives **L** from **V**.
+> ⚠️ **State of the data after D26.** The seed no longer pre-judges L: every asset starts unscored and outside it, so **L is empty until the A32 review**. The scripts refuse to run on an empty set, and on any candidate that bypassed the review.
+> - D25 found that the seeded set had bypassed Filter 1. That set is kept only as `data/legacy/d25_candidate_set.sql`, to reproduce numbers recorded before D26, behind an explicit `--legacy-d25` flag. The API never accepts it.
+> - Assets without a D22a score: Engineering WS, PLC-01, PLC-03 (RTU), Backup Control Switch and the OT Firewall. Any of them that passes Filter 1 is scored at A32 step 4.
+> - The attack-path set is P1–P5. D27 added P5 through the Backup Control Switch.
 
-**Process note (added after D12):** Filter 1's four criteria are scored with AI assistance — a model generates a first-pass yes/mostly/no per criterion with reasoning, a human confirms or overrides each before it counts. The criteria themselves are unchanged; what changed is how they're populated. Detail in `02-ai-role.md` §7–10.
+**Process note (added after D12, revised by D26):** Filter 1's criteria are scored with AI assistance. A model suggests a first pass, and a human confirms or overrides each answer before it counts. D26 fixed the scale, the rules and the safeguards above. Detail in `02-ai-role.md` §7–10.
 
 ## 5. Decision Variables and Objective
 

@@ -31,35 +31,45 @@ In one sentence: *describe the network, work out how an attacker moves through i
 ```
 src/frontend/          React + Vite
   App.jsx              routing between screens
-  PlausibilityReview.jsx   Screen 3 — candidate confirmation
+  PlausibilityReview.jsx   Screen 3 — Filter 1 review (rebuilt in D26)
   Dashboard.jsx            Screen 1 — single-run view
         │  HTTP/JSON, CORS-restricted to localhost:5173
         ▼
-src/api/main.py        FastAPI — 9 endpoints, 246 lines
+src/api/main.py        FastAPI — 9 endpoints, 317 lines
         │
-        ├──▶ src/graph_model/__init__.py   186 lines
+        ├──▶ src/graph_model/__init__.py   263 lines
         │      load_graph()              builds nx.DiGraph from SQLite
         │      compute_centrality()      betweenness, weighted
         │      compute_criticality()     Crit(v) = w₁·SL + w₂·Central·Damage + w₃·ConduitSL  (D20)
         │      write_computed_scores()   persists back to assets
-        │      load_candidate_locations()  → L
+        │      load_candidate_locations()  → L, refusing unreviewed or unscored candidates (D26)
         │      load_attack_paths()         → P
         │
-        ├──▶ src/optimizer/metrics.py     89 lines
+        ├──▶ src/plausibility/            Filter 1's rules and the AI prompt (D26)
+        │      __init__.py   143 lines   sequence, path, combination and reason rules; weakest path
+        │      prompt.py     346 lines   Table 1, prompt, parser, scoring loop (used by the notebook)
+        │
+        ├──▶ src/optimizer/metrics.py     125 lines
         │      score()   F(x) and all five components
         │                shared by all five methods
         │
-        ├──▶ src/optimizer/baselines.py   186 lines
+        ├──▶ src/optimizer/baselines.py   196 lines
         │      greedy()  distorted_greedy()  random_baseline()  centrality_baseline()
         │
-        └──▶ src/optimizer/milp.py       124 lines
+        └──▶ src/optimizer/milp.py       141 lines
                solve_milp()   OR-Tools CP-SAT, exact validator
         │
         ▼
-data/deception_placement.db     SQLite, 10 tables
-```
+data/deception_placement.db     SQLite, 10 tables (not tracked; rebuilt from schema.sql + seed.sql)
 
-**Not yet built:** the explanation layer (`/runs/{id}/explain` — needs the Ollama integration), Screen 2 (sensitivity-sweep comparison), the Colab plausibility notebook, and the physical VMs.
+notebooks/plausibility_scoring.ipynb   Colab; the AI first pass (A20, D26)
+scripts/import_plausibility_scores.py  notebook CSV → ai_suggested_* columns
+scripts/review_io.py                   the review's committed record: export / restore
+scripts/run_comparison.py, sweep.py, structure_check.py   the evaluation scripts
+```
+*Line counts as of D26.*
+
+**Not yet built:** the explanation layer (`/runs/{id}/explain` — needs the Ollama integration), Screen 2 (sensitivity-sweep comparison), and the physical VMs. The Colab plausibility notebook was written in D26 and has not yet been run, because it needs a GPU.
 
 **Design property worth noting:** every method calls the same `score()` function. That is what makes a greedy result and a MILP result comparable at all — if each method computed its own objective, the comparison would be meaningless.
 
@@ -119,20 +129,27 @@ This is where D14's bug lived: assets were seeded, edges and conduits were not, 
 ### Flow B — Candidate selection, human-in-the-loop
 
 ```
-Colab notebook (Qwen3 14B)  [not yet built]
-   scores 4 rubric criteria per asset
+Screen 3: three blind cards scored first   (AI answer hidden until confirmed)
+        ▼
+Colab notebook (Qwen3 14B, 4-bit)  [written in D26, not yet run]
+   scores 4 rubric criteria per asset → ai_suggestions.csv
+        ▼
+scripts/import_plausibility_scores.py
         ▼
 candidate_locations.ai_suggested_*     (suggestions only)
         ▼
 Screen 3 ← GET /candidates
-   human reads AI reasoning, confirms or overrides
+   human checks each pre-filled answer against the path steps,
+   confirms or changes it; reason required where D26 says
         ▼
-POST /candidates/{asset_id}/confirm
+POST /candidates/{asset_id}/confirm    (rules: src/plausibility)
         ▼
-candidate_locations.is_candidate = 1   ──►  this is L
+candidate_locations.is_candidate = 1   ──►  this is L, once Filter 2 has scored it
+        ▼
+scripts/review_io.py export  →  data/review/plausibility_review.csv  (committed)
 ```
 
-The optimizer reads only `is_candidate=1`. An unconfirmed AI suggestion has no path into the search space. *(D25: the seed itself sets `is_candidate=1` on three rows no human confirmed — Historian, HMI, PLC-02 — which bypasses this gate. A32 re-derives the set through it.)*
+The optimizer reads only `is_candidate=1`. An unconfirmed AI suggestion has no path into the search space. *(D25 found the seed setting `is_candidate=1` on rows no human had confirmed. Since D26 the seed sets nothing, and `load_candidate_locations` refuses any candidate that did not come through the review or has no Filter 2 score. The pre-D26 set survives only as `data/legacy/d25_candidate_set.sql`, for reproducing old numbers behind `--legacy-d25`.)*
 
 ### Flow C — A single optimization run
 
@@ -253,7 +270,7 @@ Each step unblocks the next.
 5. ~~`/optimize`, `/runs`, `/runs/{id}`~~ — done, D17
 6. ~~Screen 1, dashboard~~ — built, present in `src/frontend/src/Dashboard.jsx`
 7. **Explanation layer** — needs Ollama running; not testable in a sandbox
-8. **Colab notebook** — independent; needs GPU-backed inference
+8. **Colab notebook** — written in D26 (`notebooks/plausibility_scoring.ipynb`); running it needs GPU-backed inference (A20)
 9. **Screen 2** — only meaningful once Phase D generates multiple runs
 10. **Physical VMs** — needed for demonstration, not for the algorithm
 
@@ -263,4 +280,4 @@ Before Phase D starts, §7.2 and §7.3 need decisions. Both are cheap to resolve
 
 ## 9. The one-paragraph version
 
-An OT network is described as a directed graph whose nodes carry an IEC 62443 zone, a Purdue level and an asset type, and whose edges carry protocols and weights. Four attack paths are traced across it using verified MITRE ATT&CK for ICS techniques. Every asset is scored for criticality, then filtered by a four-criterion plausibility rubric and a detectability check to produce the candidate set. (D25 found that the seeded set skipped part of this; A32 re-derives it.) An optimizer selects the subset of candidates maximizing a five-term objective — attack-path coverage, earliness of interception, criticality-weighted protection, minus operational risk and deployment cost — within a budget. A local language model explains the result to an analyst without altering it. The random and centrality baselines run against identical attack paths so the result can be compared rather than asserted.
+An OT network is described as a directed graph whose nodes carry an IEC 62443 zone, a Purdue level and an asset type, and whose edges carry protocols and weights. Five attack paths are traced across it using verified MITRE ATT&CK for ICS techniques (the fifth, through the backup conduit, added by D27). Every asset is scored for criticality, then filtered by a four-criterion plausibility rubric and a detectability check to produce the candidate set. (D25 found that the seeded set skipped part of this; A32 re-derives it.) An optimizer selects the subset of candidates maximizing a five-term objective — attack-path coverage, earliness of interception, criticality-weighted protection, minus operational risk and deployment cost — within a budget. A local language model explains the result to an analyst without altering it. The random and centrality baselines run against identical attack paths so the result can be compared rather than asserted.
