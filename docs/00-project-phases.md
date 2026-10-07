@@ -12,14 +12,14 @@ A: Foundation ──▶ B: Detailed Design ──▶ C: Build ──▶ D: Evalu
 
 Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs were frozen and are being corrected before any campaign: the objective's normalisation by D25, and the candidate set under A32. D is gated on A32 and then A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list.
 
-## Phase A — Foundation ✅ Complete (one minor open item, doesn't block Phase B)
+## Phase A — Foundation ✅ Complete (its one open item was closed on 6 October 2026)
 
 Literature review; analysis of existing OT deception solutions and existing placement-optimization research; formal problem definition; threat/attack model; testbed architecture.
 
 **Original roadmap items covered:** 1, 2, 3, 4, 5, 6
 **Documents:** `sources.md`, `iteration-2` through `iteration-10-findings.md`, `research-synthesis-implementation.md`, `formal-problem-definition.md`, `threat-attack-model.md`, `testbed-architecture.md`
 **Exit criteria (all met):** novelty claim tested against the closest available prior art via primary-source read, not just an abstract; tested again via a targeted water/manufacturing sector check; the optimization problem has a precise mathematical statement; the testbed has a verified path for every step of every attack scenario.
-**One open item, tracked not blocking:** the full text of `sources.md` #315 (a manufacturing-sector paper) hasn't been read yet — logged in `00-action-items.md` rather than held as a phase gate, since it can be resolved in parallel with Phase B.
+**One open item, tracked not blocking:** the full text of `sources.md` #315 (a manufacturing-sector paper) hasn't been read yet — logged in `00-action-items.md` rather than held as a phase gate, since it can be resolved in parallel with Phase B. *Closed 6 October 2026:* #315 was read in full and is not a placement competitor (A4). The same batch of supplied sources closed A8, A9 and A39 and the claims half of A29; CATCH (A33) remains unobtainable.
 
 ## Phase B — Detailed Design ✅ Complete
 
@@ -52,7 +52,7 @@ The actual construction: standing up the 7 physical VMs, implementing the graph 
 
 Run every method against P1–P5 (P5 added by D27) on the comparison grid held in `scripts/sweep.py` (D24), collect Coverage / Early / CritProt / Risk / Cost / runtime for each, run the weight-sensitivity sweep from `formal-problem-definition.md` §5, and produce the comparison tables and charts.
 
-**Inputs frozen (D20–D22a); evaluation code corrected (D23, D24); two input defects corrected before any campaign — Risk and Cost now divided by a fixed K = 4 (D25), and the candidate set re-derived by §4's filters (A32, pending; its rules fixed by D26). Gated on A32, then A12.** On the seeded candidate set greedy equals the exhaustive optimum in every cell *by construction* (D25: every attack path meets exactly one candidate). Comparing methods on F alone is implied by optimality and cannot test whether F is a good objective. An evaluation criterion outside F must be chosen — held-out attack paths, input-perturbation robustness, synthetic larger instances or testbed attack simulation — and frozen before the campaign runs.
+**Inputs frozen (D20–D22a); evaluation code corrected (D23, D24); two input defects corrected before any campaign — Risk and Cost now divided by a fixed K = 4 (D25), and the candidate set re-derived by §4's filters (A32, pending; its rules fixed by D26). Gated on A32, with A35–A38 and A40 settled before the freeze and A41 before the scoring notebook runs, then A12.** On the seeded candidate set greedy equals the exhaustive optimum in every cell *by construction* (D25: every attack path meets exactly one candidate). Comparing methods on F alone is implied by optimality and cannot test whether F is a good objective. An evaluation criterion outside F must be chosen — held-out attack paths, input-perturbation robustness, synthetic larger instances or testbed attack simulation — and frozen before the campaign runs.
 
 **Original roadmap item covered:** 11
 **Exit criteria:** results speak to the primary research question in `formal-problem-definition.md` §8 — including honestly, if they don't support it as strongly as hoped. A negative or mixed result, reported honestly, is a valid thesis outcome; a result quietly reframed to look better than it is isn't.
@@ -86,6 +86,10 @@ D25 also fixed in advance what the thesis may claim. Phase D is gated on:
    - route A, an AI first pass with three blind cards and written reasons.
 
    Screen 3 was rebuilt, the scoring notebook was written (not yet run), and the seed no longer pre-judges L, which is empty until your review. Remaining steps, in order: the blind cards; the notebook and import; reviewing the other seven cards; exporting the review; D22a scores for new candidates; freeze and re-run.
+
+   *Added 5 October 2026:* four input questions found while preparing the guide's progress report are also settled before the freeze — A35 (what an edge weight means), A36 (a path's target), A37 (placeholder criticality inputs) and A38 (the missing OT DMZ–Control conduit).
+
+   *Added 6 October 2026,* from the sources you supplied that day: a fifth, A40 — the criticality formula multiplies centrality by damage where the patent it draws on adds them — and a label fix, A41 — T0832's tactic is Impact — which must land before the notebook runs.
 2. **A12** — the research question's wording together with an evaluation criterion that is not F itself.
 3. **A15** — agreement with the guide that a mixed result is acceptable.
 
