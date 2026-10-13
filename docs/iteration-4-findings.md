@@ -10,6 +10,8 @@ This had been open since iteration 2. It's resolved now, and better than expecte
 
 Practical implication for your thesis: you now have two real, citable precedents for treating operational risk as a first-class, heavily-weighted term rather than an afterthought — which validates the composite-objective structure in section 10 of your brief. Neither paper is OT, and neither gives you a ready-made formula to drop in (they're RL rewards and utility functions, not the kind of closed-form term your MILP/greedy formulation needs) — but the *ablation evidence* that this term matters more than you might assume is a strong argument for not treating it as a minor correction in your own weighting/sensitivity analysis.
 
+*Correction (D28, 12 October 2026): overtaken. [250] was later read in full. Its false-positive penalty weighs 0.06 and penalises deception actions on benign traffic, which is a false-alarm term rather than decoy detectability. Its ablation shows the term matters when present, not that it should be weighted heavily, so this section's "heavily-weighted" conclusion is withdrawn. The weights are justified by the sensitivity sweep (iteration 5, D5).*
+
 ## 2. The Ma/Han/Kamhoua/Fu discrepancy — resolved
 
 Iteration 3 flagged a bibliographic problem: two near-identical papers, one via arXiv (5 authors including Nandi Leslie, "submission to AAMAS 2023") and one cited by a JHU faculty page as GameSec 2023 (4 authors, no Leslie). Both exist, and they're genuinely different: [252] is the confirmed, published, peer-reviewed GameSec 2023 paper (Springer LNCS 14167, pp. 215–233) — cite this one. The arXiv version only ever claims "submission to AAMAS 2023," with no evidence found that it was accepted there; it looks like an earlier draft that was reworked (title changed from "Decoy Resource" to "Resource," Leslie dropped) before landing at GameSec. Simple fix for your reference list: use [252]'s Springer citation, not the arXiv one.
@@ -32,7 +34,7 @@ Also unprompted, also relevant: [262] and [263] both show that real ICS honeypot
 
 ## 6. Still not resolved
 
-- **Qin et al.'s exact method** [266] — blocked by publisher bot-detection on a direct fetch this iteration. You have institutional access through NFSU; pull it via your library's ScienceDirect proxy rather than the open web.
+- **Qin et al.'s exact method** [266] — blocked by publisher bot-detection on a direct fetch this iteration. You have institutional access through NFSU; pull it via your library's ScienceDirect proxy rather than the open web. *Correction (D28, 12 October 2026): this route is not available. The NFSU library is not available to you (A2).*
 - **Direct primary source for "Decoy Allocation Against Lateral Movement: A Network Centrality Game Approach"** [source 238] — still only confirmed via a publication listing. The closest thing found is a likely-foundational POSG paper [261]; worth a targeted IEEE Xplore search rather than general web search.
 - **Whether [237]'s role-aware centrality measure has been tested as an honeypot-placement baseline anywhere** — carried over from iteration 3, not touched this round either.
 

@@ -28,13 +28,16 @@ No new data gets computed for this step; everything is a read from what `02-opti
 
 ```
 From placement_runs + placements (this run):     which asset_ids have x_l = 1
-From run_metrics (this run):                       coverage, early, crit_prot, risk, cost, f_score
-From run_metrics (the Random run, same budget):     same five fields, for comparison
-From run_metrics (the Centrality run, same budget): same five fields, for comparison
-From attack_paths:                                  path names, for referring to P1/P2/P3 by their
-                                                     Stuxnet-class / Industroyer2-class / recon-only labels
-                                                     instead of bare IDs
+From placement_runs (this run):                    coverage_score, early_score, critprot_score,
+                                                     risk_score, cost_score, objective_value
+From placement_runs (the Random run, same budget):     the same columns, for comparison
+From placement_runs (the Centrality run, same budget): the same columns, for comparison
+From attack_paths:                                  path names, for referring to P1–P5 by their
+                                                     scenario labels (Stuxnet-class, Industroyer2-class
+                                                     and so on) instead of bare IDs
 ```
+
+*Corrected by D28:* this listing read from a `run_metrics` table, which does not exist; a run's metrics are columns of `placement_runs` (`data/schema.sql`). It also named only P1–P3.
 
 ## 4. The prompt
 
@@ -83,6 +86,8 @@ intercepts and how early, (3) how it compares to the two baselines. Under
 ## 5. Worked example
 
 Using representative numbers consistent with the testbed and threat model — Engineering WS-2 and PLC-02 as the proposed placement, per `testbed-architecture.md`'s worked candidate-location example:
+
+> *D28: read this example for the shape of the prompt and the output only.* It was written in Phase B, and its path facts were wrong even then. Engineering WS-2 was never on P1 (D19 later put it on P3), and PLC-02 has never been on any path (D21, D27), so it intercepts neither P1 nor P2. "All three attack scenarios" predates P4 and P5. The numbers were never computed. The asset names are not candidates: L is empty until the A32 review, and nothing here is an expected answer. A real example will come from a Phase D run.
 
 | Method | Coverage | Early | CritProt | Risk | Cost |
 |---|---|---|---|---|---|
@@ -240,7 +245,7 @@ It wrote down expected outputs before any scoring: "no" on criterion 1 for the O
 
 `formal-problem-definition.md` §8 asks specifically whether the explanation is accurate and useful, not just whether it runs. Given weekend hours don't support a full user study, the honest, scoped-down evaluation for **explanation** is a manual accuracy check: generate explanations for each of the sensitivity-sweep runs from Phase D, and check each one against three criteria —
 
-1. **Factual accuracy** — do the numbers it states match `run_metrics` exactly, or does it round oddly, invent a figure, or misattribute a metric to the wrong method?
+1. **Factual accuracy** — do the numbers it states match the run's metric columns in `placement_runs` exactly, or does it round oddly, invent a figure, or misattribute a metric to the wrong method?
 2. **Guardrail adherence** — does it ever suggest a change, recommend an additional decoy, or hedge on the algorithm's choice, despite being told not to?
 3. **Readability** — would this actually help an analyst who hadn't seen the raw numbers?
 

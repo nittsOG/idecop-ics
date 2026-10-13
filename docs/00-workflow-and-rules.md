@@ -51,7 +51,7 @@ Everything created from here on uses the prefix. Next document (`data model`) wi
 
 **Automated — I handle this without asking:** creating, editing, and organizing files within this conversation; web research and verification; citation logging; document drafting; keeping the index/log/action-items files current; keeping the nine 📌 Project Knowledge docs identical to their GitHub versions (see *Project Knowledge sync* below).
 
-**Not automated — I'll flag it, you act:** anything outside this conversation. Institutional library access (NFSU credentials), confirming a decision with your guide, anything requiring physical access or an account only you hold. When this comes up, it goes in `00-action-items.md` in a consistent format — you'll never have to hunt through chat history for a manual step I mentioned once and moved on from.
+**Not automated — I'll flag it, you act:** anything outside this conversation. Obtaining a paper, patent or page I cannot read, which you supply as a PDF (I ask for these up front, with a list and links), confirming a decision with your guide, anything requiring physical access or an account only you hold. *(Changed 12 October 2026, D28: the first example used to be "institutional library access (NFSU credentials)", which is not available to you, A2.)* When this comes up, it goes in `00-action-items.md` in a consistent format — you'll never have to hunt through chat history for a manual step I mentioned once and moved on from.
 
 ## Project Knowledge sync
 

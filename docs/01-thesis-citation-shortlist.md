@@ -1,6 +1,6 @@
 # Thesis Citation Shortlist — Curated from `sources.md`
 
-322 entries logged across ten iterations; this is the subset actually worth citing in the thesis, organized the way the literature review chapter would actually be structured, not the order they were found in. Each entry states what's being drawn from it and why it earns a place, not just the reference. Source numbers in brackets point back to the full entry in `sources.md` for the complete context, link, and verification marker.
+Compiled when the source log held 322 entries (it holds 390 as of 12 October 2026); this is the subset actually worth citing in the thesis, organized the way the literature review chapter would actually be structured, not the order they were found in. Each entry states what's being drawn from it and why it earns a place, not just the reference. Source numbers in brackets point back to the full entry in `sources.md` for the complete context, link, and verification marker.
 
 **43 entries.** Not a hard target — a defensible, well-justified set given what's actually verified. Padding to a round number with weak entries would be worse than a shorter, stronger list.
 
@@ -22,7 +22,7 @@
 *What's drawn from it:* the closest *methodological* precedent — a graph-partition ILP minimizing decoy count while covering MITRE ATT&CK-derived attack paths, full text confirmed (Multi-Terminal Vertex Separator formulation, SCIP solver, exact eval setup and results). Needs direct, explicit engagement in section 14: same mathematical shape as this project's approach, different domain (enterprise IT, not OT).
 
 **4. Zambianco, M., Facchinetti, T., Doriguzzi-Corin, R., & Siracusa, D. (2024).** "Resource-aware Cyber Deception for Microservice-based Applications." *IEEE Transactions on Services Computing*, 17(6), 4211–4224. [#25, #191]
-*What's drawn from it:* a second paper from the same authors, confirming this is a sustained research line, not a one-off — integer non-linear optimization for decoy placement under a resource budget, using a betweenness-centrality heuristic for scale. Cited alongside #3 to show the depth of the closest precedent group.
+*What's drawn from it:* a second paper from the same authors, confirming this is a sustained research line, not a one-off — integer non-linear optimization for decoy placement under a resource budget, using a betweenness-centrality heuristic for scale. Cited alongside entry 3 to show the depth of the closest precedent group.
 
 **5. Ngo, M.-Q., Guo, M., & Nguyen, H. (2023).** "Near Optimal Strategies for Honeypots Placement in Dynamic and Large Active Directory Networks." AAMAS 2023. [#26]
 *What's drawn from it:* the NP-hardness proof for honeypot placement, even on static graphs — the direct justification for why brute-force is ruled out and a heuristic/exact-solver approach (greedy + MILP) is the right method class, cited in `formal-problem-definition.md` §7 and D1.
@@ -30,20 +30,20 @@
 **6. Ngo, M.-Q., Guo, M., & Nguyen, H. (2023).** "Catch Me if You Can: Effective Honeypot Placement in Dynamic AD Attack Graphs." arXiv:2312.16820. [#27]
 *What's drawn from it:* comparable-scale evaluation data (AD graphs up to ~12,001 nodes) used as calibration for what published work considers a reasonable evaluation scale — part of the feasibility argument for this project's own ~11-node testbed being appropriately scoped, not undersized.
 
-**7. Nguemkam, S., Anwar, A. H., Kengne Tchendji, V., Tosh, D., & Kamhoua, C. (2023).** "Optimal Honeypot Allocation Using Core Attack Graph in Cyber Deception Games." IEEE PIMRC 2023. [#28]
+**7. Nguemkam, A. L., Anwar, A. H., Tchendji, V. K., Tosh, D. K., & Kamhoua, C. (2023).** "Optimal Honeypot Allocation Using Core Attack Graph in Cyber Deception Games." *Proc. IEEE 34th PIMRC*, Toronto, pp. 1–6, doi:10.1109/PIMRC56721.2023.10293814. [#28] *(D28: the first author's initials are A. L., not S.; citation confirmed from #29's reference list. This paper itself has not been read.)*
 *What's drawn from it:* the "core attack graph" abstraction — concentrating decoys on critical-path nodes rather than the full graph — a related simplification strategy worth citing alongside this project's own two-filter candidate-location reduction (Filter 1 + Filter 2 in §4).
 
 **8. Park, D., & Dagher, G. G. (2026).** "Adaptive honeypot allocation in multi-attacker networks via Bayesian Stackelberg Games." *Computers & Security*, 168, 104949. [#30, #192]
 *What's drawn from it:* full text read specifically to correct an early misreading — this paper's "layered structure" is generic graph-distance layering for solver tractability, *not* a Purdue-Model or IEC 62443 reference architecture, despite surface resemblance. Cited as the nearest thing to an "OT-flavored" precedent that, on close reading, isn't actually OT-specific — an important negative finding for the novelty argument, not just a citation.
 
 **9. Kulkarni, A., Cohen, J., Kamhoua, C., & Fu, J. (2024).** "Integrated Resource Allocation and Strategy Synthesis in Safety Games on Graphs with Deception." arXiv:2407.14436. [#236]
-*What's drawn from it:* the theoretical basis for a greedy algorithm's approximation guarantee — proves a comparable decoy-placement objective is submodular in structured cases, giving greedy a real (1−1/e) bound. Directly underlies D1's method choice, with the honest caveat (in `02-optimization-formulation.md` §1) that this project's own objective only partially satisfies the same property.
+*What's drawn from it:* a precedent for proving submodularity of a decoy-placement objective — it shows its own objective is monotone and, in structured cases, submodular, which gives greedy a (1−1/e) bound **for that objective**. It does not give this project's plain greedy a guarantee: F(x) is submodular but not monotone (D20), and the bound this project can claim belongs to Distorted Greedy (#353, D23). *(D28: this entry used to say the paper gives "greedy a real (1−1/e) bound" that "directly underlies D1's method choice", which D20 and D23 overtook.)*
 
 **10. Kouam Wamba, K., Hayel, Y., Deugoué, G., & Kamhoua, C. (2025).** "A novel centrality measure for analyzing lateral movement in complex networks." *Physica A*, 658. [#237]
 *What's drawn from it:* a direct critique of standard centrality measures (betweenness, degree, etc.) for missing source/intermediate/target role structure in lateral-movement scenarios. Cited in D4 to justify naming *betweenness specifically* as the baseline while acknowledging its limitations, rather than presenting centrality as an unexamined default.
 
 **11. Podder, S., Sreedharan, S., Caglar, T., Ray, A., Bashir, M., & Ray, I. (2025).** "SPEAR: Security Posture Evaluation using AI Planner-Reasoning on Attack-Connectivity Hypergraphs." SACMAT 2025. [#255]
-*What's drawn from it:* the formal framework — PDDL-based automated planning generating hardening strategies with soundness/completeness guarantees — underlying i-EXAM (#12 below). Cited as the technical foundation of the "deterministic planner decides" side of the decide/explain split.
+*What's drawn from it:* the formal framework — PDDL-based automated planning generating hardening strategies with soundness/completeness guarantees — underlying i-EXAM (entry 12 below). Cited as the technical foundation of the "deterministic planner decides" side of the decide/explain split.
 
 **12. Podder, S., Ganim, R., Sreedharan, S., Ray, A., & Ray, I. (2026).** "i-EXAM: Instructable and Explainable Attack Connectivity Graph Modeler." arXiv:2607.05888. [#244]
 *What's drawn from it:* the closest architectural match found anywhere for this project's AI philosophy — a formal planner decides, an LLM's only role is explaining the result in natural language, for general network hardening. Directly grounds D6 and `formal-problem-definition.md` §8's secondary research question; the single most load-bearing citation for the AI layer's design.
@@ -51,14 +51,14 @@
 **13. Wang, K., et al. (2021).** "An Automatic Planning-Based Attack Path Discovery Approach from IT to OT Networks." *Security and Communication Networks* (Wiley). [#257]
 *What's drawn from it:* the same PDDL-based planning formalism as SPEAR/i-EXAM, applied specifically to IT-to-OT attack path discovery. Bridges the AI-explanation architecture directly into the OT domain — closes the gap between "this decide/explain pattern is precedented" and "it's been shown to work on OT-adjacent topologies specifically."
 
-**14. Nguemkam, S., et al. (2024).** "Optimal Honeypot Allocation Using Core Attack Graph in Partially Observable Stochastic Games." *IEEE Access*, 12, 187444–187455. [#29]
-*What's drawn from it:* comparable-scale POSG evaluation data (scaling to ~300 nodes via a core-attack-graph abstraction) — additional feasibility calibration alongside #6, and an example of the game-theoretic method family this project's approach is explicitly *not* using, with reasoning for that choice available in the decisions log.
+**14. Nguemkam, A. L., Anwar, A. H., Tchendji, V. K., Tosh, D. K., & Kamhoua, C. (2024).** "Optimal Honeypot Allocation Using Core Attack Graph in Partially Observable Stochastic Games." *IEEE Access*, 12, 187444–187455, doi:10.1109/ACCESS.2024.3513461. [#29] *(D28: initials corrected; read in full on 6 October 2026. It never mentions industrial control, SCADA, IEC 62443 or the Purdue model.)*
+*What's drawn from it:* comparable-scale POSG evaluation data (scaling to ~300 nodes via a core-attack-graph abstraction) — additional feasibility calibration alongside entry 6, and an example of the game-theoretic method family this project's approach is explicitly *not* using, with reasoning for that choice available in the decisions log.
 
-**15. Anonymous authors (2023).** "Optimizing Honeypot Placement Strategies with Graph Neural Networks for Enhanced Resilience via Cyber Deception." 2nd Graph Neural Networking Workshop (ACM). [#34]
-*What's drawn from it:* one further method-family data point (GNN-based placement, addressing the "curse of dimensionality" in game-theoretic approaches) — cited briefly in the related-work survey of the placement-optimization landscape to show breadth of methods considered before settling on greedy+MILP.
+**15. Osman, Nadeem, Hemida, & Kamhoua (2023).** "Optimizing Honeypot Placement Strategies with Graph Neural Networks for Enhanced Resilience via Cyber Deception." *GNNet '23: Proc. 2nd Graph Neural Networking Workshop* (ACM), pp. 37–43, doi:10.1145/3630049.3630169. [#34, #323] *(D28: authors completed from A9; read in full on 6 October 2026.)*
+*What's drawn from it:* one further method-family data point (GNN-based placement, addressing the "curse of dimensionality" in game-theoretic approaches) — cited briefly in the related-work survey of the placement-optimization landscape to show breadth of methods considered before settling on greedy+MILP. Its scenario places a single honeypot on generic networks, with no OT setting and no multi-decoy budget.
 
-**16. D3O-IIoT** — deep reinforcement learning-driven dynamic deception orchestration for industrial IoT security (full author/venue TBD — 🟡 needs verification before final citation). [#250]
-*What's drawn from it:* the direct quantitative justification for weighting operational risk heavily — an ablation study found removing the false-positive-control term cost 51.4% of the system's performance. This is the single citation D5 and `formal-problem-definition.md` §5 rest on; verify full bibliographic details before the thesis draft locks it in.
+**16. Wushishi, Hussain, Khalid, Hussain, Jamjoom, & Ullah (2026).** "D3O-IIoT: deep reinforcement learning-driven dynamic deception orchestration for industrial IoT security." *Scientific Reports*, 16, 2389 (published online 21 December 2025), doi:10.1038/s41598-025-33426-4. [#250, #324]
+*What's drawn from it:* a precedent for a multi-objective deception design. Its reward combines attack mitigation, deception engagement, a false-positive penalty and resource cost, the same shape as this project's composite objective. Its ablation shows the false-positive term matters when present: without it, the attack-mitigation rate fell from 12.4 to 6.0 while the false-alarm rate also fell, from 2.0% to 0.9% (Table 6). The term penalises deception actions applied to benign traffic, which corresponds to Filter 1's malice-fidelity criterion, not to δ·Risk, the detectability of a deployed decoy. **It is not evidence for weighting operational risk heavily:** the penalty's weight is 0.06, and the authors credit low penalty weights with allowing "aggressive defense". *(D28: this entry used to present the paper as "the direct quantitative justification for weighting operational risk heavily", with author and venue to be confirmed. The full text, read on 6 October 2026, supplied the citation and overturned the justification.)*
 
 ---
 
@@ -96,7 +96,7 @@
 *What's drawn from it:* the official framing document for why ATT&CK for ICS exists as a separate matrix from Enterprise ATT&CK — grounds the choice to build the threat model on ICS-specific tactics/techniques rather than generic ones.
 
 **26. MITRE.** ATT&CK for ICS structural update, April 2026. [#229]
-*What's drawn from it:* the exact current structure (12 tactics, 79 techniques, 18 sub-techniques) used to precisely scope the threat model's technique selection and to note, accurately, that the "Decoys Cannot Go Everywhere" feasibility rubric (#33 below) has only been applied to the Enterprise matrix, not ICS — an explicitly named open gap this project's Filter 1 partially addresses.
+*What's drawn from it:* the exact current structure (12 tactics, 79 techniques, 18 sub-techniques) used to precisely scope the threat model's technique selection and to note, accurately, that the "Decoys Cannot Go Everywhere" feasibility rubric (entry 33 below) has only been applied to the Enterprise matrix, not ICS. This project does not fill that gap: its Filter 1 applies the rubric to asset positions in one network, not to the ICS matrix (iteration 11, D26). *(D28: this entry used to call the ICS matrix "an explicitly named open gap this project's Filter 1 partially addresses", the claim dropped at iteration 11.)*
 
 **27. International Electrotechnical Commission.** IEC 62443-3-3, Annex A ("Discussion of the SL vector"). [#267]
 *What's drawn from it:* the formal definition of the 7-element Security Level vector (FR1–FR7) — the standards-grounded half of the criticality formula in `formal-problem-definition.md` §2.
@@ -108,7 +108,7 @@
 
 ## V. Gap-confirmation sources — independent authorities converging on the same conclusion
 
-**29. Sandia National Laboratories (2021).** SAND2021-11609. [#296] *(cross-referenced with #23 above)*
+**29. Sandia National Laboratories (2021).** SAND2021-11609. [#296] *(cross-referenced with entry 23 above)*
 *What's drawn from it, specifically for this section:* the direct quote — "there is currently an absence of well-developed cyber-physical deception elements and virtualization technologies for OT systems" — a national laboratory's own internal justification for funding this exact category of work, independent of any academic literature review.
 
 **30. Electric Power Research Institute (2019).** "Deception Technology: Emerging Cyber Security Technology for Utilities." [#306]
@@ -130,8 +130,8 @@
 **34. exida (functional safety / OT security consultancy).** Blog: "IEC 62443 – Levels, Levels and More Levels." [#268]
 *What's drawn from it:* the industry's own admission that "a pragmatic means of SL quantification has not yet been developed and vetted by the community" — the explicit justification for presenting this project's SL-based criticality scoring as a semi-quantitative approximation, not a solved measurement.
 
-**35. US Patent (number on file in `sources.md` #282).** "Criticality analysis of attack graphs." [#282]
-*What's drawn from it:* a worked, numeric formula — Criticality = f(locality, centrality, damage) — combining Purdue-level locality, network centrality, and operational damage fraction into a single score, with a full example computation. The graph/operational half of this project's dual criticality-scoring approach, independent of and complementary to the IEC 62443 SL-vector route.
+**35. Hassanzadeh, A., Hasan, K., & Nayak, A. (2022).** "Criticality analysis of attack graphs." US Patent 11,252,175 B2, Accenture Global Solutions, granted 15 February 2022. [#282, #325]
+*What's drawn from it:* a worked, numeric formula combining Purdue-level locality, network centrality and operational damage share into a single score, with a full example computation. Its equation (1) is a weighted sum, C(i) = α·l(i) + β·c(i) + γ·d(i), and its centrality is a degree-and-strength measure over traffic shares, not betweenness. The graph/operational half of this project's dual criticality-scoring approach, independent of and complementary to the IEC 62443 SL-vector route. This project multiplies centrality by damage rather than adding them, which A40 is to settle. *(D28: the number was "on file"; the full text was read on 6 October 2026.)*
 
 **36. Hollerer, S., Sauter, T., & Kastner, W. (2022).** "Risk Assessments Considering Safety, Security, and Their Interdependencies in OT Environments." ARES 2022 (ACM). [#270]
 *What's drawn from it:* a precedent for *how* to justify combining heterogeneous risk metrics (CVSS, IEC 62443 SL, IEC 61508 SIL) into one composite score over a zone/conduit structure — a methodological model for this project's own composite-objective writeup, not a source of specific numbers.
@@ -143,7 +143,7 @@
 
 ## VII. Plausibility-scoring-assist grounding (the AI-assisted Filter 1 design, D12)
 
-**38. Valeros, V., et al. (2026).** "Decoys Cannot Go Everywhere." arXiv:2606.27966. [#40] *(cross-referenced with #33 above)*
+**38. Valeros, V., et al. (2026).** "Decoys Cannot Go Everywhere." arXiv:2606.27966. [#40] *(cross-referenced with entry 33 above)*
 *What's drawn from it, specifically here:* the actual four-criterion structure — can a decoy exist, would an attacker reach it, does it yield useful signal, is it a reliable indicator — adapted directly into `formal-problem-definition.md` §4's Filter 1, now scored with AI assistance and human confirmation.
 
 **39. Anonymous authors (2026).** "Uncovering Vulnerabilities of LLM-Assisted Cyber Threat Intelligence." arXiv:2509.23573. [#318]
@@ -169,4 +169,4 @@
 
 ## What didn't make this list, and why
 
-Roughly 280 entries in `sources.md` aren't here. Most fall into one of three buckets, worth naming so the omission reads as deliberate rather than incomplete: **stepping stones** (papers found while chasing a citation-list trail that turned out not to be independently relevant — e.g., most of the Kamhoua-cluster bibliography beyond what's cited above); **unresolved sources** (🔴/🟡-marked entries where a full primary text was never confirmed, like the "Decoy Allocation Against Lateral Movement" paper still needing IEEE Xplore access); and **redundant confirmations** (several sources say the same thing as one already-cited source — citing all of them would pad the reference list without adding an argument). Pulling from any of these later is fine if a specific claim needs a specific new citation — this list is the strong, verified core, not a ceiling.
+Most of the 390 entries in `sources.md` aren't here *(D28: this said "roughly 280", counted when the log held 322)*. Most fall into one of three buckets, worth naming so the omission reads as deliberate rather than incomplete: **stepping stones** (papers found while chasing a citation-list trail that turned out not to be independently relevant — e.g., most of the Kamhoua-cluster bibliography beyond what's cited above); **unresolved sources** (🔴/🟡-marked entries where a full primary text was never confirmed, like the "Decoy Allocation Against Lateral Movement" paper, which is behind IEEE Xplore and so unread, since no library access is available, A2); and **redundant confirmations** (several sources say the same thing as one already-cited source — citing all of them would pad the reference list without adding an argument). Pulling from any of these later is fine if a specific claim needs a specific new citation — this list is the strong, verified core, not a ceiling.

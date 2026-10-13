@@ -10,6 +10,11 @@ Everything here is drafted to be pasted and adjusted, not to be used verbatim wi
 
 Templates vary in what they allow. All three versions state the same claims; only the compression differs.
 
+*Drafting notes (D28, 12 October 2026):*
+- *The sentences on evaluation, here and in contributions 4–5 (§5), describe the finished thesis. Phase D has not run, so do not reuse them in a progress report as completed work.*
+- *The iteration and source counts are as of 12 October 2026. Refresh them at submission.*
+- *"Operational risk" here is, in this project, detectability exposure; false positives are handled by Filter 1's malice-fidelity criterion, not by a term in the objective (D20, D26). The brief named the metric "false-positive/operational risk", so say where the term first appears that the project splits it this way (D28).*
+
 ### 1.1 Short form (~150 words)
 
 > Cyber deception is an established defensive technique for industrial control systems, but existing work concentrates almost entirely on the fidelity of the decoy rather than on where it should be placed. In current practice, placement is decided manually or by architectural convention. This work formulates deception placement in OT/ICS networks as a constrained optimisation problem. The network is modelled as a directed graph in which IEC 62443 zones, conduits, Purdue levels and asset types are explicit attributes, and attack scenarios are expressed as sequences of MITRE ATT&CK for ICS techniques. A composite objective combining attack-path coverage, earliness of interception, criticality-weighted protection, operational risk and deployment cost is maximised subject to a decoy budget, using a greedy method validated against an exact solver. A local language model explains the resulting placement without participating in the decision. The method is evaluated against random and centrality-based baselines on a multi-zone virtualised testbed.
@@ -22,7 +27,7 @@ Templates vary in what they allow. All three versions state the same claims; onl
 >
 > This work formulates deception placement for multi-zone OT/ICS architectures as a constrained optimisation problem. The network is represented as a directed graph whose nodes carry IEC 62443 zone membership, Purdue level and asset type, and whose conduits are the edge subsets crossing zone boundaries. Asset criticality combines the IEC 62443-3-3 Security Level vector with weighted network centrality and operational damage share. Attack scenarios are expressed as ordered sequences of verified MITRE ATT&CK for ICS techniques. Candidate locations are derived through a four-criterion decoy-plausibility rubric, adapted from published work on enterprise ATT&CK techniques and applied to asset positions in the network, followed by a detectability assessment. A composite objective spanning attack-path coverage, earliness of interception, criticality-weighted protection, operational risk and deployment cost is maximised under a decoy budget using a greedy algorithm, validated against an exact mixed-integer formulation. A local language model generates analyst-facing explanations without altering the placement.
 >
-> A literature review across ten structured iterations, cataloguing 322 sources, establishes that formal placement optimisation is mature in enterprise IT but effectively absent for multi-zone OT architectures. A working prototype is evaluated against random and centrality baselines on an eleven-node, four-zone virtualised testbed.
+> A literature review of thirteen structured iterations and later targeted checks, recorded in a 390-entry source log, establishes that formal placement optimisation is mature in enterprise IT but effectively absent for multi-zone OT architectures. A working prototype is evaluated against random and centrality baselines on an eleven-node, four-zone virtualised testbed.
 
 ### 1.3 Keywords
 
@@ -95,11 +100,11 @@ Defined now so the figures can be produced before the template dictates their ca
 | 1.1 | Purdue Enterprise Reference Architecture | Standard layered ICS model, levels 0–5 | Standard reference; redraw, do not copy |
 | 1.2 | Conceptual pipeline | Architecture → model → paths → candidates → optimisation → explanation | `01-original-brief.md` §5 |
 | 2.1 | Research landscape | Two-by-two: domain against generation/placement | TA-1 §3.1 |
-| 2.2 | Literature review process | Ten iterations, source counts, shortlisting | `sources.md` |
+| 2.2 | Literature review process | Thirteen iterations, source counts, shortlisting | `sources.md` |
 | 3.1 | System architecture | Five components and their interfaces | `02-system-flow.md` §2 |
 | 3.2 | Testbed zone and conduit structure | Four zones, eleven nodes, conduits marked | `testbed-architecture.md` |
 | 3.3 | Network model G | Directed graph with zone colouring | Generated from the live graph model |
-| 3.4 | Attack paths overlaid on the topology | P1, P2, P3 traced across the graph | `threat-attack-model.md` |
+| 3.4 | Attack paths overlaid on the topology | P1–P5 traced across the graph | `threat-attack-model.md` |
 | 3.5 | Candidate location filtering | Two-stage filter, assets surviving each stage | `formal-problem-definition.md` §4 |
 | 3.6 | Objective function components | Five terms, signs, what each measures | `formal-problem-definition.md` §5 |
 | 3.7 | Greedy algorithm flow | Marginal gain loop with early stopping | `02-optimization-formulation.md` |
@@ -129,10 +134,12 @@ Defined now so the figures can be produced before the template dictates their ca
 | 3.2 | Attack path P1 — step sequence with technique IDs | `threat-attack-model.md` |
 | 3.3 | Attack path P2 — step sequence with technique IDs | `threat-attack-model.md` |
 | 3.4 | Attack path P3 — step sequence with technique IDs | `threat-attack-model.md` |
-| 3.5 | Notation summary | `00-glossary.md` §6 |
-| 3.6 | Plausibility rubric criteria | `formal-problem-definition.md` §4 |
-| 3.7 | Computed criticality scores by asset | Generated |
-| 3.8 | Candidate locations after filtering | Generated |
+| 3.5 | Attack path P4 — step sequence with technique IDs | `threat-attack-model.md` |
+| 3.6 | Attack path P5 — step sequence with technique IDs | `threat-attack-model.md` |
+| 3.7 | Notation summary | `00-glossary.md` §6 |
+| 3.8 | Plausibility rubric criteria | `formal-problem-definition.md` §4 |
+| 3.9 | Computed criticality scores by asset | Generated |
+| 3.10 | Candidate locations after filtering | Generated |
 | 4.1 | Technology stack | `01-original-brief.md` §8 |
 | 4.2 | Database schema summary | `data/schema.sql` |
 | 4.3 | API endpoint reference | `src/api/main.py` |
@@ -140,6 +147,8 @@ Defined now so the figures can be produced before the template dictates their ca
 | 5.2 | Comparative results across methods | Phase D |
 | 5.3 | Sensitivity sweep results | Phase D |
 | 5.4 | Optimality gap, greedy against exact | Phase D |
+
+*D28: tables 3.5 and 3.6 (P4, added by D21, and P5, added by D27) were added and the tables after them renumbered; the list stopped at P3 before.*
 
 ---
 
@@ -150,7 +159,7 @@ For §1.7 and, in compressed form, for §6.1. Stated at defensible strength.
 1. A formal specification of deception placement in multi-zone OT/ICS architectures as a constrained optimisation problem, in which IEC 62443 zone and conduit structure functions as a numeric input to the objective rather than as architectural annotation.
 2. An asset criticality measure combining the IEC 62443-3-3 Security Level vector with weighted network centrality and operational damage share, drawing on two independently sourced methods rather than one.
 3. Adaptation of an existing decoy-feasibility rubric, published for Enterprise ATT&CK techniques, to asset positions in a zone-structured OT network, with a stated rule for combining its four scores, combined with a detectability filter to produce the candidate location set. *(Corrected in D26: this item said "to the ATT&CK for ICS matrix", a claim dropped at iteration 11; see `formal-problem-definition.md` §4.)*
-4. A working prototype implementing the graph model, four placement methods, a REST interface and an analyst-facing web interface, evaluated on a representative multi-zone testbed.
+4. A working prototype implementing the graph model, five placement methods (random, centrality, greedy, distorted greedy and an exact mixed-integer model), a REST interface and an analyst-facing web interface, evaluated on a representative multi-zone testbed. *(D28: this said "four placement methods"; distorted greedy was adopted as the fifth in D23.)*
 5. An empirical comparison of the proposed method against random and centrality-based baselines across a parametric sweep of objective weights.
 6. Demonstration that explanation can be added to a security decision procedure without compromising its determinism, by confining the language model to interpreting output it cannot alter.
 

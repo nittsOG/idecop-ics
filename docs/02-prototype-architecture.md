@@ -6,16 +6,23 @@ The last Phase B document. Pulls `02-data-model.md`, `02-optimization-formulatio
 
 ```
 /src
-  /graph_model      NetworkX construction from SQLite; writes G, L, P back to SQLite
-  /optimizer        greedy.py, milp.py (OR-Tools CP-SAT), random_baseline.py, centrality.py
-  /ai_explain        Ollama client (Phi-4-mini), prompt templates, called only from /runs/{id}/explain
-  /api               FastAPI app — the only thing that calls into the four modules above
-  /frontend          React + Cytoscape.js, the three screens in §3
+  /graph_model      builds G from SQLite; Central(v) and Crit(v); loads L and P. Run as a
+                    script, it also writes the computed scores back (D13's note)
+  /optimizer        metrics.py (the one shared score()), baselines.py (greedy, distorted
+                    greedy, random, centrality), milp.py (OR-Tools CP-SAT)
+  /plausibility     Filter 1's rules, the AI prompt, its parser and scoring loop (D26)
+  /api              FastAPI app — the only thing the running system writes through
+  /frontend         React (Vite): Screens 1 and 3. Screen 1 draws the network as plain SVG
+  /ai_explain       not built (A6): Ollama client (Phi-4-mini) for /runs/{id}/explain
 /scripts
+  run_comparison.py, sweep.py, structure_check.py    the evaluation scripts
   import_plausibility_scores.py   one-time import of the Colab notebook's CSV output
+  review_io.py                    the committed record of the Filter 1 review (D26)
 /notebooks
   plausibility_scoring.ipynb      Part B of 02-ai-role.md — lives outside /src entirely, never imported by it
 ```
+
+*Corrected by D28 to match the repository.* The Phase B list named `greedy.py`, `random_baseline.py` and `centrality.py`, which became `baselines.py` and `metrics.py`. It also gave the frontend Cytoscape.js, which the original brief listed as a candidate (§8) but which is not used. It omitted `/plausibility` and four scripts, and listed `/ai_explain` as if built.
 
 **One rule worth stating plainly:** `/api` is the only module with write access to the database. *(D26: this holds for the running system. Four offline setup steps also write: the notebook import, `scripts/review_io.py restore`, the legacy SQL for historical reproduction, and `graph_model`'s `write_computed_scores` when run as a script. See D13's note.)* `graph_model` and `optimizer` are libraries the API calls, not services with their own persistence logic — this keeps every write auditable at one layer instead of scattered across modules, and it's the same principle already enforced structurally for the AI components in `02-ai-role.md` (neither `ai_explain` nor the Colab notebook can write to a table that matters without going through a confirmed, API-mediated step).
 
@@ -29,12 +36,16 @@ Extends the sketch in `02-data-model.md` to the full set actually needed once al
 | `GET /candidates` | `candidate_locations` (both real and `ai_suggested_*` columns) | — | Screen 3 |
 | `POST /candidates/{asset_id}/confirm` | — | `criterion_*`, `human_reason`, `passes_plausibility`, `is_candidate`, `human_confirmed`, `confirmed_at`; on a blind card's first confirmation, the write-once `blind_*` columns (D26) | Screen 3 |
 | `GET /attack-paths` | `attack_paths`, `attack_path_steps` | — | Screen 1 |
-| `PUT /assets/{id}/damage-score` | — | `assets.damage_fraction` | Screen 3 (setup) |
-| `POST /optimize` | `assets`, `candidate_locations` (confirmed only), `attack_paths` | `placement_runs`, `placements`, `run_metrics` | Screen 1 |
-| `GET /runs` | `placement_runs`, `run_metrics` | — | Screen 2 |
-| `GET /runs/{id}` | `placement_runs`, `placements`, `run_metrics` | — | Screen 1 |
-| `GET /runs/compare?budget={b}` | `run_metrics`, filtered by budget | — | Screen 2 |
-| `POST /runs/{id}/explain` | `run_metrics` (this run + same-budget Random/Centrality runs) | `explanations` | Screen 1 |
+| `PUT /assets/{id}/damage-score` | — | `assets.damage_score` | Screen 3 (setup) |
+| `POST /optimize` | `assets`, `candidate_locations` (confirmed only), `attack_paths` | `placement_runs` (including its metric columns), `placements` | Screen 1 |
+| `GET /runs` | `placement_runs` | — | Screen 2 |
+| `GET /runs/{id}` | `placement_runs`, `placements` | — | Screen 1 |
+| `GET /runs/compare?budget={b}` | `placement_runs`, filtered by budget | — | Screen 2 |
+| `POST /runs/{id}/explain` | `placement_runs` (this run + same-budget Random/Centrality runs) | `explanations` | Screen 1 |
+
+*Corrected by D28.* There is no `run_metrics` table. A run's metrics are columns of `placement_runs`: `coverage_score`, `early_score`, `critprot_score`, `risk_score`, `cost_score`, `objective_value` and `runtime_seconds` (`data/schema.sql`). The damage column is `damage_score`, not `damage_fraction`.
+
+**Built so far:** `GET /graph`, `GET /assets`, `GET /candidates`, `POST /candidates/{asset_id}/confirm`, `GET /attack-paths`, `POST /optimize`, `GET /runs`, `GET /runs/{id}` and `GET /health` (`src/api/main.py`). **Not built:** `PUT /assets/{id}/damage-score` (Damage is still a placeholder, A37), `GET /runs/compare` (Screen 2) and `POST /runs/{id}/explain` (A6).
 
 `POST /optimize` never returns a placement directly in its response body beyond the `run_id` — the frontend always fetches the actual result via `GET /runs/{id}` afterward. Small deliberate choice: it means every placement the UI ever displays came from a row that's already durably stored, not from an in-flight response that could get lost on a page refresh mid-run.
 

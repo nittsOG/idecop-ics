@@ -238,6 +238,8 @@ Running catalog of every source surfaced across research iterations. **Appended 
 ### U. Qin et al. — still not fully resolved
 266. Confirmed (via reference-list cross-check) that Qin/Jiang/Dong/Doss's ICS reconnaissance paper builds on Honeyd (Provos 2003) and cites the same group's own Honey-X survey [iteration 3, #241] and an MTD survey (Sengupta et al. 2020). The exact algorithm is still not extracted — a direct fetch attempt this iteration was blocked by publisher bot detection. Needs institutional access (library proxy) rather than open web search. 🟡 https://dl.acm.org/doi/10.1016/j.cose.2023.103506
 
+    **Update, 12 October 2026 (D28).** No institutional access is available (A2), so the library-proxy route named here does not exist. The method was resolved by another route: see #271.
+
 **Iteration 4 headline: two of the four "still open" items from iteration 3 are now resolved (operational-risk quantification, the Ma/Han/Kamhoua/Fu venue discrepancy), one is substantially deepened with a genuinely valuable OT-relevant find (#257, the PDDL-planning-for-IT-to-OT paper), and two remain open (Qin et al.'s exact method, the direct primary source for "Decoy Allocation Against Lateral Movement"). No new OT-structured placement-optimization work surfaced — the novelty claim is unchanged.**
 
 ---
@@ -269,6 +271,9 @@ Running catalog of every source surfaced across research iterations. **Appended 
 
 ### Z. "Decoy Allocation Against Lateral Movement" — closed out (as "needs institutional access")
 276. **Confirmed via csauthors.net**: "Decoy Allocation Against Lateral Movement: A Network Centrality Game Approach," Charles A. Kamhoua, **IEEE Trans. Netw. Serv. Manag., 2026** — venue now independently confirmed a second way (this listing + the earlier ResearchGate co-listing), with a partial abstract: attacker lateral movement and defender decoy deployment modeled as a one-sided partially observable stochastic game, with node importance assessed via centrality measures feeding the decision process. After searches across three separate iterations (3, 4, 6), **no open-access preprint or fetchable link exists anywhere on the open web.** Conclusion: this is an IEEE-Xplore-exclusive paper with no free version — the fix is institutional/library-proxy access, not another search query. Stop searching for this one via general web search. 🟡 https://www.csauthors.net/charles-a-kamhoua/
+
+    **Update, 12 October 2026 (D28).** The fix named here, institutional or library-proxy access, is not available (A2), and IEEE Xplore is not reachable from Claude's environment (A33). The paper stays unread unless an author copy turns up.
+
 277. New, adjacent find while searching for #276: **"Coordinated Multi-Domain Deception: A Stackelberg Game Approach,"** also Charles A. Kamhoua, also IEEE Trans. Netw. Serv. Manag. 2026. Not yet investigated — same access problem likely applies. 🟡
 
 ### AA. A different placement framing — blending, not just coverage
@@ -378,6 +383,9 @@ Run specifically to ground the plausibility-scoring-assist design (D12) in real 
 ## Targeted Verification Check — Devika Jay follow-up (bounded task, not a full iteration)
 
 310. Devika Jay's IEEE Access abstract re-confirmed identically across four independent secondary listings (ResearchGate, Semantic Scholar, DOAJ, and citations in five other papers) — no discrepancies. Full mathematical text remains inaccessible via open web (IEEE Xplore blocked the direct fetch); still needs NFSU library proxy access for the actual formulation. 🟡
+
+    **Update, 12 October 2026 (D28).** Superseded by #312: the full text was later read. The NFSU library route named here is not available (A2).
+
 311. **US Patent 12,425,450 B2 — "Method for securing digital substations and system thereof"** — Devika Jay, Himanshu Goyel, Amulya Sreejith, Rajesh Rathi; assigned to **GridSentry Private Limited (Karnataka, India)**; filed Feb 22, 2024, claiming priority from Indian application 202341012168, filed Feb 22, 2023 — the same year as the IEEE Access paper. ⭐⭐⭐ This is not just an academic paper — this exact research line has been **commercialized by an Indian company**. The patent's mechanism is methodologically distinct from the academic paper's: it's a *reactive switching* system — a decoy network mirrors the real substation network, and on detecting malicious activity, a switching node redirects the attacker to it using periodically-changing bogus MAC IDs — versus the paper's *proactive bi-level optimization* over which individual IEDs get decoys ahead of time. Same inventor, same domain, two different technical approaches, both now needing acknowledgment: cite the patent as evidence this research line has reached commercial deployment and IP protection in India specifically; cite the paper for the formal optimization method. 🟢 https://patentsgazette.uspto.gov/week38/OG/html/1538-4/US12425450-20250923.html
 
 **This targeted check (one paper, not a broad pass) surfaced something a full iteration might not have: a live Indian commercial entity building on adjacent technology. That's now part of the answer to "who else is working on this," not just "what papers exist."**
@@ -414,6 +422,8 @@ Run specifically to close the item named in `research-synthesis-implementation.m
 
 324. **Wushishi, Hussain, Khalid, Hussain, Jamjoom, Ullah (2025)** — "D3O-IIoT: deep reinforcement learning-driven dynamic deception orchestration for industrial IoT security," *Scientific Reports*, DOI 10.1038/s41598-025-33426-4. Completes the record for #250. Confirms the ablation figure: false-positive control is the dominant reward term. Article number still to be captured for the final reference list. 🟢 https://www.nature.com/articles/s41598-025-33426-4
 
+    **Update, 12 October 2026 (D28).** The article number is 2389 (*Scientific Reports* 16:2389, 2026; A8). "Confirms the ablation figure: false-positive control is the dominant reward term" is superseded by #250's 6 October update: the term's weight is 0.06, and its ablation shows only that the term matters when present.
+
 325. **Hassanzadeh, Hasan, Nayak (2022)** — "Criticality analysis of attack graphs," US Patent 11,252,175 B2, assignee Accenture Global Solutions Ltd.; EP equivalent EP3644579B1, published 2022-03-30; continuation US11811816B2 (2023). Completes the record for #282. Exact US grant date still to be confirmed. 🟢 https://patents.google.com/patent/US11252175
 
     **Update, 6 October 2026 — 🟢** US grant date read from the patent itself: 15 February 2022. Inventors Amin Hassanzadeh, Kamrul Hasan, Anup Nayak. The formula is additive; see #282's update.
@@ -435,6 +445,8 @@ Run specifically to close the item named in `research-synthesis-implementation.m
 4. §5.2 states explicitly that trap-aware adversaries — decoy fingerprinting, policy adaptation across alerts — are **out of scope and a stated limitation**. That is precisely what this project's Filter 2 detectability check addresses. A 2026 paper naming the gap your candidate filter fills is a strong differentiation point for section 14.
 
 **One more thing worth noting:** affiliation 3 is an Industrial Control System Security key laboratory, and the work still contains no OT structure. An ICS security lab doing decoy placement on generic CVE attack graphs is further evidence for the gap, not against it. 🟢 https://www.mdpi.com/2227-7390/14/4/683
+
+    **Update, 12 October 2026 (D28).** Point (b)'s "per #250 that is the single most influential term" is superseded: #250's false-positive term weighs 0.06 and concerns deception actions on benign traffic (see its 6 October update). What still separates TrapManager here: its λ prices deployment cost only, so it has no counterpart to this project's δ·Risk, which measures detectability exposure. Neither objective has a false-positive term; this project handles false positives in Filter 1's malice-fidelity criterion (D26).
 
 327. **Method note — forward-citation chasing is a distinct search channel.** #326 surfaced because it *cites* #323, not because it matched any keyword query used across ten iterations. Ten passes of keyword search missed it; one reference-verification lookup found it. Keyword search finds papers that describe themselves the way you describe your problem; citation chasing finds papers that *build on* work you already know is relevant, regardless of vocabulary. Both directions matter: backward (a paper's own reference list) and forward (papers citing it). **Action for A17:** run forward-citation searches on the five anchor papers — #305/#312 (Jay), #323 (Osman), Zambianco, Kulkarni, and #326 itself — in Scopus or Google Scholar's "Cited by", not only keyword queries. This is also a known weakness of the review as conducted, and worth one sentence in the review-methodology section of Chapter 2.
 
@@ -610,6 +622,8 @@ First iteration to search *products and code repositories* rather than literatur
     - *Targeted assets:* include Jump Host, Switch, Routers, Firewall and VPN Server.
 
     Grounds P5's entry at the DMZ Jump Host. https://attack.mitre.org/techniques/T0822/
+
+    **Update, 13 October 2026 (D28).** Also grounds P2 step 1, at the same asset, by the user's choice. MITRE's record for Industroyer2 maps no initial-access technique (#389), so P2's entry is a composition, as P5's is.
 
 384. **MITRE ATT&CK for ICS — T0855 Unauthorized Command Message — negative result.** 🔴 On 4 October 2026 the fetch tool returned no page content, twice. Not used: P5's impact step reuses **T0836 Modify Parameter**, already verified for P1 in `threat-attack-model.md`. https://attack.mitre.org/techniques/T0855/
 

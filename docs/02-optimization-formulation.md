@@ -39,7 +39,7 @@ GREEDY(L, P, Crit, B, weights=(α,β,γ,δ,ε)):
     return x, F(x)
 ```
 
-**Complexity:** each iteration evaluates `F` for every remaining candidate, and evaluating `F` once means checking every path in `P` for interception — `O(B · |L| · |P|)` overall. At this project's scale (`|L|` on the order of 10, `|P| = 3`, `B` a handful), this runs in well under a second. Not a performance concern here; stated for completeness since a reviewer may ask.
+**Complexity:** each iteration evaluates `F` for every remaining candidate, and evaluating `F` once means checking every path in `P` for interception — `O(B · |L| · |P|)` overall. At this project's scale (`|L|` on the order of 10, `|P| = 5`, `B` a handful), this runs in well under a second. *(D28: this said `|P| = 3`, true before D21 and D27 added P4 and P5. The `|P| = 3` in §3's D16 account is history and stays, per the revision note below.)* Not a performance concern here; stated for completeness since a reviewer may ask.
 
 **Early stopping matters practically**, not just theoretically: once no candidate improves `F(x)`, stop rather than filling the budget — this is what lets the evaluation report "the method found K decoys sufficient" as a real result, not just "used all B decoys because that's what was allowed."
 

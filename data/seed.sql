@@ -35,8 +35,12 @@ INSERT INTO attack_path_steps (path_id, step_order, asset_id, tactic, technique_
     (1, 2, (SELECT asset_id FROM assets WHERE name='Engineering WS'), 'Execution', 'T1203', 'Exploitation for Client Execution'),
     (1, 3, (SELECT asset_id FROM assets WHERE name='PLC-01'),         'Lateral Movement', NULL, 'Program download to PLC'),
     (1, 4, (SELECT asset_id FROM assets WHERE name='PLC-01'),         'Impair Process Control', 'T0836', 'Modify Parameter'),
-    (1, 5, (SELECT asset_id FROM assets WHERE name='HMI'),            'Inhibit Response Function', 'T0832', 'Manipulation of View'),
-    (2, 1, (SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),  'Initial Access', NULL, 'Network-perimeter entry'),
+    -- D28: T0832's tactic is Impact (sources.md 387). It was recorded as Inhibit
+    -- Response Function until 12 October 2026. No term of F reads a tactic.
+    (1, 5, (SELECT asset_id FROM assets WHERE name='HMI'),            'Impact', 'T0832', 'Manipulation of View'),
+    -- D28: T0822 added at the user's choice, before any blind card was scored
+    -- (sources.md 383; P5 step 1 uses it at the same asset). It read 'Network-perimeter entry'.
+    (2, 1, (SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),  'Initial Access', 'T0822', 'External Remote Services'),
     (2, 2, (SELECT asset_id FROM assets WHERE name='PLC-03 (RTU)'),   'Execution', NULL, 'IEC-104 protocol-specific module'),
     (2, 3, (SELECT asset_id FROM assets WHERE name='PLC-03 (RTU)'),   'Impair Process Control', 'T0836', 'Modify Parameter'),
     (2, 4, (SELECT asset_id FROM assets WHERE name='PLC-03 (RTU)'),   'Impair Process Control', 'T0806', 'Brute Force I/O'),

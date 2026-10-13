@@ -10,7 +10,7 @@ Where a term has a specific meaning *in this project* that is narrower than its 
 
 These are ordinary words doing technical work.
 
-**Plausibility** — believability. In this project it means: *could a defender-controlled decoy realistically exist at this position, and would an attacker believe it?* A decoy PLC on a control network is plausible, because real PLCs live there. A decoy firewall is not, because a firewall is infrastructure an attacker routes *through*, not a thing it interacts with and inspects. Plausibility is a property of the *location and asset type*, not of the decoy's technical quality. A perfectly built decoy in an implausible position is still worthless.
+**Plausibility** — believability. In this project it means: *could a defender-controlled decoy realistically exist at this position, and would an attacker believe it?* Filter 1's four criteria (`formal-problem-definition.md` §4) are how it is judged. *(D28: two examples here said whether decoys of particular testbed asset types are plausible. They were removed because Filter 1 had not yet been scored, and nothing written before scoring may serve as an expected answer, D26.)* Plausibility is a property of the *location and asset type*, not of the decoy's technical quality. A perfectly built decoy in an implausible position is still worthless.
 
 **Rubric** — a fixed scoring guide: a set of stated criteria, applied identically to every item being scored, so that two people scoring the same item get the same answer. The word comes from educational assessment. A rubric is the opposite of case-by-case judgement; the criteria are written down *before* scoring begins and do not change between items.
 
@@ -36,9 +36,9 @@ A decoy that fits neither goes untouched.
 
 **Conduit** — an IEC 62443 term, not a general networking one. A conduit is the *permitted communication channel between two zones*, plus the controls on it. Formally, in this project, the set of edges that cross a given zone boundary. A zone is a group of assets with a shared security requirement; a conduit is how zones are allowed to talk. Note the collision risk in prose: "conduit" also means a physical pipe for cabling in plant engineering, so the standard's meaning should be stated on first use.
 
-**Coverage** — in this project, specifically *attack-path coverage*: the fraction of defined attack paths that have at least one decoy somewhere along them. Not network coverage, not asset coverage. A placement covering two of three paths scores 2/3.
+**Coverage** — in this project, specifically *attack-path coverage*: the fraction of defined attack paths that have at least one decoy somewhere along them. Not network coverage, not asset coverage. A placement covering two of the five paths scores 2/5.
 
-**Early detection / earliness** — how far along an attack path interception happens, expressed as a fraction of the path's length. Catching an attacker at step 1 of 5 is better than at step 5 of 5, because the attacker has done less by then. Scored so that earlier is higher. Critically, in this project it is a **mean over intercepted paths**, which means adding a decoy that only intercepts late can lower the score — a real property of the formulation, not a bug (see D19).
+**Early detection / earliness** — how far along an attack path interception happens, expressed as a fraction of the path's length. Catching an attacker at step 1 of 5 is better than at step 5 of 5, because the attacker has done less by then. Scored so that earlier is higher: each intercepted path contributes 1 − stage/length, and the sum is divided by |P|, the number of all paths (D20). *(D28: this entry still described the pre-D20 form, a mean over intercepted paths, as "a real property of the formulation, not a bug". D20 found it a defect, since adding a late-intercepting decoy could lower the score. The mean stage is still reported, not optimised.)*
 
 ---
 
@@ -60,9 +60,9 @@ A decoy that fits neither goes untouched.
 
 **Historian** — a database that records process data over time, usually sitting in the DMZ so business systems can read it without touching the control network. A common attacker target for reconnaissance.
 
-**Jump host / jump server** — a controlled intermediate machine that administrators must pass through to reach a protected network. Also, therefore, a controlled intermediate machine an attacker must pass through — which is exactly why it is a strong decoy position.
+**Jump host / jump server** — a controlled intermediate machine that administrators must pass through to reach a protected network. *(D28: a sentence judging it as a decoy position was removed before Filter 1 scoring, D26.)*
 
-**OT DMZ — demilitarized zone** — the buffer network between the business network and the control network. Nothing crosses directly; traffic terminates in the DMZ and is relayed. The most externally exposed OT-adjacent zone, which is why decoys there score well on interception but poorly on detectability.
+**OT DMZ — demilitarized zone** — the buffer network between the business network and the control network. Nothing crosses directly; traffic terminates in the DMZ and is relayed. The most externally exposed OT-adjacent zone. *(D28: a clause predicting how decoys here score was removed before Filter 1 scoring, D26.)*
 
 **Purdue Model / Purdue level** — the standard layered reference architecture for ICS networks, numbered roughly: Level 0 physical process, Level 1 controllers, Level 2 supervisory control, Level 3 site operations, Level 3.5 DMZ, Levels 4–5 enterprise IT. A shorthand for "how deep in the plant is this asset."
 
@@ -96,7 +96,7 @@ A decoy that fits neither goes untouched.
 
 **Fingerprinting** — identifying what something really is from its observable characteristics. Applied to decoys, it is how an attacker detects the deception. See **detectability**.
 
-**False positive** — a decoy alert triggered by legitimate activity rather than an attacker. In OT this matters more than in IT: a decoy that interferes with real process traffic, or that trains operators to ignore alerts, has a genuine operational cost. Published ablation evidence shows a false-positive-control term was the single most important component of a comparable system's objective, which is why operational risk is weighted heavily here rather than set low by default.
+**False positive** — a decoy alert triggered by legitimate activity rather than an attacker. In OT this matters more than in IT: a decoy that interferes with real process traffic, or that trains operators to ignore alerts, has a genuine operational cost. This project handles false positives through Filter 1's **malice fidelity** criterion, which excludes a position where benign activity routinely triggers the decoy (a No); the objective itself has no false-positive term (D26). *(D28: this entry used to say published ablation evidence is "why operational risk is weighted heavily here". It is not: that source's false-positive term weighs 0.06 and concerns deception actions on benign traffic, and the risk weight δ is set by the sensitivity sweep, default 1.)*
 
 ---
 
@@ -106,11 +106,11 @@ A decoy that fits neither goes untouched.
 
 **MITRE ATT&CK for ICS** — a public, structured catalogue of real adversary behaviour observed in industrial environments, organized as tactics and techniques. The ICS matrix is separate from the Enterprise matrix.
 
-**Tactic** — the attacker's goal at a stage: Initial Access, Discovery, Lateral Movement, Collection, Impair Process Control, Inhibit Response Function, Impact. The *why*.
+**Tactic** — the attacker's goal at a stage. The *why*. This project's seeded paths use Initial Access, Execution, Lateral Movement, Discovery, Collection, Impair Process Control and Impact; ATT&CK for ICS has twelve, Inhibit Response Function among them (#229). *(D28: the list used to omit Execution and include Inhibit Response Function, which no path uses since P1 step 5 was corrected to Impact.)*
 
 **Technique** — a specific method of achieving a tactic, with an ID. The *how*. ICS technique IDs start with T0 (T0836 Modify Parameter, T0832 Manipulation of View, T0806 Brute Force I/O); Enterprise IDs start with T1 (T1091 Replication Through Removable Media).
 
-**Attack path** — an ordered sequence of (asset, tactic, technique) steps from an entry point to an objective. This project's set is P = {P1, P2, P3}.
+**Attack path** — an ordered sequence of (asset, tactic, technique) steps from an entry point to an objective. This project's set is P = {P1, P2, P3, P4, P5}: D21 added P4 and D27 added P5. *(D28: this said {P1, P2, P3}.)*
 
 **Lateral movement** — moving from one compromised machine to another inside the network, as opposed to breaking in from outside.
 
@@ -144,9 +144,9 @@ A decoy that fits neither goes untouched.
 
 **NP-hard** — a complexity class meaning, informally, that no known algorithm finds the exact optimum in reasonable time as the problem grows. Deception placement is proven NP-hard even on static graphs, which is *why* an approximation method is needed rather than brute force.
 
-**Greedy algorithm** — an algorithm that repeatedly takes the single best next step without reconsidering earlier ones. Fast, simple, and usually suboptimal — except when the objective has a property called submodularity.
+**Greedy algorithm** — an algorithm that repeatedly takes the single best next step without reconsidering earlier ones. Fast, simple, and usually suboptimal — except that when the objective is both monotone and submodular, greedy is guaranteed to come within (1 − 1/e) of the optimum. This project's F is submodular but not monotone; see **Submodularity**. *(D28: this said only "except when the objective has a property called submodularity".)*
 
-**Submodularity** — the formal name for diminishing returns: adding a decoy to a small set helps more than adding the same decoy to a large set. When an objective is submodular and monotone, greedy comes with a proven guarantee of at least (1 − 1/e) ≈ 63% of the true optimum. Published work proves a comparable decoy-placement objective is submodular in structured cases. **This project must check whether its own objective satisfies the property before claiming the guarantee** — the proof pattern is reusable, the proof itself is not automatic.
+**Submodularity** — the formal name for diminishing returns: adding a decoy to a small set helps more than adding the same decoy to a large set. When an objective is submodular and monotone, greedy comes with a proven guarantee of at least (1 − 1/e) ≈ 63% of the true optimum. Published work proves a comparable decoy-placement objective is submodular in structured cases. **This project did the check (D20, D23):** F(x) is submodular but not monotone, so plain greedy carries no guarantee, and the (1 − 1/e) bound attaches to Distorted Greedy, which fits this objective's form (#353). *(D28: this entry used to say the check was still to be done.)*
 
 **MILP — Mixed-Integer Linear Programming** — a formal optimization method that finds the *exact* optimum for problems expressible as linear relationships with some integer variables. Exact but expensive; tractable here only because the instance is small.
 
@@ -164,7 +164,7 @@ A decoy that fits neither goes untouched.
 
 **Sensitivity sweep / parametric sweep** — systematically varying the objective's weights and recording how the chosen placement and each metric shift. This is how the weights get *justified* rather than asserted. The field's standard practice; formal expert elicitation has no precedent in this literature.
 
-**Ablation study** — removing one component of a system to measure how much it contributed. Cited here as the evidence for weighting operational risk heavily.
+**Ablation study** — removing one component of a system to measure how much it contributed. An ablation shows that a term matters when present, not how heavily it should be weighted. *(D28: this entry used to say an ablation study was "the evidence for weighting operational risk heavily"; that reading of #250 is withdrawn.)*
 
 **Wall-clock time** — real elapsed time to compute a result, reported as one of the comparison metrics because a method that is better but takes hours may not be better in practice.
 
@@ -183,7 +183,7 @@ A decoy that fits neither goes untouched.
 | `SL(v)` | Security Level component of criticality, from IEC 62443-3-3 |
 | `Central(v)` | Graph-centrality component of criticality |
 | `Damage(v)` | Share of operational process load the asset is responsible for |
-| `P` | The set of attack paths, {P1, P2, P3} |
+| `P` | The set of attack paths, {P1, P2, P3, P4, P5} |
 | `L` | Candidate deception locations — the *confirmed* subset of V after both filters. The optimizer's actual search space |
 | `x_l` | Decision variable: 1 if a decoy is placed at location l |
 | `x*` | The selected placement — the optimizer's answer |
@@ -191,10 +191,10 @@ A decoy that fits neither goes untouched.
 | `α, β, γ, δ, ε` | Weights on coverage, earliness, criticality protection, risk, cost |
 | `B` | Budget — maximum number of decoys |
 | `Coverage(x)` | Fraction of paths in P intercepted by at least one decoy |
-| `Early(x)` | Mean earliness of interception across intercepted paths |
+| `Early(x)` | Earliness of interception, summed over intercepted paths and divided by the number of all paths (D20) |
 | `CritProt(x)` | Criticality-weighted protection of path targets, normalized |
-| `Risk(x)` | Estimated probability of legitimate OT traffic hitting a decoy |
-| `Cost(x)` | Deployment cost — decoy count, or resource-weighted |
+| `Risk(x)` | Normalised detectability exposure: the placed decoys' D22a scores, summed and divided by K = 4 (D20, D25). Not a probability, and not a false-positive term *(D28: this row still gave the pre-D20 definition, the probability of legitimate traffic hitting a decoy)* |
+| `Cost(x)` | Decoy count divided by K = 4 (D25); a resource-weighted variant remains possible |
 
 ---
 

@@ -52,7 +52,7 @@ The actual construction: standing up the 7 physical VMs, implementing the graph 
 
 Run every method against P1–P5 (P5 added by D27) on the comparison grid held in `scripts/sweep.py` (D24), collect Coverage / Early / CritProt / Risk / Cost / runtime for each, run the weight-sensitivity sweep from `formal-problem-definition.md` §5, and produce the comparison tables and charts.
 
-**Inputs frozen (D20–D22a); evaluation code corrected (D23, D24); two input defects corrected before any campaign — Risk and Cost now divided by a fixed K = 4 (D25), and the candidate set re-derived by §4's filters (A32, pending; its rules fixed by D26). Gated on A32, with A35–A38 and A40 settled before the freeze and A41 before the scoring notebook runs, then A12.** On the seeded candidate set greedy equals the exhaustive optimum in every cell *by construction* (D25: every attack path meets exactly one candidate). Comparing methods on F alone is implied by optimality and cannot test whether F is a good objective. An evaluation criterion outside F must be chosen — held-out attack paths, input-perturbation robustness, synthetic larger instances or testbed attack simulation — and frozen before the campaign runs.
+**Inputs frozen (D20–D22a); evaluation code corrected (D23, D24); two input defects corrected before any campaign — Risk and Cost now divided by a fixed K = 4 (D25), and the candidate set re-derived by §4's filters (A32, pending; its rules fixed by D26). Gated on A32, with A35–A38 and A40 settled before the freeze (A41, the one item due before the scoring notebook, was done in D28), then A12.** On the seeded candidate set greedy equals the exhaustive optimum in every cell *by construction* (D25: every attack path meets exactly one candidate). Comparing methods on F alone is implied by optimality and cannot test whether F is a good objective. An evaluation criterion outside F must be chosen — held-out attack paths, input-perturbation robustness, synthetic larger instances or testbed attack simulation — and frozen before the campaign runs.
 
 **Original roadmap item covered:** 11
 **Exit criteria:** results speak to the primary research question in `formal-problem-definition.md` §8 — including honestly, if they don't support it as strongly as hoped. A negative or mixed result, reported honestly, is a valid thesis outcome; a result quietly reframed to look better than it is isn't.
@@ -73,7 +73,7 @@ Guide review cycles, viva preparation, formatting to NFSU's submission requireme
 
 ## Where we are right now
 
-**As of D26 (3 October 2026).** Phases A and B are complete. Phase C's core computational build is complete and verified — database, graph model, all five optimizer implementations, the API and two of three screens — with the explanation layer, Screen 2 and the physical testbed outstanding. The Colab notebook was written in D26 and has not yet been run.
+**As of D28 (12 October 2026).** Phases A and B are complete. Phase C's core computational build is complete and verified — database, graph model, all five optimizer implementations, the API and two of three screens — with the explanation layer, Screen 2 and the physical testbed outstanding. The Colab notebook was written in D26 and has not yet been run.
 
 Phase D's inputs were frozen (D20–D22a) and its evaluation code corrected (D23, D24). D25 then found two input defects before any campaign ran:
 - On the seeded candidate set, greedy is optimal by construction.
@@ -90,6 +90,8 @@ D25 also fixed in advance what the thesis may claim. Phase D is gated on:
    *Added 5 October 2026:* four input questions found while preparing the guide's progress report are also settled before the freeze — A35 (what an edge weight means), A36 (a path's target), A37 (placeholder criticality inputs) and A38 (the missing OT DMZ–Control conduit).
 
    *Added 6 October 2026,* from the sources you supplied that day: a fifth, A40 — the criticality formula multiplies centrality by damage where the patent it draws on adds them — and a label fix, A41 — T0832's tactic is Impact — which must land before the notebook runs.
+
+   *Added 12–13 October 2026 (D28):* A41 is done, and P2 step 1 now carries T0822, your choice. P freezes, as seeded, when the first blind card is scored. D28 also corrected the repository text that the 6 October sources overturned, including D5's case for weighting operational risk heavily. No number changed. Because D28 changes the seed, the database is rebuilt before the blind cards, and the batch is pushed before the notebook runs.
 2. **A12** — the research question's wording together with an evaluation criterion that is not F itself.
 3. **A15** — agreement with the guide that a mixed result is acceptable.
 

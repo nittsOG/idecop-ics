@@ -1,7 +1,9 @@
 """
 graph_model — builds G = (V, E) as a real NetworkX graph from SQLite, and
 computes the two derived quantities formal-problem-definition.md §1-2 define:
-Central(v) and Crit(v). Read-only against the database; nothing here writes.
+Central(v) and Crit(v). Read-only against the database, except
+write_computed_scores(), which writes the computed scores back when this module
+is run as a script (D13's note).
 
 Central(v) is genuinely computed from the graph's real edges (fixed in D14 —
 see 02-data-model.md's edges/conduits section). SL(v) and Damage(v) are NOT
@@ -19,11 +21,14 @@ import networkx as nx
 
 DB_PATH = Path(__file__).resolve().parents[2] / "data" / "deception_placement.db"
 
-# Illustrative SL(v) by Purdue level, following IEC 62443's usual convention
-# that required security level rises closer to the physical process — NOT
-# elicited data. Replace with real per-asset SL-3-3 vectors (7 FR scores,
-# formal-problem-definition.md §2) before treating any Crit(v) result as
-# more than a pipeline smoke test.
+# Illustrative SL(v) by Purdue level, rising closer to the physical process —
+# NOT elicited data. (D28: this comment used to call the rise "IEC 62443's usual
+# convention". Jaatun et al., #330, do not support that: they argue against giving
+# the embedded devices at the bottom of the Purdue model high SL targets, since
+# the zones above protect them.) Whether Phase D may use these placeholders is
+# A37. Replace with real per-asset SL-3-3
+# vectors (7 FR scores, formal-problem-definition.md §2) before treating any
+# Crit(v) result as more than a pipeline smoke test.
 PLACEHOLDER_SL_BY_LEVEL = {
     "—": 0.3, "3.5": 0.5, "3": 0.6, "2-3": 0.65, "1-2": 0.85,
 }

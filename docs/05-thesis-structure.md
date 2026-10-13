@@ -207,9 +207,9 @@ Ordered by *readiness*, not by chapter number.
 
 **Immediate priority order, given weekend hours:**
 
-1. TA-1 submission — 21 September, fixed
+1. ~~TA-1 submission — 21 September, fixed~~ TA-1 did not take place as scheduled and has not been rescheduled (A14) *(corrected by D28)*
 2. Chapter 3 draft — the largest chapter that is fully unblocked
-3. Resolve the risk/criticality normalisation question — this blocks Phase D, which blocks Chapter 5
+3. ~~Resolve the risk/criticality normalisation question — this blocks Phase D, which blocks Chapter 5~~ Resolved by D20 and D25. Phase D, and so Chapter 5, is now gated on A32, the inputs to settle before the freeze (A35–A38, A40), A12 and A15; see `00-project-phases.md` *(corrected by D28)*
 4. Chapter 4 §4.1–4.6 — while the implementation details are fresh
 5. Everything else in readiness order
 
@@ -250,6 +250,6 @@ Carried over from the project's own rigor rules, and worth stating once rather t
 Recorded so it does not surface late:
 
 1. **Actual final submission deadline.** The ordering above is relative; converting it to dates requires the real date.
-2. **Four incomplete references** flagged in the TA-1 document, including the sole source for weighting operational risk.
-3. **The institutional database review** — still the one systematic gap in Chapter 2's methodology.
-4. **Whether Chapter 5 can be written at all** under the current objective formulation, per the note in §2 above. This is the highest-priority technical decision outstanding.
+2. ~~**Four incomplete references** flagged in the TA-1 document, including the sole source for weighting operational risk.~~ A8 and A9 completed three of them, [23], [12] and [26], on 6 October 2026, and the full text of [23] does not support weighting operational risk heavily (D28). The fourth is not named anywhere in the repository; check the TA-1 document for it. *(Corrected by D28.)*
+3. **The systematic database review** — still the one systematic gap in Chapter 2's methodology. No institutional library is available (A2), so A17 is now a documented sweep of open indexes, and the thesis states that the subscription databases were not swept. Whether that is acceptable is the guide's call. *(Corrected by D28: this said "the institutional database review".)*
+4. ~~**Whether Chapter 5 can be written at all** under the current objective formulation, per the note in §2 above. This is the highest-priority technical decision outstanding.~~ Overtaken: D20 and D25 resolved the formulation question. Chapter 5 now waits on the gates in §5's priority list. *(Corrected by D28.)*

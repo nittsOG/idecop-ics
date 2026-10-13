@@ -46,13 +46,15 @@ Zone 0 (External)          — Attacker
 Zone 1 (OT DMZ, PL 3.5)    — OT Firewall, DMZ Jump Host, Historian*
         │  conduit: DMZ→Supervisory rules
 Zone 2 (Supervisory, PL 3) — Engineering WS, Engineering WS-2*, HMI
-        │  conduit: Supervisory→Control rules (the critical boundary — this is
-        │  the single conduit every path in P must cross to reach impact)
+        │  conduit: Supervisory→Control rules (the critical boundary; P1
+        │  crosses it, while P2 and P5 enter Control from the OT DMZ — A38)
 Zone 3 (Control, PL 1–2)   — PLC-01, PLC-02, PLC-03*, Backup Switch*
         │
 Zone 4 (Process)           — Process Model (OpenPLC-driven simulation)
 ```
 (`*` = modeled-only node)
+
+*D28: the Supervisory→Control note used to call it "the single conduit every path in P must cross to reach impact". P2 and P5 contradict that: both cross from the OT DMZ straight into Control, a boundary with no recorded conduit. Whether to record one is A38.*
 
 This is a direct instantiation of `zone(v)` and `c(z_i, z_j)` from Section 1 of the formal problem definition — not a separate diagram that happens to look similar. The optimizer reads this structure directly.
 
@@ -108,8 +110,10 @@ NetworkX graph (G, L, P)  →  SQLite
                     Local LLM via Ollama (explanation only,
                     per the i-EXAM/SPEAR pattern — sources 244, 255)
                                  │
-                         FastAPI → Cytoscape.js / React Flow UI
+                         FastAPI → React UI (network drawn as plain SVG)
 ```
+
+*D28: the last box said "Cytoscape.js / React Flow UI", the original brief's candidate libraries (§8). Neither is used: Screen 1 draws the network as plain SVG.*
 
 The optimizer never touches the live VMs directly during placement decisions — it operates on the modeled graph. Live VM telemetry (if you wire it up) feeds evaluation *after* placement, to check whether the deployed decoys actually intercept the attack paths when run — that's the evaluation methodology, not this document.
 

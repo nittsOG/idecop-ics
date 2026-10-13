@@ -22,6 +22,8 @@ The useful conclusion: **this is not a placement-optimization paper**, and it ne
 
 Iteration 4 established that operational risk *should* be a heavily-weighted term (the 51.4% ablation result). This iteration checked how papers in this space actually *set* that kind of coefficient, since knowing it matters isn't the same as knowing how to justify a number.
 
+*Correction (D28, 12 October 2026): the first sentence above is withdrawn. Read in full, [250] does not support heavy weighting (see iteration 4's correction). This section's finding, that the field sets such weights by parametric sensitivity sweep, stands and is now the only justification for them.*
+
 The answer is unglamorous but useful: **parametric sensitivity sweeps**, not expert elicitation. Park & Dagher's own paper is a clean example — they vary their honeypot-cost coefficient from 0 to 10 and report how the optimal strategy and defender utility shift across that range [272]. A dedicated search for formal expert-elicitation methodology (the kind used in health economics and risk management) turned up nothing applied to honeypot or deception cost coefficients specifically. This means your brief's own plan — weighting justified through literature, experiments, and sensitivity analysis — already matches how this exact community operates. You don't need a fancier justification method than a sweep; you need to run one and show the results, which is squarely within a weekend-hours-scale evaluation.
 
 ## 4. Bibliography, further filled in

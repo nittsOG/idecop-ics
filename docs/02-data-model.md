@@ -151,6 +151,8 @@ Populated directly from `testbed-architecture.md`'s 11-node graph and `threat-at
 > - D22/D22a replaced the detectability values.
 >
 > D26 brought the `candidate_locations` block back into line. The other differences remain, and `seed.sql` holds the current values.
+>
+> D28 corrected one error present here and in `seed.sql` from the start: P1 step 5's tactic. MITRE lists T0832 Manipulation of View under Impact, not Inhibit Response Function (#387). D28 also gave P2 step 1 a technique, T0822 External Remote Services (#383), in both places; it had read "Network-perimeter entry".
 
 ```sql
 INSERT INTO zones (name, purdue_level) VALUES
@@ -184,8 +186,8 @@ INSERT INTO attack_path_steps (path_id, step_order, asset_id, tactic, technique_
     (1, 2, (SELECT asset_id FROM assets WHERE name='Engineering WS'), 'Execution', 'T1203', 'Exploitation for Client Execution'),
     (1, 3, (SELECT asset_id FROM assets WHERE name='PLC-01'),         'Lateral Movement', NULL, 'Program download to PLC'),
     (1, 4, (SELECT asset_id FROM assets WHERE name='PLC-01'),         'Impair Process Control', 'T0836', 'Modify Parameter'),
-    (1, 5, (SELECT asset_id FROM assets WHERE name='HMI'),            'Inhibit Response Function', 'T0832', 'Manipulation of View'),
-    (2, 1, (SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),  'Initial Access', NULL, 'Network-perimeter entry'),
+    (1, 5, (SELECT asset_id FROM assets WHERE name='HMI'),            'Impact', 'T0832', 'Manipulation of View'),
+    (2, 1, (SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),  'Initial Access', 'T0822', 'External Remote Services'),
     (2, 2, (SELECT asset_id FROM assets WHERE name='PLC-03 (RTU)'),   'Execution', NULL, 'IEC-104 protocol-specific module'),
     (2, 3, (SELECT asset_id FROM assets WHERE name='PLC-03 (RTU)'),   'Impair Process Control', 'T0836', 'Modify Parameter'),
     (2, 4, (SELECT asset_id FROM assets WHERE name='PLC-03 (RTU)'),   'Impair Process Control', 'T0806', 'Brute Force I/O'),
@@ -253,17 +255,17 @@ INSERT INTO edges (source_asset_id, target_asset_id, protocol, weight) VALUES
 
 | Endpoint | Method | Purpose |
 |---|---|---|
-| `/graph` | GET | Full `G` — assets + edges as JSON, for the Cytoscape.js/React Flow frontend |
+| `/graph` | GET | Full `G` — assets + edges as JSON, for Screen 1's network view, drawn as plain SVG *(D28: this said "the Cytoscape.js/React Flow frontend"; neither library is used)* |
 | `/candidates` | GET | Every asset's Filter 1 review state, with its attack-path steps. On an unconfirmed blind card the AI's answer is withheld (D26). `L` is the confirmed subset that passes Filter 1 and has a Filter 2 score |
 | `/candidates/{id}/confirm` | POST | The reviewer's four answers and reason; applies the rules in `src/plausibility` (D26) |
 | `/attack-paths` | GET | `P` with all steps |
-| `/assets/{id}/damage-score` | PUT | Set `Damage(v)` manually during testbed design (§2 — elicited, not computed) |
-| `/optimize` | POST | Body: `{method, alpha..epsilon, budget}`. Runs the optimizer, writes a `placement_runs` row + `placements` rows, returns the result |
+| `/assets/{id}/damage-score` | PUT | Set `Damage(v)` manually during testbed design (§2 — elicited, not computed). *Not built: Damage is still a placeholder (A37)* |
+| `/optimize` | POST | Body: `{method, alpha..epsilon, budget}`. Runs the optimizer, writes a `placement_runs` row + `placements` rows, and returns the `run_id`; the result is read with `GET /runs/{id}` (`02-prototype-architecture.md` §2) |
 | `/runs` | GET | List all runs — this is the query Phase D's baseline comparison reads from directly |
 | `/runs/{id}` | GET | Full detail: metrics + which assets got decoys |
-| `/runs/{id}/explain` | POST | Triggers the Ollama call per `formal-problem-definition.md` §8, writes an `explanations` row |
+| `/runs/{id}/explain` | POST | Triggers the Ollama call per `formal-problem-definition.md` §8, writes an `explanations` row. *Not built (A6)* |
 
-`/optimize` is the only endpoint that writes to `placement_runs`/`placements` — everything else is read-only or, for damage-score, a narrow single-field write. Keeping writes concentrated in one place matches the "optimizer decides deterministically" principle from the AI philosophy (original brief §9, `00-decisions-log.md` D6): the API surface itself enforces that placement decisions only ever come from one code path, not from several places that could disagree.
+`/optimize` is the only endpoint that writes to `placement_runs`/`placements` — every other endpoint is read-only, except the confirm route, which writes the review's fields in `candidate_locations`, and damage-score, a narrow single-field write. *(D28: this said "everything else is read-only", which the confirm route contradicts.)* Keeping writes concentrated in one place matches the "optimizer decides deterministically" principle from the AI philosophy (original brief §9, `00-decisions-log.md` D6): the API surface itself enforces that placement decisions only ever come from one code path, not from several places that could disagree.
 
 ## What This Enables Next
 
