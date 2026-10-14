@@ -87,6 +87,8 @@ An empty suggestion on a confirmed card is filled. That is the expected order fo
 
 For your own reference when Phase C starts, not a deployment guide:
 
+> *14 October 2026 (D29):* setup is now one script, `uv run scripts/setup.py`, and the current run commands are in `04-setup-guide.md`. The environment is pinned, and Node.js comes inside it. So the bare commands below work only once `.venv` is activated; otherwise prefix them with `uv run`.
+
 ```
 ollama pull phi4-mini                    # once
 ollama serve                             # background, for /runs/{id}/explain

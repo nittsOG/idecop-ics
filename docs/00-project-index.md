@@ -69,8 +69,21 @@ If a document upstream in this chain changes in a way that invalidates something
 | `02-optimization-formulation.md` | Specification | Stable | 💾 Offline | `formal-problem-definition.md` §5–7, `02-data-model.md` | `02-ai-role.md`, `02-prototype-architecture.md` |
 | `02-ai-role.md` | Specification | Stable | 💾 Offline | `02-optimization-formulation.md`, `02-data-model.md`, `01-original-brief.md` §9 | `02-prototype-architecture.md` |
 | `02-prototype-architecture.md` | Specification | Stable | 💾 Offline | `02-data-model.md`, `02-optimization-formulation.md`, `02-ai-role.md` | Phase C build directly |
+| `04-setup-guide.md` | Implementation | Stable | 💾 Offline | D29's pinned environment (`.python-version`, `requirements.txt`, `requirements.lock`) and `scripts/setup.py`, `src/frontend/package-lock.json`, `02-prototype-architecture.md` | `README.md`'s *Running it*, its short form; every local run of Screen 3 and the scripts |
 
 **26 files as of this point — 9 in Project Knowledge, 17 offline.** This table is what gets a new row every time — per the trigger in `00-workflow-and-rules.md`'s maintenance table, which now includes assigning a tier to every new file, not just a category.
+
+*13 October 2026: this table is behind the folder.*
+- `04-setup-guide.md` was added today.
+- Twelve docs in `docs/` have no row:
+  - `00-glossary.md`, `00-project-timeline.md`;
+  - `02-detectability-rubric.md`, `02-system-flow.md`;
+  - `03-commercial-prior-art-analysis.md`, `03-honest-review.md`;
+  - `04-deployment-requirements.md`;
+  - `05-front-matter-pack.md`, `05-thesis-structure.md`;
+  - `iteration-11` to `iteration-13-findings.md`.
+- The count above is out of date as well: the table covers 28 of the folder's 40 files.
+- Registering the twelve is outstanding.
 
 ## Context tier — what goes in Project Knowledge, what stays offline
 

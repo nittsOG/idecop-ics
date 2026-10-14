@@ -530,7 +530,7 @@ First iteration to search *products and code repositories* rather than literatur
 
 ### PP. Build environment
 
-358. **PyPI — OR-Tools binary wheels by Python version.** 🟢 **Verified directly (28 September 2026)** by requesting manylinux x86_64 binary wheels from PyPI for each Python version: `ortools 9.15.6755` publishes wheels for **CPython 3.11, 3.12, 3.13 and 3.14**. Checked because the user's Kali machine may run a newer Python than the development environment; it means `pip install -r requirements.txt` (`ortools>=9.9`) needs no source build on any of those versions. `04-deployment-requirements.md` says only "Python 3.x", which this does not contradict. Logged because it was cited in a chat reply, under the rule that every source cited anywhere is recorded — so the check is not silently repeated. https://pypi.org/project/ortools/
+358. **PyPI — OR-Tools binary wheels by Python version.** 🟢 **Verified directly (28 September 2026)** by requesting manylinux x86_64 binary wheels from PyPI for each Python version: `ortools 9.15.6755` publishes wheels for **CPython 3.11, 3.12, 3.13 and 3.14**. Checked because the user's Kali machine may run a newer Python than the development environment; it means `pip install -r requirements.txt` (`ortools>=9.9`) needs no source build on any of those versions. `04-deployment-requirements.md` says only "Python 3.x", which this does not contradict. Logged because it was cited in a chat reply, under the rule that every source cited anywhere is recorded — so the check is not silently repeated. *Re-checked 13 October 2026* against PyPI's file list for `ortools 9.15.6755`, still the latest release. Wheels exist for CPython 3.9 to 3.14 on Windows (x86-64 only), macOS (arm64 and x86-64) and Linux (x86-64 and aarch64). There is none for 3.15 and no source distribution. So on Python 3.15, `pip install -r requirements.txt` fails with "No matching distribution found for ortools>=9.9" (reproduced on 3.15.0b4). The install succeeds on 3.10 to 3.14, and the legacy sweep prints identical output on each (Linux). `04-deployment-requirements.md` now states this range. D29 then pinned the development environment to 3.13. https://pypi.org/project/ortools/
 
 ### QQ. Pre-annotation and anchoring evidence — for A32's scoring route
 
@@ -646,3 +646,32 @@ First iteration to search *products and code repositories* rather than literatur
 The PDFs you supplied on 6 October 2026 are recorded under their existing numbers: #29, #34, #250, #282 with #325, #315, #330, #347, #372 and #386–#389. One item is new.
 
 390. **Third web search for CATCH (#373) — negative result, with patent leads.** 6 October 2026: no open copy of CATCH found. The search surfaced four more US patents. 🟡 None has been read, and only one title is known: **US 12,519,833**, which carries the same title as US 11,777,989 (#374), "Automated deployment of decoy production networks". The others are **US 12,495,073**, **US 12,592,968** and **US 12,609,964**. All enter A29's sweep. USPTO full texts: https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/12519833, https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/12495073, https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/12592968, https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/12609964, and for US 11,777,989 https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/11777989. Two other results of the same search were not relevant and not used: arXiv:1903.02601 (https://arxiv.org/pdf/1903.02601) and a vendor glossary entry on breadcrumbs (https://trapster.cloud/en/glossary/breadcrumb).
+
+### XX. The development environment — for D29 (14 October 2026)
+
+391. **nodejs-wheel and nodejs-wheel-binaries — Node.js packaged as Python wheels (PyPI).** 🟢 Read on PyPI on 14 October 2026: the project description and the file list.
+- **What it is.** It describes itself as "an unofficial repository to distribute Node.js prebuilt wheels through PyPI". The maintainer is Jinzhe Zeng, the licence is MIT, and it is built with scikit-build-core and cibuildwheel.
+- **Commands.** `node`, `npm`, `npx` and `corepack` come only with `nodejs-wheel`. `nodejs-wheel-binaries` is its dependency.
+- **Platforms.** Version 24.19.0 (uploaded 19 August 2026) has wheels for Windows (x64 and ARM64), macOS 13.5 or later (Intel and Apple silicon), and Linux with glibc 2.28 or later (x86-64 and aarch64).
+- **Adoption.** basedpyright 1.40.2 declares `nodejs-wheel-binaries>=20.13.1` as a dependency.
+- 🟡 **Not established:** whether the Node binaries are compiled in its own CI or repackaged from nodejs.org. A fetch of the repository README from GitHub returned nothing.
+
+Cited by D29 and `04-setup-guide.md`. https://pypi.org/project/nodejs-wheel/ · https://github.com/njzjz/nodejs-wheel
+
+392. **uv — its README on PyPI (Astral).** 🟢 Read on 14 October 2026, at version 0.13.1, uploaded that day (MIT or Apache-2.0).
+- **Installation.**
+  - macOS and Linux: `curl -LsSf https://astral.sh/uv/install.sh | sh`.
+  - Windows: `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`.
+  - Either: `pip install uv` or `pipx install uv`.
+- **Documented features this project uses:**
+  - `uv python pin` writes `.python-version`;
+  - `uv venv` downloads a Python version as needed;
+  - `uv pip compile --universal` writes a platform-independent requirements file;
+  - `uv pip sync` installs one.
+- **Also tested directly with 0.13.1 (D29).**
+  - Outside a project, `uv run` uses the `.venv` it finds in the current or a parent folder. With no `.venv`, it uses the computer's own Python.
+  - `uv venv` refuses to overwrite an existing `.venv` unless given `--clear`.
+  - `uv pip sync` stops on a checksum mismatch. With `--dry-run` it prints "Would make no changes" when the environment already matches.
+  - `uv run` on a script carrying inline metadata (a `# /// script` block) runs it in a separate temporary environment, and passes the path of uv in the `UV` variable. `scripts/setup.py` relies on both.
+
+https://pypi.org/project/uv/ · https://docs.astral.sh/uv/

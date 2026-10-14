@@ -1,8 +1,12 @@
-# iDECOP-ICS — Python dependencies
-# Install with: pip install -r requirements.txt
+# iDECOP-ICS — direct dependencies, with minimum versions.
+# The frozen environment is requirements.lock, generated from this file (D29).
+# Set up with: uv run scripts/setup.py (docs/04-setup-guide.md).
+# After changing this file, regenerate the lock with the command at the top of
+# requirements.lock. D29 says when that is allowed.
 
 fastapi>=0.110
 uvicorn[standard]>=0.29
 pydantic>=2.6
 networkx>=3.2
 ortools>=9.9
+nodejs-wheel>=22.12   # Node.js inside the virtual environment, for the frontend; an unofficial build (D29)

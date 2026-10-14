@@ -24,7 +24,7 @@ Everything below is real, executed code. The database is initialised and queried
 | `src/plausibility/` | Filter 1's rules (sequence, combination, reason) and the AI first-pass prompt, shared by the API, the scripts and the notebook (D26) |
 | `notebooks/` | `plausibility_scoring.ipynb` — the Colab AI first pass for Filter 1 (A20) |
 | `data/` | Schema and seed data; `legacy/` holds the pre-D26 candidate set for reproducing old numbers; `review/` will hold the committed Filter 1 review |
-| `scripts/` | `run_comparison.py` — runs all five methods at one budget; `sweep.py` — the declared 20-cell grid behind every comparative number (D24); `structure_check.py` — exhaustive monotonicity/submodularity/modularity tests, including whether the gain part is modular (D25's claim rule); `import_plausibility_scores.py` and `review_io.py` — the notebook import and the review's committed record (D26) |
+| `scripts/` | `setup.py` — the one-time setup of the pinned environment, the database and the frontend's packages, with checks (D29); `run_comparison.py` — runs all five methods at one budget; `sweep.py` — the declared 20-cell grid behind every comparative number (D24); `structure_check.py` — exhaustive monotonicity/submodularity/modularity tests, including whether the gain part is modular (D25's claim rule); `import_plausibility_scores.py` and `review_io.py` — the notebook import and the review's committed record (D26) |
 
 ---
 
@@ -102,47 +102,57 @@ The objective was corrected in D20 after exhaustive structural testing (`scripts
 
 ## Running it
 
+**Step by step, with checks and fixes:** `docs/04-setup-guide.md`. Below is the short form.
+
+**The environment is pinned (D29).** You need only Git and uv. A setup script builds `.venv` once, holding:
+- Python 3.13 (`.python-version`);
+- every package at the version recorded in `requirements.lock`, with checksums;
+- Node.js.
+
+It then builds the database if there is none, installs the frontend's packages, and checks the result. Run everything from the repository root. The commands are the same on every operating system.
+
 ```bash
-pip install -r requirements.txt
+uv run scripts/setup.py                                  # once; again after a pull that changes requirements.lock
 
-python3 -c "
-import sqlite3
-conn = sqlite3.connect('data/deception_placement.db')
-for f in ['data/schema.sql','data/seed.sql']:
-    conn.executescript(open(f).read())
-conn.commit()
-"
-
-python3 -m uvicorn src.api.main:app --reload    # backend
-cd src/frontend && npm install && npm run dev   # frontend; Screen 3 is the Filter 1 review
+uv run python -m uvicorn src.api.main:app --reload       # backend
+cd src/frontend && uv run npm run dev                    # frontend, in a second terminal; open http://localhost:5173, not 127.0.0.1
 ```
 
-**The Filter 1 review (A32, D26), in order.**
-1. In Screen 3, score the three blind cards: DMZ Jump Host, Historian and PLC-03 (RTU).
-2. Run `notebooks/plausibility_scoring.ipynb` in Colab with a GPU (A20). Then run `python3 scripts/import_plausibility_scores.py ai_suggestions.csv`.
-3. Review the other seven cards in Screen 3.
-4. Run `python3 scripts/review_io.py export --require-complete`, then commit `data/review/` with the notebook's two output files.
+- **The database is safe.** The setup script never changes an existing database, because it holds your confirmations.
+- **`uv run`** runs a command inside `.venv` without activating it. The commands below write `python` for short: put `uv run` in front, or activate `.venv` first.
+- **UTF-8.** The database is built with UTF-8 named explicitly. The command this README gave until 13 October 2026 did not name it, and on Windows that stores three kinds of value garbled. The guide's *Notes* give the effect: no live result moved. The setup script reports a database built that way.
 
-`python3 scripts/review_io.py restore data/review/plausibility_review.csv` rebuilds the review on a fresh database.
+**The Filter 1 review (A32, D26), in order.**
+1. In Screen 3 (the *Plausibility Review* button), score the three blind cards: DMZ Jump Host, Historian and PLC-03 (RTU).
+2. Run `notebooks/plausibility_scoring.ipynb` in Colab with a GPU (A20). Then run `python scripts/import_plausibility_scores.py ai_suggestions.csv`.
+3. Review the other seven cards in Screen 3.
+4. Run `python scripts/review_io.py export --require-complete`, then commit `data/review/` with the notebook's two output files.
+
+`python scripts/review_io.py restore data/review/plausibility_review.csv` rebuilds the review on a fresh database.
 
 **The evaluation scripts** run once the review has produced candidates with Filter 2 scores:
 
 ```bash
-python3 scripts/run_comparison.py               # all five methods at one budget (B=3; pass a budget to change it)
-python3 scripts/sweep.py --sens                 # the 20-cell comparison grid, plus grid sensitivity
-python3 scripts/structure_check.py              # monotonicity, submodularity, modularity — exhaustive
+python scripts/run_comparison.py                # all five methods at one budget (B=3; pass a budget to change it)
+python scripts/sweep.py --sens                  # the 20-cell comparison grid, plus grid sensitivity
+python scripts/structure_check.py               # monotonicity, submodularity, modularity — exhaustive
 ```
 
 **To reproduce a number recorded before D26,** load the legacy set into a freshly built database, then pass the flag:
 
 ```bash
-python3 -c "import sqlite3; c=sqlite3.connect('data/deception_placement.db'); c.executescript(open('data/legacy/d25_candidate_set.sql').read()); c.commit()"
-python3 scripts/sweep.py --sens --legacy-d25    # likewise run_comparison.py, structure_check.py
+python -c "import sqlite3; c=sqlite3.connect('data/deception_placement.db'); c.executescript(open('data/legacy/d25_candidate_set.sql', encoding='utf-8').read()); c.commit()"
+python scripts/sweep.py --sens --legacy-d25     # likewise run_comparison.py, structure_check.py
 ```
 
 The output is identical to commit `1a93af9`'s, apart from a banner marking it as historical. The API never accepts the legacy set.
 
-`node_modules/`, `dist/` and `*.db` are not tracked — regenerate with the commands above. **After pulling any change to `data/schema.sql`, delete `data/deception_placement.db` and rebuild it:** SQLite does not retrofit table constraints, so an old database keeps the old ones. D23 added a method name to a `CHECK` constraint, and an unrebuilt database rejects that method's runs with HTTP 500. **D26 changed the candidate table's constraints and columns, so rebuild after pulling it.** Export your review first if you have started one.
+`.venv/`, `node_modules/`, `dist/` and `*.db` are not tracked — `uv run scripts/setup.py` regenerates them. Run it again after pulling a change to `requirements.lock` or `src/frontend/package-lock.json`.
+
+**After pulling any change to `data/schema.sql` or `data/seed.sql`, delete `data/deception_placement.db` and rebuild it.** The database keeps whatever it was built from.
+- SQLite does not retrofit table constraints, so an old database keeps the old ones. D23 added a method name to a `CHECK` constraint, and an unrebuilt database rejects that method's runs with HTTP 500.
+- **D26 changed the candidate table's constraints and columns, so rebuild after pulling it.**
+- Export your review first if you have started one. The guide's *Your review data* gives the order: export, rebuild, restore.
 
 ---
 

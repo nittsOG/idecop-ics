@@ -10,10 +10,11 @@ The full file/folder layout for when the GitHub repo gets created at the start o
   01-*.md          research — sources, iteration findings, synthesis
   02-*.md          specification — problem definition, threat model, testbed, data model, etc.
   03-*.md          evaluation — methodology, results write-up
+  04-*.md          implementation — deployment requirements, setup guide
   05-*.md          thesis chapter drafts
 /references        PDFs of papers cited in sources.md
 /src               code — graph model, optimizer, plausibility rules (D26), AI explanation layer, API, frontend
-/scripts           evaluation and data-handling scripts (comparison, sweep, structure check, notebook import, review record)
+/scripts           setup, evaluation and data-handling scripts (one-time setup, D29; comparison, sweep, structure check, notebook import, review record)
 /notebooks         the Colab plausibility-scoring notebook (D26)
 /testbed           VM configs, pfSense export, OpenPLC programs, Node-RED flows
 /data              SQLite schema and seed; legacy/ (the pre-D26 candidate set, for reproducing old numbers); review/ (the committed Filter 1 review and the notebook's outputs, D26)
@@ -22,6 +23,8 @@ The full file/folder layout for when the GitHub repo gets created at the start o
 ```
 
 No `04-*` in `/docs` — the implementation roadmap lives entirely in `00-project-phases.md`, so a separate `04-` category would just be an empty folder. If that changes later, add it then rather than leaving a placeholder now.
+
+*Superseded (13 October 2026).* `04-` is in use. It holds `04-deployment-requirements.md`, and `04-setup-guide.md` was added that day. The roadmap itself still lives only in `00-project-phases.md`.
 
 ## What goes where
 

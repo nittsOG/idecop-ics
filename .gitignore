@@ -8,5 +8,6 @@ data/*.db
 *.key
 __pycache__/
 *.pyc
+.venv/
 node_modules/
 dist/

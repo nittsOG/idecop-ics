@@ -35,14 +35,19 @@ This is the real barrier, and it is worth putting first. Every software dependen
 Current prototype stack. All open source, no paid dependency — the original brief's constraint, which turns out to matter more for deployment than it did for development.
 
 **Core system**
-- Python 3.x
+- Python 3.10 to 3.14. **[verified]** on Linux, 13 October 2026 (#358).
+  - Not 3.15 yet: OR-Tools publishes no package for it.
+  - Not 3.9: the API's `str | None` annotations fail at run time before 3.10.
+  - This line read "Python 3.x" until then.
+  - The development environment pins 3.13 (D29).
+- **Reference environment (D29).** `.python-version` fixes Python 3.13. `requirements.lock` fixes every Python package and Node.js, at exact versions with checksums. A deployment built from the lock runs the configuration the evaluation runs on.
 - NetworkX — graph construction and centrality
 - Google OR-Tools, CP-SAT solver — exact MILP validation
 - FastAPI + an ASGI server (uvicorn) — backend
 - SQLite — datastore. **[likely]** a site with existing database standards would substitute PostgreSQL; the schema is not SQLite-specific
 
 **Interface**
-- Node.js toolchain (build time only)
+- Node.js toolchain (build time only). In development it comes inside the pinned environment, from an unofficial build of Node.js (D29).
 - React + Vite — the three screens
 - Served as static files at runtime; no Node runtime needed in production
 
@@ -52,6 +57,11 @@ Current prototype stack. All open source, no paid dependency — the original br
 - A larger model for the plausibility assist, if that step is used at all
 
 **Operating system** — Linux or Windows. Nothing platform-specific. **[unverified]** the prototype has been run on the development machine only.
+
+*13 October 2026:* one platform difference was found in the setup instructions, not in the code, and fixed.
+- **The defect.** The README's database command read the SQL files in the system's default encoding. On Windows that garbles three kinds of value.
+- **The effect.** No live result moved (`04-setup-guide.md`, *Notes*).
+- **Still unverified:** a full run on Windows.
 
 **Critical property:** both AI components can be removed entirely and the system still produces a valid placement. Explanation degrades to the raw metric breakdown; plausibility scoring degrades to a human filling in the rubric, which is how it worked before that component existed. A deployment with no AI at all is a supported configuration, not a broken one.
 
