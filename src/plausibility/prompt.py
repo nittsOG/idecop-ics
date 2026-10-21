@@ -7,6 +7,7 @@ repository. It is also the canonical text of the prompt that 02-ai-role.md §9
 summarises. Everything here runs without a GPU, so it is tested locally with a
 stand-in model. Only the generation call itself needs Colab.
 """
+import hashlib
 import json
 import re
 
@@ -51,6 +52,9 @@ TABLE_1 = {
 CONVENTIONS = (
     "Unit of analysis. The level definitions were written for ATT&CK techniques. Here each item is one asset "
     "position in one network: read \"the technique\" as \"the attack-path steps at this position\".",
+    # D30: the operating profile. formal-problem-definition.md §4 states the same rule as convention 6.
+    "This plant. The plant facts, the asset's profile and its connections describe this plant as designed, in "
+    "normal operation. Take them as given.",
     "What a decoy here means. A decoy imitating this asset's type, deployed in the same zone, on the same network "
     "segment and behind the same conduits, so that attack paths through this asset pass where it sits. It is not "
     "a change to the real asset.",
@@ -64,9 +68,10 @@ CONVENTIONS = (
     "incidentally) or a Seek (the attacker looks for this kind of asset and interacts with a fabricated one). An "
     "asset on no listed path scores No. An asset on several paths is scored per path, and the lowest per-path "
     "level is the one recorded.",
-    "Malice fidelity. First name the routine benign activity that reaches this position. In OT networks that "
-    "includes, among others, asset-inventory and monitoring scans, historian polling and data collection, "
-    "engineering-software and vendor maintenance sessions, backup jobs and time synchronisation.",
+    "Malice fidelity. First name the routine benign activity that reaches this position, as the plant facts and "
+    "the asset's profile describe it. In OT networks generally that includes, among others, asset-inventory and "
+    "monitoring scans, historian polling and data collection, engineering-software and vendor maintenance "
+    "sessions, backup jobs and time synchronisation; the profile says which of these happen in this plant.",
 )
 
 OUTPUT_SHAPE = """{
@@ -139,12 +144,42 @@ def asset_context(conn, asset_id):
         other, direction = (tgt, "to") if src == asset_id else (src, "from")
         neighbours.append({"asset": names[other], "direction": direction, "protocol": proto})
 
+    # D30: the operating profile, which Screen 3 shows from this same function.
+    row = conn.execute("SELECT role, runs, routine_activity FROM asset_profiles WHERE asset_id = ?",
+                       (asset_id,)).fetchone()
+    profile = {"role": row[0], "runs": row[1], "routine_activity": row[2]} if row else None
+
     return {"asset_id": a[0], "name": a[1], "asset_type": a[2], "purdue_level": a[3], "zone": a[4],
-            "paths": paths, "neighbours": neighbours}
+            "plant_facts": plant_facts(conn), "profile": profile, "paths": paths, "neighbours": neighbours}
+
+
+def plant_facts(conn):
+    """The plant-wide facts of the operating profile (D30), in their recorded order."""
+    return [r[0] for r in conn.execute("SELECT text FROM plant_facts ORDER BY fact_id")]
+
+
+def context_hash(ctx):
+    """A short SHA-256 of everything the prompt and the card show for one asset
+    (D30): plant facts, profile, connections and paths. The notebook's CSV and the
+    review export record it as context_sha256. The import and the restore check
+    it, so an answer is never attached to facts other than the ones it was given
+    against. (Not called a fingerprint: in this project that word means telling a
+    decoy from a real asset, Filter 2.)"""
+    text = json.dumps(ctx, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
 
 
 def user_prompt(ctx):
-    lines = [f"Asset: {ctx['name']} — {ctx['asset_type']}, zone {ctx['zone']} (Purdue level {ctx['purdue_level']})"]
+    lines = []
+    if ctx.get("plant_facts"):
+        lines.append("Plant facts (about the plant as a whole):")
+        lines.extend(f"- {t}" for t in ctx["plant_facts"])
+        lines.append("")
+    lines.append(f"Asset: {ctx['name']} — {ctx['asset_type']}, zone {ctx['zone']} (Purdue level {ctx['purdue_level']})")
+    if ctx.get("profile"):
+        lines.append(f"Role: {ctx['profile']['role']}")
+        lines.append(f"Runs: {ctx['profile']['runs']}")
+        lines.append(f"Routine activity that reaches it: {ctx['profile']['routine_activity']}")
     if ctx["neighbours"]:
         lines.append("Direct network connections: " + "; ".join(
             f"{n['direction']} {n['asset']}" + (f" ({n['protocol']})" if n["protocol"] else "")
@@ -303,7 +338,7 @@ def derive(parsed, ctx):
 # --- The scoring loop, shared by the notebook and the local tests -------------
 CSV_FIELDS = (["asset_id", "asset_name"]
               + [f"ai_suggested_{c[0]}" for c in CRITERIA]
-              + ["ai_reasoning", "ai_model", "generated_at", "repo_commit", "parse_status", "notes"])
+              + ["ai_reasoning", "ai_model", "generated_at", "repo_commit", "context_sha256", "parse_status", "notes"])
 
 RETRY_MESSAGE = "That answer could not be used ({error}). Return only the JSON object, in the required shape."
 
@@ -336,7 +371,7 @@ def run(contexts, generate, model_tag, commit, generated_at, log=print):
         row = {"asset_id": ctx["asset_id"], "asset_name": ctx["name"],
                "ai_reasoning": reasoning if status == "ok" else "",
                "ai_model": model_tag, "generated_at": generated_at, "repo_commit": commit,
-               "parse_status": status, "notes": "; ".join(notes) if status == "ok" else error}
+               "context_sha256": context_hash(ctx), "parse_status": status, "notes": "; ".join(notes) if status == "ok" else error}
         for c in CRITERIA:
             row[f"ai_suggested_{c[0]}"] = (levels.get(c[0]) or "") if status == "ok" else ""
         rows.append(row)

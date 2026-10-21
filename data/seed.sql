@@ -99,18 +99,82 @@ INSERT INTO conduits (zone_a_id, zone_b_id, description) VALUES
     ((SELECT zone_id FROM zones WHERE name='OT DMZ'),      (SELECT zone_id FROM zones WHERE name='Supervisory'), 'DMZ→Supervisory rules'),
     ((SELECT zone_id FROM zones WHERE name='Supervisory'), (SELECT zone_id FROM zones WHERE name='Control'),     'Supervisory→Control rules — the critical boundary');
 
+-- D30: eight of the nine blank protocols are filled from the operating profile
+-- (below); the Attacker's connection has none.
+-- No term of F reads a protocol; Screen 3's cards and the scoring prompt do.
 INSERT INTO edges (source_asset_id, target_asset_id, protocol, weight) VALUES
     ((SELECT asset_id FROM assets WHERE name='Attacker'),          (SELECT asset_id FROM assets WHERE name='OT Firewall'),          NULL,      1.0),
-    ((SELECT asset_id FROM assets WHERE name='OT Firewall'),       (SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),        NULL,      1.0),
-    ((SELECT asset_id FROM assets WHERE name='OT Firewall'),       (SELECT asset_id FROM assets WHERE name='Historian'),            NULL,      1.0),
-    ((SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),     (SELECT asset_id FROM assets WHERE name='Engineering WS'),       NULL,      1.0),
-    ((SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),     (SELECT asset_id FROM assets WHERE name='HMI'),                  NULL,      1.0),
+    ((SELECT asset_id FROM assets WHERE name='OT Firewall'),       (SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),        'SSH over VPN', 1.0),
+    ((SELECT asset_id FROM assets WHERE name='OT Firewall'),       (SELECT asset_id FROM assets WHERE name='Historian'),            'HTTPS',   1.0),
+    ((SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),     (SELECT asset_id FROM assets WHERE name='Engineering WS'),       'RDP',     1.0),
+    ((SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),     (SELECT asset_id FROM assets WHERE name='HMI'),                  'HTTP',    1.0),
     ((SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),     (SELECT asset_id FROM assets WHERE name='PLC-03 (RTU)'),         'IEC-104', 1.0),
-    ((SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),     (SELECT asset_id FROM assets WHERE name='Backup Control Switch'),NULL,      0.5),
-    ((SELECT asset_id FROM assets WHERE name='Engineering WS'),    (SELECT asset_id FROM assets WHERE name='Engineering WS-2'),     NULL,      0.5),
+    ((SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),     (SELECT asset_id FROM assets WHERE name='Backup Control Switch'),'SSH',     0.5),
+    ((SELECT asset_id FROM assets WHERE name='Engineering WS'),    (SELECT asset_id FROM assets WHERE name='Engineering WS-2'),     'SMB',     0.5),
     ((SELECT asset_id FROM assets WHERE name='Engineering WS'),    (SELECT asset_id FROM assets WHERE name='PLC-01'),               'S7comm',  1.0),
     ((SELECT asset_id FROM assets WHERE name='Engineering WS-2'),  (SELECT asset_id FROM assets WHERE name='PLC-02'),               'S7comm',  0.5),
     ((SELECT asset_id FROM assets WHERE name='HMI'),               (SELECT asset_id FROM assets WHERE name='PLC-01'),               'Modbus',  1.0),
     ((SELECT asset_id FROM assets WHERE name='HMI'),               (SELECT asset_id FROM assets WHERE name='PLC-02'),               'Modbus',  1.0),
-    ((SELECT asset_id FROM assets WHERE name='Backup Control Switch'), (SELECT asset_id FROM assets WHERE name='PLC-01'),           NULL,      0.5),
-    ((SELECT asset_id FROM assets WHERE name='Backup Control Switch'), (SELECT asset_id FROM assets WHERE name='PLC-02'),           NULL,      0.5);
+    ((SELECT asset_id FROM assets WHERE name='Backup Control Switch'), (SELECT asset_id FROM assets WHERE name='PLC-01'),           'Ethernet', 0.5),
+    ((SELECT asset_id FROM assets WHERE name='Backup Control Switch'), (SELECT asset_id FROM assets WHERE name='PLC-02'),           'Ethernet', 0.5),
+    -- D30: four connections the profile and the paths imply, appended so that the
+    -- 14 rows above keep their edge_ids; data/legacy/d25_candidate_set.sql removes them.
+    -- G1, the Historian's data source; G2, engineers' trend queries and P4's move;
+    -- G3, the RTU's master; G4 (i), the firewall rule that P3's scan uses.
+    ((SELECT asset_id FROM assets WHERE name='HMI'),               (SELECT asset_id FROM assets WHERE name='Historian'),            'OPC UA',  1.0),
+    ((SELECT asset_id FROM assets WHERE name='Engineering WS'),    (SELECT asset_id FROM assets WHERE name='Historian'),            'HTTPS',   1.0),
+    ((SELECT asset_id FROM assets WHERE name='HMI'),               (SELECT asset_id FROM assets WHERE name='PLC-03 (RTU)'),         'IEC-104', 1.0),
+    ((SELECT asset_id FROM assets WHERE name='OT Firewall'),       (SELECT asset_id FROM assets WHERE name='Engineering WS-2'),     NULL,      1.0);
+
+-- Operating profile (D30). Facts about the plant as designed, drafted by Claude
+-- from testbed-architecture.md, threat-attack-model.md and this file, and confirmed
+-- by the user on 19 October 2026, before any blind card was scored on the fresh database.
+-- Screen 3 shows it and the scoring prompt includes it, word for word. No
+-- judgement about decoys and no rubric level belongs here. It freezes at the
+-- first blind-card score on the fresh database.
+INSERT INTO plant_facts (text) VALUES
+    ('Operators watch the HMI around the clock. Engineers work weekday day shifts. Vendors connect only in maintenance windows agreed in advance.'),
+    ('The plant runs no network scans of its own: its network monitoring is passive.'),
+    ('External stands for the company''s office network and, beyond it, the internet. The Attacker node is the only modelled asset there.');
+
+INSERT INTO asset_profiles (asset_id, role, runs, routine_activity) VALUES
+    ((SELECT asset_id FROM assets WHERE name='OT Firewall'),
+     'The perimeter firewall between the External zone and the OT DMZ. Its rules are that conduit.',
+     'pfSense. It filters traffic between External and the OT DMZ, terminates the remote-access VPN, and has a web management interface. One rule, left over from an earlier setup, lets connections from outside reach Engineering WS-2 directly; no scheduled traffic uses it.',
+     'Unsolicited scans and connection attempts from the internet, all day. VPN logins by engineers on working days and by vendors in maintenance windows, passed on to the DMZ Jump Host. Office users'' HTTPS requests passing through to the Historian, in working hours. Rare configuration changes, made at the firewall''s own console.'),
+    ((SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),
+     'The plant''s entry point for remote work. Engineers and vendors log in here first, then open sessions into the plant. It also relays software updates into the plant.',
+     'Linux with minimal services: an SSH server for logins, and the tools for onward sessions (a remote-desktop client, a web browser, an SSH client and an IEC-104 maintenance tool).',
+     'Engineers'' remote logins over the VPN through the OT Firewall on working days, and vendors'' logins in maintenance windows. Onward remote-desktop sessions to the Engineering WS, and dashboard views of the HMI. The RTU vendor''s scheduled IEC-104 maintenance sessions to PLC-03 (RTU). Rare switch configuration sessions, and the quarterly failover test through the Backup Control Switch. Monthly software updates passing through to the plant.'),
+    ((SELECT asset_id FROM assets WHERE name='Historian'),
+     'Stores the plant''s process data over time and serves it to engineers and office users.',
+     'A time-series database, with a web interface for trends and reports and a data-collection interface.',
+     'Process values arriving from the HMI every few seconds. Engineers querying trends from the Engineering WS, in working hours. Office users viewing reports through the firewall, in working hours. A nightly archive job on the Historian itself.'),
+    ((SELECT asset_id FROM assets WHERE name='Engineering WS'),
+     'Where engineers write PLC programs, download them to PLC-01 and change its parameters.',
+     'Windows 10/11 with PLC engineering software. Its project files are shared with Engineering WS-2, and engineers query the Historian''s trends from it over HTTPS.',
+     'Engineers'' logins, local and remote, on working days. Program downloads and parameter changes to PLC-01, in maintenance windows. A weekly backup of PLC-01''s program, uploaded to this workstation. Monthly operating-system and engineering-software updates, brought in through the DMZ Jump Host.'),
+    ((SELECT asset_id FROM assets WHERE name='Engineering WS-2'),
+     'A second engineering workstation in the same zone, used for PLC-02.',
+     'Windows 10/11 with the same PLC engineering software as the Engineering WS.',
+     'Engineers'' local logins on working days, less often than on the Engineering WS, mainly when PLC-02 needs changes. Program downloads and parameter changes to PLC-02, in maintenance windows. A weekly backup of PLC-02''s program, uploaded to this workstation. Project files and monthly operating-system and engineering-software updates, copied from the Engineering WS. A firewall rule, left over from an earlier setup, lets connections from outside reach this workstation directly; no scheduled traffic uses it.'),
+    ((SELECT asset_id FROM assets WHERE name='HMI'),
+     'The operators'' screens. They show process values and let operators change setpoints.',
+     'A Node-RED dashboard, served over HTTP. It forwards process values to the Historian every few seconds, over OPC UA.',
+     'Operators at the console around the clock. Engineers viewing the dashboard through the jump host. Replies to its own polling of PLC-01 and PLC-02 every second over Modbus, and of PLC-03 (RTU) over IEC-104.'),
+    ((SELECT asset_id FROM assets WHERE name='PLC-01'),
+     'Controls part of the simulated process.',
+     'OpenPLC.',
+     'Modbus polling by the HMI every second, around the clock. Program downloads and parameter changes from the Engineering WS, in maintenance windows. A weekly upload of its program to the Engineering WS, as a backup. Traffic through the Backup Control Switch only in the quarterly failover test, from the DMZ Jump Host.'),
+    ((SELECT asset_id FROM assets WHERE name='PLC-02'),
+     'A second controller of the same kind as PLC-01, controlling another part of the simulated process.',
+     'OpenPLC.',
+     'Modbus polling by the HMI every second, around the clock. Program downloads and parameter changes from Engineering WS-2, in maintenance windows. A weekly upload of its program to Engineering WS-2, as a backup. Traffic through the Backup Control Switch only in the quarterly failover test, from the DMZ Jump Host.'),
+    ((SELECT asset_id FROM assets WHERE name='PLC-03 (RTU)'),
+     'A remote terminal unit at a substation-type site. It reports measurements and operates circuit breakers on command.',
+     'IEC-104 outstation firmware.',
+     'The HMI''s IEC-104 polling and the RTU''s own spontaneous reports, around the clock. Clock-synchronisation commands from its master, which IEC-104 includes. The RTU vendor''s scheduled maintenance sessions through the jump host.'),
+    ((SELECT asset_id FROM assets WHERE name='Backup Control Switch'),
+     'A managed switch giving a second network route into the Control LAN, to PLC-01 and PLC-02.',
+     'Managed-switch firmware with an SSH management interface.',
+     'Rare administrator configuration sessions through the jump host. It carries traffic only in the quarterly failover test, when an engineer on the DMZ Jump Host connects through it to PLC-01 and PLC-02.');

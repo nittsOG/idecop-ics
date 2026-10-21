@@ -35,7 +35,7 @@ src/frontend/          React + Vite
   Dashboard.jsx            Screen 1 — single-run view
         │  HTTP/JSON, CORS-restricted to localhost:5173
         ▼
-src/api/main.py        FastAPI — 9 endpoints, 317 lines
+src/api/main.py        FastAPI — 10 endpoints, 341 lines (D30)
         │
         ├──▶ src/graph_model/__init__.py   263 lines
         │      load_graph()              builds nx.DiGraph from SQLite
@@ -47,7 +47,7 @@ src/api/main.py        FastAPI — 9 endpoints, 317 lines
         │
         ├──▶ src/plausibility/            Filter 1's rules and the AI prompt (D26)
         │      __init__.py   143 lines   sequence, path, combination and reason rules; weakest path
-        │      prompt.py     346 lines   Table 1, prompt, parser, scoring loop (used by the notebook)
+        │      prompt.py     381 lines   Table 1, prompt, parser, scoring loop (used by the notebook); asset_context, context_hash (D30)
         │
         ├──▶ src/optimizer/metrics.py     125 lines
         │      score()   F(x) and all five components
@@ -94,14 +94,15 @@ Computed scores are stored rather than only derived, so a stored run remains int
 
 ---
 
-## 4. API surface — 9 endpoints
+## 4. API surface — 10 endpoints
 
 | Endpoint | Purpose |
 |---|---|
 | `GET /health` | Liveness check |
 | `GET /graph` | Nodes *and* edges — what Screen 1's visualization needs |
 | `GET /assets` | Flat asset list with computed scores |
-| `GET /candidates` | Candidate locations with AI suggestions and confirmation state |
+| `GET /candidates` | Candidate locations with AI suggestions and confirmation state, and since D30 each asset's context: operating profile, connections and full paths |
+| `GET /plant-facts` | The plant-wide lines of the operating profile (D30) |
 | `POST /candidates/{asset_id}/confirm` | Human confirms or overrides the four rubric scores |
 | `GET /attack-paths` | P, with step sequences |
 | `POST /optimize` | Runs a method, stores the result |
@@ -122,6 +123,7 @@ testbed-architecture.md  +  threat-attack-model.md
 data/schema.sql  +  data/seed.sql
         ▼
 zones · assets · edges · conduits · attack_paths · attack_path_steps
+plant_facts · asset_profiles            (the operating profile, D30)
 ```
 
 This is where D14's bug lived: assets were seeded, edges and conduits were not, so the graph had zero connectivity.
@@ -139,7 +141,8 @@ scripts/import_plausibility_scores.py
 candidate_locations.ai_suggested_*     (suggestions only)
         ▼
 Screen 3 ← GET /candidates
-   human checks each pre-filled answer against the path steps,
+   human checks each pre-filled answer against the card's context
+   (operating profile, connections, full paths; the same as the prompt's, D30),
    confirms or changes it; reason required where D26 says
         ▼
 POST /candidates/{asset_id}/confirm    (rules: src/plausibility)

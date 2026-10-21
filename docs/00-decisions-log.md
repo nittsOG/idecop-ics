@@ -397,7 +397,7 @@ A32's steps 1 and 3 were the user's calls. They were made between 1 and 3 Octobe
 - *Claude's own earlier correction went too far.* On 30 September Claude had called this anchoring argument overstated, on the strength of #359–#361. Those studies are linguistic annotation with accurate taggers, and the two closer studies point the other way.
 - *The user chose A* to keep the reviewer's work low, and because the AI's value at plant scale is exactly that reduction.
 - *The safeguards adopted:*
-  - **Three blind cards.** They are drawn at random, before any AI output exists, from the eight assets on a modelled path. They are scored before their AI answers are shown, and give the one unanchored agreement measure. Their first answers are written once, to their own columns, and never change. The final answers may still be revised, with a reason. Draw: `random.Random(20261003).sample(population, 3)` under CPython 3.11, where the population is DMZ Jump Host, Engineering WS, Engineering WS-2, HMI, Historian, OT Firewall, PLC-01 and PLC-03 (RTU), sorted by name. Result: **DMZ Jump Host, Historian, PLC-03 (RTU)**.
+  - **Three blind cards.** They are drawn at random, before any AI output exists, from the eight assets on a modelled path. They are scored before their AI answers are shown, and give the one unanchored agreement measure. Their first answers are written once, to their own columns, and never change. *[D30: the review restarted once, on a fresh database and before any AI output existed. The first answers are those given on that database.]* The final answers may still be revised, with a reason. Draw: `random.Random(20261003).sample(population, 3)` under CPython 3.11, where the population is DMZ Jump Host, Engineering WS, Engineering WS-2, HMI, Historian, OT Firewall, PLC-01 and PLC-03 (RTU), sorted by name. Result: **DMZ Jump Host, Historian, PLC-03 (RTU)**.
   - **A written reason** on a blind card, on a card with no AI suggestion, after changing any AI answer, and for any Mostly No or No.
   - **No fallback to the AI's answer.** The confirm endpoint used to fill a blank with the AI's suggestion.
   - **Each card shows the asset's attack-path steps.** The design-time rationale text, which pre-judged outcomes, is no longer shown.
@@ -560,7 +560,7 @@ On 6 October 2026 the user supplied full texts and printouts that had been out o
 - *Claude's error, corrected here:* the first draft of this entry called T1692.001 "the only candidate found" and missed T0822, and Claude's recommendation on 11 October to leave P2's steps alone rested on the same oversight. The independent review caught it.
 - *Still without IDs:* P1 step 3, P2 step 2 and P3 steps 1–2. T1692.001 for P2 step 2 (#389) fails the primary-source rule, because its own page has not been read. The other three would each need a MITRE page verified. Of the four, only P2 step 2 appears on a blind card, PLC-03's.
 - *Why freeze at the first blind-card score:* once scoring starts, a change would leave the reviewer and the model judging different steps.
-- *The rule until the review is committed:* any change to P needs its own entry, and every card and AI suggestion showing the changed step is re-scored. A blind card cannot be re-scored blind, because its first answers are written once (D26). Its comparison also rests on the AI's prompt, which shows every step of P2, P4 and P5, the paths through the three blind assets. So a change to any step of those paths after the blind cards are confirmed voids the affected cards' agreement measure, and the entry must say so.
+- *The rule until the review is committed:* any change to P needs its own entry, and every card and AI suggestion showing the changed step is re-scored. A blind card cannot be re-scored blind, because its first answers are written once (D26). *[D30: the review restarted once, before any AI output existed. D30 records it and states the limitation.]* Its comparison also rests on the AI's prompt, which shows every step of P2, P4 and P5, the paths through the three blind assets. So a change to any step of those paths after the blind cards are confirmed voids the affected cards' agreement measure, and the entry must say so.
 - Claude recommended freezing on 11 October 2026. The user started this batch on that basis on 12 October and chose T0822 on 13 October.
 
 **8. Stale text corrected in the same batch.** None of it changes a number or an input. Most of it was found by the 11 October check and by an independent review of this batch, which had not seen it being written.
@@ -672,3 +672,169 @@ Until then the environment was whatever each machine had:
 - *Not verified:* runs on Windows and macOS.
 
 *Status: confirmed by the user (option A, and the setup script, 14 October 2026), implemented, and verified on Linux as above. Reference: `.python-version`, `requirements.txt`, `requirements.lock`, `scripts/setup.py`, `.gitignore`, `README.md` (Running it and the layout table), `04-setup-guide.md`, `04-deployment-requirements.md`, `02-prototype-architecture.md` §5 (a pointer note), `00-repository-structure.md`, `sources.md` #358, #391 and #392.*
+
+**D30 — The Filter 1 review restarts on a fresh database, under route A. The testbed gets a written operating profile, which each card and its asset's AI prompt both show, and four connections are added to E. The user's choices, 17–19 October 2026. No recorded number changes.**
+A32 step 2, scoring the three blind cards, began on 14 October 2026. Three things surfaced in it.
+
+**1. The cards were filled twice before this restart, and both fillings were discarded.**
+- *14 October:* placeholder entries, made while trying the screen. The database was deleted the same day.
+- *17 October:* all ten cards, before any AI output existed, with levels the user chose and reasons drafted with an AI writing tool from the user's points. It was not exported or committed.
+- *The user's decision, 18 October 2026:* "We are working on fresh start. No referencing to the all 10 path data provided by me earlier."
+- *How it is applied:* neither filling is used anywhere, not as a record, a comparison or a fallback. This entry records only that they existed, not what they contained.
+- *The safeguard:* a database built before D30 cannot carry anything over (item 7).
+- *Why record them at all:* the thesis presents the blind cards' answers as first answers, given before any AI answer. They are the first answers on the fresh database, and no output from the scoring model (Qwen) existed before them. But the reviewer had chosen levels for these cards once before, and had read AI-drafted reasons for them. Item 6 states the limitation.
+
+**2. Route A stands (D26).**
+- On 17 October Claude called the all-ten scoring "a plus". That was its own earlier preference for route C coming back, against D26's recorded decision.
+- The user restated route A on 18 October: "I want ai to first decide and them human to to varify." Claude withdrew the remark.
+- The user chose to send the seven non-blind cards back through route A. They wait for the notebook's suggestions, and the user reviews them after the import.
+- The three blind cards are scored by the user alone, in their own words, before the notebook runs.
+
+**3. The setup the cards needed did not exist.** The user, on 18 October: "in order for to answer the or provide input in card we need to establish the set-up which is currently missing." Claude checked what the repository defined, against `data/seed.sql` and `testbed-architecture.md`:
+- **Defined:**
+  - each asset's name, type, zone and Purdue level;
+  - 14 connections;
+  - the five paths;
+  - one line of software per VM.
+- **Not defined:**
+  - any asset's services;
+  - the routine activity that reaches any asset, which §4's convention 5 asks the reviewer to name;
+  - 9 of the 14 protocols;
+  - anything about the four graph-only assets beyond one line each.
+- **The card showed less than the prompt.** D26 gave the model each asset's connections "for criterion 4" and every step of its paths "for criterion 2" (`02-ai-role.md` §8). Screen 3's card showed neither, only the asset's own steps. Until now the reviewer would have judged from less than the model.
+- **Two paths moved between assets with no recorded connection:**
+  - P3, from the OT Firewall to Engineering WS-2;
+  - P4, between Engineering WS and the Historian.
+
+  §3 does not require paths to follow E, so no rule was broken, but the network and the paths disagreed.
+- **Options set out by Claude on 18 October.** The user chose (a).
+  - **(a) A written operating profile, held in the seed and shown to both the reviewer and the model: chosen.**
+  - (b) The network view in Screen 3 (A34): deferred, since (a) puts the connections on each card.
+  - (c) Building the VM testbed first (A21): not made a precondition. The rubric judges positions in the modelled network, and a written profile describes those fully.
+
+**4. The operating profile.**
+- **What it holds.**
+  - Three plant-wide facts.
+  - For each of the ten assets on a card: its role, what it runs, and the routine activity that reaches it.
+  - The eight blank protocols, filled in. The Attacker's connection, and the firewall rule G4 adds, carry none.
+- **Where it lives.** `data/seed.sql` (`plant_facts`, `asset_profiles`, `edges`) is the only copy.
+- **One source for both readers.**
+  - Screen 3's cards and the scoring prompt are built by the same function, `asset_context` in `src/plausibility/prompt.py`. Each card now also shows the connections and every step of each path through the asset. A card shows exactly the facts its asset's prompt receives.
+  - The reviewer sees all ten cards on one screen, and designed the testbed, so can know more than one prompt shows. A fact about a connection is therefore written into the profiles of both assets it joins. This was checked for every connection: for example, the firewall rule appears on the OT Firewall's and Engineering WS-2's profiles, and the switch's failover test on the switch's, both PLCs' and the jump host's.
+- **What it may not hold.** Facts only: no judgement about decoys and no rubric level. Two checks ran over the stored text:
+  - a word check for evaluative terms;
+  - after the independent review, a check for wording that echoes Table 1's level definitions.
+- **Completeness, checked against convention 5's example list, because convention 5 now says the profile settles which of these happen in this plant:**
+  - **Scans:** the plant runs none of its own, and the internet's reach the firewall.
+  - **Historian data collection:** from the HMI, which polls the PLCs and the RTU.
+  - **Engineering and vendor maintenance sessions:** at the Engineering WS, Engineering WS-2, the jump host, the RTU and the switch.
+  - **Backups:** the weekly PLC program backups and the Historian's nightly archive.
+  - **Time synchronisation:** the RTU takes IEC-104 clock commands from its master, the HMI (G3). No other time service is modelled.
+- **Who wrote it.**
+  - Claude drafted it from `testbed-architecture.md`, `threat-attack-model.md` and `data/seed.sql`.
+  - Claude had seen the discarded 17 October answers, which were pasted into the conversation, before drafting. It did not draw on them, and every choice that bears on routine activity is listed below with its alternatives, so a reader can judge.
+  - **From the repository:**
+    - the firewall's role and pfSense;
+    - the jump host's "Linux, minimal services" and "patch-relay stand-in";
+    - the engineering workstations' software;
+    - the HMI's Node-RED dashboard;
+    - OpenPLC on PLC-01 and PLC-02;
+    - PLC-02 as a second controller;
+    - the RTU's IEC-104 and breaker operation (P2);
+    - the switch as "an alternate conduit into PLC-01/02";
+    - the Historian as a modelled node in the OT DMZ;
+    - the five protocols already recorded.
+  - **Claude's proposals:** everything else.
+- **Three choices, each with its alternative:**
+  - **Network scanning in normal operation:** none, the monitoring being passive, chosen; or a quarterly asset-inventory scan from the Engineering WS.
+  - **The firewall rule to Engineering WS-2:** left over from an earlier setup, with no scheduled traffic, chosen; or a vendor's remote support for Engineering WS-2 in maintenance windows.
+  - **The Backup Control Switch:** a standby route, carrying traffic only in a quarterly failover test from the DMZ Jump Host, chosen; or the vendors' maintenance route to the PLCs.
+  - The draft also settled the Engineering WS as Windows 10/11, where `testbed-architecture.md` allowed "Windows 10/11 or Linux".
+- **Confirmation.** The user confirmed the whole draft on 19 October 2026 ("ALL OK"), with no changes. After the independent review (item 7), twelve profile lines were reworded, with the facts and choices unchanged. The user confirmed them on 21 October 2026 ("ok").
+- **The rules change with it,** and the prompt's rules carry the same text:
+  - §4's convention 6, *this plant*, is new;
+  - convention 5 now names the benign activity "as the operating profile describes it";
+  - convention 4's card shows the full paths.
+
+**5. Four connections are added to E.** The user's choices of 19 October 2026, as Claude recommended:
+- **G1, HMI → Historian (OPC UA):** the Historian's data source. No control asset sent it data.
+- **G2, Engineering WS → Historian (HTTPS):** engineers' trend queries, and the connection P4's moves use.
+- **G3, HMI → PLC-03 (RTU) (IEC-104):** the RTU's master, which polls it. Only the DMZ Jump Host connected to it.
+- **G4 (i), OT Firewall → Engineering WS-2 (no protocol):** the left-over firewall rule, which P3's move uses. Option (ii), stating instead that P3 uses a route the model does not record, was not taken.
+  - In zone terms the connection crosses the existing OT DMZ→Supervisory conduit, so no conduit row changes, and ConduitSL does not move.
+- **No step of P changed.** Since D30, every move between consecutive steps uses a recorded connection, in one direction or the other.
+
+**6. Limitations, stated for the thesis.** These are facts the user stated or the record shows:
+- before the fresh start, the reviewer had chosen levels for all ten cards once, the three blind cards included;
+- the reviewer had read AI-drafted reasons, written from the reviewer's own points, for those cards;
+- the reviewer may earlier have read AI-drafted design text about candidate sites;
+- the operating profile is a declared design, not measured traffic. It was drafted by an AI (Claude) that had seen the discarded answers, and confirmed by the reviewer. Its choices about routine activity were made after the 17 October filling.
+
+**7. Independent review, and what it changed.** A separate agent reviewed the batch on 19 October 2026, without having seen it produced. Everything functional passed its checks. It found one High, five Medium and four Low issues, and all were fixed before handover:
+- **High: a pre-D30 database could be carried over.** The general rebuild procedure (export, rebuild, restore) would have written the discarded answers, the write-once blind ones included, into the fresh database. The fix:
+  - a database built before D30 is now refused by the setup script, which says to delete it and not restore it;
+  - the backend refuses it too, with the same message, which Screen 3 shows;
+  - the export refuses it;
+  - every review record and every AI suggestion now carries a hash of the facts its card showed (`context_sha256`), and the restore and the import check it. The word "fingerprint" is avoided, because in this project it means telling a decoy from a real asset (Filter 2).
+- **Medium:**
+  - the limitations understated the blind cards' history, and statements in D26, D28, §4 and `02-ai-role.md` needed pointer notes;
+  - "identical facts" holds per card, not per screen, so connection facts are now written on both assets;
+  - the profile contradicted itself and E in five places (scans, "single entry point", the failover traffic's source, the route of updates, the firewall rule's conduit);
+  - the effect statement was incomplete, and the new edges' weights were unexplained;
+  - the choices that feed criterion 4, their alternatives and the drafter's prior exposure were not recorded, and three lines echoed Table 1's wording.
+- **Low:** stale text in six places; the prompt's label for the plant facts; error messages on a stale database; and nothing linking an AI suggestion to the facts it was made from.
+- **Found while verifying the fixes:** Screen 1 drew an error reply as if it were a graph. When the backend refused a database, the whole app went blank. It now shows the backend's message.
+- **A second pass,** by the same reviewer on the fixes, found two more Medium issues and five Low ones. All were fixed:
+  - **Medium: the hash check was all-or-nothing.** One card whose facts changed made the restore refuse the whole record, blind answers included, although D28's rule re-scores only the cards a change affects. It also gave its refusal only after the database had been deleted.
+    - The restore now checks per card, and refuses by name any card holding answers or an AI suggestion whose facts have changed.
+    - `--skip-changed`, for use only when a decisions-log entry authorises the change, restores everything else and leaves those cards unscored.
+    - A new `check` command runs every restore check against a database built in memory, before anything is deleted.
+    - The import works the same way.
+  - **Medium: Claude's weight-sensitivity statement was false.** It said the weights of G1 and G2 change no ranking between 0.5 and 2.0. Claude had varied the two together, and their effects cancel. *Effect on results* now gives the measured thresholds.
+  - **Low:**
+    - The rule that a connection's facts sit on both its assets failed for G1, G2 and the VPN connection. The HMI, Engineering WS, OT Firewall and DMZ Jump Host profiles now name them. Checked for every connection.
+    - The completeness note wrongly said no asset serves time.
+    - Stale text in three files.
+    - The restore crashed, without a message, on a database built before D30.
+    - "Fingerprint" was renamed to context hash.
+
+**Freeze.** The operating profile and the connections freeze at the first blind-card score on the fresh database, under the rule D28 set for P. P itself is unchanged.
+
+**Effect on results.** No evaluation result exists on the new candidate set, so none moves.
+
+*Measured on 19 October 2026 with the current code, on the confirmed seed:*
+- **Crit:** no asset moves by more than 0.002.
+- **Betweenness:**
+  - DMZ Jump Host 0.156 → 0.111;
+  - Backup Control Switch 0.067 → 0.044;
+  - Engineering WS 0.033 → 0.017;
+  - Engineering WS-2 0.011 → 0.033;
+  - HMI 0 → 0.006.
+- **Ranking, in two places:**
+  - Engineering WS-2 moves above Engineering WS, because of G4;
+  - the HMI rises from the zero tie to above the Historian and the PLCs, because of G1.
+
+  The centrality baseline ranks candidates by this number, so either change alters its pick whenever the budget falls between the two.
+- **The weights are placeholders.** The four new edges take the seed's default weight, 1.0, as placeholders under A35, the open question of what an edge weight means. The ranking depends on them.
+  - *The HMI's place:* at equal weights, two shortest routes from the DMZ Jump Host to the Historian, through the HMI and through the Engineering WS, share the credit. Any difference between G1's and G2's weights hands it all to one route.
+  - G1 alone at 1.25 or more, or G2 alone at 0.75 or less, returns the HMI's betweenness to 0 and the HMI below the Historian.
+  - On a grid of 0.5 to 2.0 for both, 21 of 49 pairs change the ranking.
+  - *The Engineering WS / Engineering WS-2 order:* it returns to the original once G4's weight exceeds about 1.5. The flip falls between 1.5 and 1.6.
+  - *Measured* on 19 October 2026 by Claude, and independently by the reviewer.
+- **Legacy reproduction unchanged.** `data/legacy/d25_candidate_set.sql` now also removes the four added connections. With it loaded and `--legacy-d25` passed, `run_comparison.py`, `sweep.py --sens` and `structure_check.py` print output identical to commit `1af1333`'s.
+
+*Status: confirmed by the user: the profile and G1–G4 on 19 October 2026 ("ALL OK"), and the post-review rewording on 21 October 2026 ("ok"). Implemented and verified.*
+- *Implemented and verified on Linux after the review's fixes:*
+  - the setup script on a fresh copy, and its refusal of a database built before D30;
+  - the API, including its refusal of such a database;
+  - the prompt's text, and the scoring loop against a stand-in model;
+  - Screens 1 and 3 in Chromium, on a current database and on one built before D30;
+  - the confirm, export, restore and import round trip;
+  - the context hash: a record or a CSV without one is refused whole, and a changed card is named and refused, or skipped with `--skip-changed`;
+  - the dry-run `check`, which changes nothing;
+  - the legacy reproduction.
+- *Reference:*
+  - data and code: `data/schema.sql`, `data/seed.sql`, `data/legacy/d25_candidate_set.sql`, `src/plausibility/prompt.py`, `src/api/main.py`, `src/frontend/src/PlausibilityReview.jsx`, `src/frontend/src/Dashboard.jsx`, `src/frontend/src/App.css`, `scripts/setup.py`, `scripts/review_io.py`, `scripts/import_plausibility_scores.py`;
+  - specification: `formal-problem-definition.md` §3–4, `02-ai-role.md` §8–10, `02-data-model.md`, `02-prototype-architecture.md` §2–3, `02-system-flow.md`, `testbed-architecture.md`, `threat-attack-model.md`;
+  - guides and trackers: `00-glossary.md`, `00-action-items.md` A32 and A35, `00-project-phases.md`, `04-setup-guide.md`, `README.md`. The last also gets the frontend command split onto two lines, because Windows PowerShell 5.1 rejects `&&`;
+  - pointer notes on D26 and D28.

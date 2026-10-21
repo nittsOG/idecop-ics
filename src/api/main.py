@@ -20,6 +20,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from src.graph_model import load_graph, compute_criticality, load_candidate_locations, load_attack_paths, CandidateSetError
 from src.plausibility import KEYS, check_answers, passes, reason_required, RubricError
+from src.plausibility.prompt import asset_context, plant_facts
 from src.optimizer.baselines import greedy, random_baseline, centrality_baseline, distorted_greedy
 from src.optimizer.milp import solve_milp
 
@@ -41,6 +42,12 @@ def get_db() -> sqlite3.Connection:
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
+    if not conn.execute("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'asset_profiles'").fetchone():
+        conn.close()
+        # Raised as an HTTPException so the CORS headers are kept and Screen 3 can show the message.
+        raise HTTPException(500, "This database was built before D30 and has no operating profile. Stop the "
+                                 "backend, delete data/deception_placement.db and run `uv run scripts/setup.py`. "
+                                 "Do not export or restore it: D30 restarted the Filter 1 review.")
     return conn
 
 
@@ -97,6 +104,16 @@ def list_assets():
     return [dict(r) for r in rows]
 
 
+@app.get("/plant-facts")
+def list_plant_facts():
+    """The plant-wide part of the operating profile (D30), shown once at the top
+    of Screen 3. The scoring prompt opens with the same lines."""
+    conn = get_db()
+    facts = plant_facts(conn)
+    conn.close()
+    return facts
+
+
 @app.get("/candidates")
 def list_candidates():
     """Every asset in Screen 3's review (all except the Attacker node, A32), with
@@ -104,7 +121,12 @@ def list_candidates():
 
     D26: on a blind card the AI's answer stays hidden until the reviewer has
     confirmed their own. The design-time `rationale` text is no longer sent,
-    because it pre-judged the outcome."""
+    because it pre-judged the outcome.
+
+    D30: each card also carries `context`, built by the same function that
+    builds the scoring prompt (src/plausibility/prompt.py, asset_context): the
+    asset's operating profile, its connections and every step of every path
+    through it. The reviewer and the AI therefore judge from the same facts."""
     conn = get_db()
     rows = conn.execute("""
         SELECT a.asset_id, a.name, a.asset_type, a.purdue_level, z.name AS zone,
@@ -127,6 +149,7 @@ def list_candidates():
         FROM attack_path_steps s JOIN attack_paths p ON p.path_id = s.path_id
         ORDER BY p.path_id, s.step_order
     """).fetchall()
+    contexts = {r["asset_id"]: asset_context(conn, r["asset_id"]) for r in rows}
     conn.close()
 
     by_asset = {}
@@ -137,6 +160,7 @@ def list_candidates():
         d = dict(r)
         d["path_steps"] = by_asset.get(d["asset_id"], [])
         d["n_paths"] = len({st["path"] for st in d["path_steps"]})
+        d["context"] = contexts[d["asset_id"]]
         d["ai_hidden"] = bool(d["blind_first"] and not d["blind_confirmed_at"])
         if d["ai_hidden"]:
             for k in KEYS:

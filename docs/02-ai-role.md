@@ -135,15 +135,26 @@ Qwen3-8B is the pre-declared fallback if 14B cannot load. Every suggestion recor
 For each of the 10 assets (every asset except the Attacker node), built by `asset_context()` in `src/plausibility/prompt.py` from the same `schema.sql` and `seed.sql` the system uses:
 
 ```
+plant facts, about the whole plant (D30)     — plant_facts
 name, asset type, zone, Purdue level        — assets, zones
+the asset's role, what it runs, and the      — asset_profiles (D30)
+  routine activity that reaches it
 direct connections and their protocols      — edges
 each attack path through the asset, every   — attack_paths, attack_path_steps
   step listed, this asset's steps marked
 the rubric: #40's Table 1 verbatim, and      — formal-problem-definition.md §4
-  the conventions D26 fixed
+  the conventions D26 fixed, with D30's
 ```
 
 The connections are there for criterion 4: they show what legitimate traffic reaches the position. The full path, not just the asset's own step, is there for criterion 2: Sweep or Seek depends on what the attacker is doing at that point.
+
+*D30:*
+- **Until D30, the reviewer saw less than the model.** Screen 3's card showed neither the connections nor the full paths, only the asset's own steps.
+- **The card now shows the same context.** It is built by the same `asset_context()`, so each card shows exactly what its asset's prompt receives. The reviewer also sees the other cards, so a fact about a connection is written into the profiles of both assets it joins.
+- **Both now show the operating profile:**
+  - the plant facts;
+  - each asset's role and what it runs;
+  - the routine activity that reaches it, which criterion 4's first step asks for.
 
 Output goes to a CSV, which `scripts/import_plausibility_scores.py` loads into columns kept separate from the ones the optimizer reads:
 
@@ -171,7 +182,7 @@ This section previously said the model "can be wrong without anything downstream
 1. the task, and that a human reviews every answer;
 2. the four levels, with the instruction that there is no neutral answer;
 3. #40's Table 1, verbatim, with its credit line;
-4. §4's definition of a candidate and its conventions, as seven rules: unit of analysis, what a decoy here means, best case at the actual position, order, ties, Interaction against the listed paths only, and naming the benign activity before scoring Malice fidelity;
+4. §4's definition of a candidate and its conventions, as eight rules: unit of analysis, this plant (the operating profile is given, D30), what a decoy here means, best case at the actual position, order, ties, Interaction against the listed paths only, and naming the benign activity, as the profile describes it, before scoring Malice fidelity;
 5. the required output, one JSON object:
 
 ```
@@ -183,7 +194,7 @@ This section previously said the model "can be wrong without anything downstream
 }
 ```
 
-The user prompt, one call per asset, lists the asset, its connections, and every path through it with this asset's steps marked. For an asset on no path, it says that Interaction is No by rule.
+The user prompt, one call per asset, lists the plant facts, the asset and its operating profile (D30), its connections, and every path through it with this asset's steps marked. For an asset on no path, it says that Interaction is No by rule.
 
 **Rules applied by code, not left to the model** (`derive()`, which records a note whenever it overrides the model):
 - an off-path asset's Interaction is No;
@@ -212,9 +223,9 @@ User prompt template: asset name, type and zone; the attack paths that reach the
 ### 10. The review step (D26)
 
 The work runs in this order:
-1. **Blind cards.** Score DMZ Jump Host, Historian and PLC-03 (RTU) in Screen 3 before the notebook runs. They were drawn at random before any AI output existed (D26). Each card's AI answer stays hidden until you confirm it, and then appears beside yours. Your first answers are stored once and never change (`blind_*` columns). You may still change the final answers afterwards, with a reason. The agreement measure always uses the first answers.
-2. **Notebook and import.** Run the notebook in Colab (A20), then `python scripts/import_plausibility_scores.py ai_suggestions.csv`. Neither prints any answer.
-3. **Review.** On the other seven cards, the AI's answers pre-fill the four selectors. Check each one against the asset's path steps, which the card lists, and confirm or change it.
+1. **Blind cards.** Score DMZ Jump Host, Historian and PLC-03 (RTU) in Screen 3 before the notebook runs. They were drawn at random before any AI output existed (D26). Each card's AI answer stays hidden until you confirm it, and then appears beside yours. Your first answers are stored once and never change (`blind_*` columns). You may still change the final answers afterwards, with a reason. The agreement measure always uses the first answers. Then export and commit the record (recommended, A32), so the blind answers are dated before any AI answer exists.
+2. **Notebook and import.** Push the repository first, because Colab clones it. Run the notebook in Colab (A20), then `python scripts/import_plausibility_scores.py ai_suggestions.csv`. Neither prints any answer. *(D30: the import refuses suggestions made from facts other than the database's, by the context hash.)*
+3. **Review.** On the other seven cards, the AI's answers pre-fill the four selectors. Check each one against what the card shows, and confirm or change it. Since D30 the card shows the asset's operating profile, its connections and every step of each path through it.
 4. **Reasons.** A reason is required:
    - on a blind card;
    - on a card with no AI suggestion;
@@ -250,7 +261,7 @@ It wrote down expected outputs before any scoring: "no" on criterion 1 for the O
 3. **Readability** — would this actually help an analyst who hadn't seen the raw numbers?
 
 **Plausibility-scoring assist** gets a different check, because its failure mode is different. The question is not "does the text read well" but "does the AI's answer match independent human judgement". Under route A (D26) there are three measures, all reported as counts in a table:
-1. **Blind-card agreement.** On the three blind cards, the AI's answers against the reviewer's first answers (the write-once `blind_*` columns), which were given before the AI's were shown. Report exact agreement and agreement within one level, per criterion, as #40 does for its expert study. This is the only measure not affected by anchoring.
+1. **Blind-card agreement.** On the three blind cards, the AI's answers against the reviewer's first answers (the write-once `blind_*` columns), which were given before the AI's were shown. Report exact agreement and agreement within one level, per criterion, as #40 does for its expert study. This is the only measure not affected by anchoring on the scoring model's answers. *(D30: before the review restarted, the reviewer had chosen levels for these three cards once and read AI-drafted reasons for them. D30 states this as a limitation.)*
    - *Blanks, fixed before any comparison exists (D26):* a criterion is compared only where both answered it.
    - Where one side stopped at an earlier No, the criteria the other side went on to answer are counted separately, as "stopped earlier".
    - The stop itself is already a disagreement at the criterion where it happened, so it is not scored a second time.

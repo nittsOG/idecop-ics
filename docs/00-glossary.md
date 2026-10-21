@@ -30,6 +30,8 @@ A decoy that fits neither goes untouched.
 
 **Blind card** — one of three assets scored in Screen 3 before the AI's answer is shown (D26), so that the AI can be compared with a judgement it did not influence. Drawn at random before any AI output existed.
 
+**Operating profile** — the facts about the testbed plant in normal operation, recorded by D30 so that the Filter 1 review can be judged without inventing them. It holds three plant-wide facts and, for each asset, its role, what it runs, and the routine activity that reaches it, plus the protocols on its connections. Screen 3's cards and the AI's prompt show the same text. It holds facts only, never a judgement about decoys.
+
 **Anchoring** — the tendency to move toward a suggestion one has already seen, even when free to change it. Measured for LLM suggestions in annotation by #362 and #363. It is the reason for the blind cards, and for the written reason the review requires on boundary answers and changed answers.
 
 **Detectability** — how easily an attacker can tell a decoy is a decoy, from outside. Real, demonstrated attacker capability: passive signatures such as TTL values, open-port counts and response timing can expose a honeypot without the attacker ever touching it. In this project it is the **second filter** on candidate locations. A decoy in a heavily scanned segment is worth less than the same decoy deeper in the network, because it is more likely to be fingerprinted before it can do its job. *Not to be confused with* the same word in Asset Criticality Analysis (#336), where detectability means how far in advance a *failure* can be detected. Here it is always the attacker identifying a decoy (A26).

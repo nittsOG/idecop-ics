@@ -14,6 +14,11 @@ It then builds the database, installs the frontend's packages, and checks the re
 - **Recovery cases:** a `.venv` made with Python 3.12, a package removed by hand, a database built from an older seed, a database read in the wrong encoding, and a run with uv missing.
 - **The other routes:** the setup by hand, the fallback without uv, and steps 4 to 6 were run as written too.
 - **Not run here:** the uv installers in step 1 (uv was installed from PyPI instead), and anything on Windows or macOS, because neither system was available. A dry run confirmed that every locked package has a ready-made build for Windows (64-bit), macOS (Intel and Apple silicon) and Linux.
+- **Re-checked on 18–19 October 2026, after D30 changed the database and the cards:**
+  - the setup script on a fresh copy;
+  - its warning on a database built before D30;
+  - step 6, in Chromium.
+- **On Kali.** Between 14 and 17 October 2026 the user ran the prototype on Kali Linux, the first run outside Claude's environment.
 
 ---
 
@@ -145,8 +150,10 @@ It prints `Local: http://localhost:5173/`. Open exactly that address. `uv run` p
 
 1. Click **Plausibility Review**. The header reads `0 of 10 confirmed · 0 on the shortlist · 0 of 3 blind cards done`.
 2. The section *Blind cards — score these first* holds DMZ Jump Host, Historian and PLC-03 (RTU).
-3. The DMZ Jump Host card lists two steps, P2 step 1 and P5 step 1. Both are `T0822 External Remote Services`.
-4. The HMI card reads `P1 · step 5 of 5 · Impact · T0832 Manipulation of View`.
+3. Above the cards, *This plant* lists three facts about the plant (D30).
+4. Each card shows the asset's role, what it runs, the routine activity that reaches it, its connections, and every step of each path through it, with the asset's own steps in bold.
+   - The DMZ Jump Host card shows two paths, P2 and P5. Its own step in each is the first, `T0822 External Remote Services`.
+   - On the HMI card, P1's last step reads `HMI · Impact · T0832 Manipulation of View ← this asset`.
 5. On the **Dashboard**, choosing a method and pressing Run shows `No candidate locations yet: L is empty until the A32 review ...`. That is expected until the review confirms an asset that passes Filter 1.
 
 **The scripts behave the same way.** `uv run python scripts/run_comparison.py` prints `No candidate set yet. L is empty until the A32 review ...` and exits. `sweep.py` and `structure_check.py` do the same. This is expected until A32 is done.
@@ -181,14 +188,16 @@ Then open `http://localhost:5173`. To stop, press Ctrl+C in each terminal.
 - **Export after every sitting.** `uv run python scripts/review_io.py export` writes `data/review/plausibility_review.csv`. This is a recommendation, not a rule from D26.
   - A mid-review export is safe. On a blind card that is still open, the script leaves the AI's fields blank.
   - `--require-complete` is for the final export only (A32 step 5).
-- **Blind answers cannot be redone.** A blind card's first answers are written once and cannot be re-scored blind (D26). If the database is lost before an export, they are gone for good.
+- **Blind answers cannot be redone.** A blind card's first answers are written once and cannot be re-scored blind (D26). If the database is lost before an export, they are gone for good. *D30 restarted the review once, before any AI output existed. It is recorded there, and the first answers are those given on the fresh database.*
+- **After pulling D30: delete, don't restore.** A database built before D30 holds answers that D30 discarded. Stop the backend, delete `data/deception_placement.db` and run `uv run scripts/setup.py`. Do not export or restore it. The setup script, the backend, the export and the restore all refuse to carry anything over.
 - **When the database must be rebuilt.** That happens when a pull changes `data/schema.sql` or `data/seed.sql`, or when the setup script warns that the database does not match. Do this in order:
   1. Export.
-  2. Stop the backend.
-  3. Delete `data/deception_placement.db`.
-  4. Run `uv run scripts/setup.py`. It builds a fresh database.
-  5. Run `uv run python scripts/review_io.py restore data/review/plausibility_review.csv`. It runs only on a freshly built database.
-  6. If you had imported the notebook's suggestions, import them again: `uv run python scripts/import_plausibility_scores.py ai_suggestions.csv`.
+  2. Check that the record will restore: `uv run python scripts/review_io.py check data/review/plausibility_review.csv`. It changes nothing. If it names cards whose facts have changed, stop: D28's rule applies, and a decisions-log entry decides what happens to them.
+  3. Stop the backend.
+  4. Delete `data/deception_placement.db`.
+  5. Run `uv run scripts/setup.py`. It builds a fresh database.
+  6. Run `uv run python scripts/review_io.py restore data/review/plausibility_review.csv`. It runs only on a freshly built database.
+  7. If you had imported the notebook's suggestions, import them again: `uv run python scripts/import_plausibility_scores.py ai_suggestions.csv`.
 
 ---
 
@@ -250,6 +259,7 @@ source .venv/bin/activate
 | `Port 5173 is in use, trying another one...`, then `Local: http://localhost:5174/` | A dev server is already running. The backend accepts only port 5173 | Stop the other one with Ctrl+C in its terminal, then run `uv run npm run dev` again |
 | `/health` shows `"db_exists":false`, or a screen shows `Database not found at ...` | No database in this folder | Run the setup script from the repository root |
 | HTTP 500 on Confirm or Run, after a pull | The database was built from an older `schema.sql`, whose constraints SQLite does not update | Rebuild, following *Your review data* |
+| Screen 3: "This database was built before D30 …" | The database predates D30's operating profile | Stop the backend, delete `data/deception_placement.db`, run `uv run scripts/setup.py`. Do not export or restore it |
 | `npm ci`: `1 high severity vulnerability` | On 13 October 2026, npm's audit flagged `source-map-js`, which the build tools use (vite → postcss). A crafted source map can stall the dev build. It does not touch the API or your data | Ignore it for local use. `npm audit fix` rewrites `package-lock.json`, a tracked file, so make that change only as its own deliberate commit |
 | Without uv: `No matching distribution found` | The virtual environment was made with a Python the lock does not cover, such as 3.11 or 3.15 | Delete `.venv` and make it again with `py -3.13` or `python3.13` |
 | Odd `database is locked` or file errors | *A precaution, not reproduced here:* sync tools such as OneDrive can lock files inside a synced folder | Keep the clone outside OneDrive, Dropbox or similar folders |

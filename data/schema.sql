@@ -37,6 +37,22 @@ CREATE TABLE edges (
     weight           REAL DEFAULT 1.0
 );
 
+-- Operating profile (D30): facts about the plant as designed. Screen 3's cards
+-- and the scoring prompt (src/plausibility/prompt.py) both read it, so the
+-- reviewer and the AI judge from the same facts. It holds no judgement about
+-- decoys and no rubric level. It freezes at the first blind-card score (D30).
+CREATE TABLE plant_facts (
+    fact_id  INTEGER PRIMARY KEY AUTOINCREMENT,
+    text     TEXT NOT NULL
+);
+
+CREATE TABLE asset_profiles (
+    asset_id          INTEGER PRIMARY KEY REFERENCES assets(asset_id),
+    role              TEXT NOT NULL,   -- what the asset is for in this plant
+    runs              TEXT NOT NULL,   -- its software and the services it offers
+    routine_activity  TEXT NOT NULL    -- the routine activity that reaches it
+);
+
 CREATE TABLE candidate_locations (
     asset_id                     INTEGER PRIMARY KEY REFERENCES assets(asset_id),
     -- Filter 1 (formal-problem-definition.md §4, D26): four-level scale from

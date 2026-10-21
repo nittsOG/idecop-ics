@@ -41,9 +41,15 @@ At minimum, include one reconnaissance-heavy path, one credential-theft/lateral-
 
 The current set is P1–P5 (`threat-attack-model.md`). D21 added P4, and D27 added P5, the backup-conduit path.
 
+*D30:* every move between consecutive steps of P now uses a connection recorded in **E**, in one direction or the other. Before D30, two paths moved between assets with no recorded connection:
+- P3, from the OT Firewall to Engineering WS-2;
+- P4, between Engineering WS and the Historian.
+
+This section does not require paths to follow **E**. D30 recorded those connections and changed no step of any path.
+
 ## 4. Candidate Deception Locations
 
-Not every **v ∈ V** is a valid decoy site. Define **L ⊆ V** by applying two filters in sequence. Everything in this section up to Filter 2 was fixed by D26 **before any scoring took place**, which is the order the source itself follows ("we fixed the decision rules before scoring", #40).
+Not every **v ∈ V** is a valid decoy site. Define **L ⊆ V** by applying two filters in sequence. Everything in this section up to Filter 2 was fixed by D26 **before any scoring took place**, which is the order the source itself follows ("we fixed the decision rules before scoring", #40). *D30 (18 October 2026) amended conventions 4 and 5 and added convention 6, the operating profile. That was after two fillings of the cards that were discarded, and before the review restarted on a fresh database.*
 
 **What a candidate means.** **x_l = 1** places a decoy imitating `type(l)` in `zone(l)`, on the same network segment and behind the same conduits as `l`. Attack paths through `l` pass where it sits. It is not a change to the real asset. Whether an attacker on a path would actually interact with the decoy is not assumed here: criterion 2 scores it.
 
@@ -64,14 +70,19 @@ Not every **v ∈ V** is a valid decoy site. Define **L ⊆ V** by applying two 
 - Intelligence yield is the one criterion the objective does not strictly need to gate, since F credits detection, not intelligence. It is kept in the rule for simplicity. #40 found it almost never limiting: one Mostly No, and no No, among 80 techniques.
 - This is a declared adaptation, not #40's own rule.
 
-**Scoring conventions (D26), fixed before scoring:**
+**Scoring conventions (D26), fixed before scoring, with D30's amendments made before the review restarted:**
 1. **Order.** Score the criteria in order. The first No ends the evaluation, and the criteria after it stay blank (#40).
 2. **Ties.** Where the evidence fits two adjacent levels equally, choose the lower one, closer to No (#40).
 3. **Best case, actual position.** Score each criterion for "the best case a well-instrumented decoy could plausibly produce" (#40), but at this position in this network. #40 scores what is possible in principle; this project scores one deployment.
-4. **Interaction is judged only against the paths in P, as modelled.** For each path, name it and say whether the encounter is a **Sweep** or a **Seek** (see below). The card lists the steps.
+4. **Interaction is judged only against the paths in P, as modelled.** For each path, name it and say whether the encounter is a **Sweep** or a **Seek** (see below). The card lists every step of each path through the asset, with the asset's own steps marked *(D30; until then it listed only the asset's own steps)*.
    - An asset that appears in no path's asset sequence scores **No**, because the model cannot credit it with any interception. The API and Screen 3 enforce this for human answers, and the notebook's code for the AI's. In the current testbed it applies only to PLC-02. *(D26 also named the Backup Control Switch here. D27 added P5 through it.)* Because the rule imposes this No, it needs no written reason. An asset excluded this way is still scored, and the thesis reports it as a plausible decoy site outside the modelled threats (D27, option (a)). It is not silently dropped.
    - An asset on more than one path is scored per path, and the lowest per-path level is recorded (**weakest path decides**). The objective credits an interception on every path through a chosen site, so a single best-case score would credit paths the rubric says the attacker would not take that way. The reviewer gives each path's level in the required reason. Since D27 this applies to three assets: Engineering WS (P1, P4), the DMZ Jump Host (P2, P5) and PLC-01 (P1, P5).
-5. **Malice fidelity names the benign activity first.** Before scoring, write down the routine benign activity that reaches this position. In OT networks that includes asset-inventory and monitoring scans, historian polling and data collection, engineering-software and vendor maintenance sessions, backup jobs and time synchronisation. #40's own expert study asks for this ("make Malice Fidelity more explicit about benign administrative activity"); the list of examples is this project's.
+5. **Malice fidelity names the benign activity first.** Before scoring, write down the routine benign activity that reaches this position, as the operating profile describes it (convention 6). In OT networks generally that includes asset-inventory and monitoring scans, historian polling and data collection, engineering-software and vendor maintenance sessions, backup jobs and time synchronisation; the profile says which of these happen in this plant. #40's own expert study asks for this ("make Malice Fidelity more explicit about benign administrative activity"); the list of examples is this project's. *(D30 added the reference to the profile.)*
+6. **This plant (D30).** The plant facts, each asset's profile and its connections describe this plant as designed, in normal operation. Take them as given.
+   - Together they are the testbed's **operating profile**, held in `data/seed.sql`: the `plant_facts` and `asset_profiles` tables, and the protocols on `edges`.
+   - Each card shows exactly the text its asset's prompt receives, built by one function (`asset_context` in `src/plausibility/prompt.py`). The reviewer sees every card on one screen, so a fact about a connection is written into the profiles of both assets it joins.
+   - The profile states facts only: no judgement about decoys and no rubric level.
+   - It freezes at the first blind-card score on the fresh database, and from then D28's rule for P applies to it as well.
 
 **Level definitions — #40, Table 1, reproduced unchanged.** In this project the unit is an asset position, so read "the technique" as "the attack-path steps at this position". That reading note is ours, not part of the table.
 
@@ -89,6 +100,7 @@ Not every **v ∈ V** is a valid decoy site. Define **L ⊆ V** by applying two 
 - The output is a filtered search space for an optimiser, rather than a coverage map of a matrix.
 - #40 names an asset-centred assessment as future work. This is one deployment-specific form of it.
 - D26 adds three things: the combination rule, convention 3's restriction to the actual position, and conventions 4 and 5. The scale, the order rule, the tie rule and the best-case wording are #40's own.
+- D30 adds convention 6, the operating profile, which convention 5 now draws on.
 
 *This replaces an earlier and weaker claim* that the project is "the first to apply the rubric to ICS ATT&CK." That claim was dropped at iteration 11 rather than defended: MITRE Engage has published mappings for ATT&CK for ICS since 2024, and while those map techniques to engagement *activities* rather than applying this rubric, the distinction is definitional and not worth the argument it would invite. The claim above is narrower, is specific to this formulation, and does not depend on what any adjacent mapping does or does not contain. See `iteration-11-findings.md`.
 
@@ -103,7 +115,7 @@ Not every **v ∈ V** is a valid decoy site. Define **L ⊆ V** by applying two 
    - They were drawn at random, before any AI output existed, from the eight assets that lie on a modelled path. The draw is recorded in D26.
    - They are scored before their AI answers are shown.
    - Their first answers are stored once and never change, even if the final answers are later revised with a reason.
-   - They give the one unanchored measure of how often the AI agrees with independent judgement.
+   - They give the one measure of how often the AI agrees with judgement it did not anchor. *(D30: before the review restarted, the reviewer had chosen levels for these cards once and read AI-drafted reasons for them. D30 states this as a limitation.)*
 4. **A written reason** is required:
    - on a blind card;
    - on a card with no AI suggestion;

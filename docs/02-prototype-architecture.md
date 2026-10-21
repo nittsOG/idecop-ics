@@ -33,7 +33,8 @@ Extends the sketch in `02-data-model.md` to the full set actually needed once al
 | Method & path | Reads | Writes | Used by |
 |---|---|---|---|
 | `GET /graph` | `assets`, `edges` | — | Screen 1, 2 |
-| `GET /candidates` | `candidate_locations` (both real and `ai_suggested_*` columns) | — | Screen 3 |
+| `GET /candidates` | `candidate_locations` (both real and `ai_suggested_*` columns); since D30 also each asset's context from `asset_context()`: `asset_profiles`, `edges`, `attack_paths`, `attack_path_steps` | — | Screen 3 |
+| `GET /plant-facts` | `plant_facts` (D30) | — | Screen 3 |
 | `POST /candidates/{asset_id}/confirm` | — | `criterion_*`, `human_reason`, `passes_plausibility`, `is_candidate`, `human_confirmed`, `confirmed_at`; on a blind card's first confirmation, the write-once `blind_*` columns (D26) | Screen 3 |
 | `GET /attack-paths` | `attack_paths`, `attack_path_steps` | — | Screen 1 |
 | `PUT /assets/{id}/damage-score` | — | `assets.damage_score` | Screen 3 (setup) |
@@ -45,7 +46,7 @@ Extends the sketch in `02-data-model.md` to the full set actually needed once al
 
 *Corrected by D28.* There is no `run_metrics` table. A run's metrics are columns of `placement_runs`: `coverage_score`, `early_score`, `critprot_score`, `risk_score`, `cost_score`, `objective_value` and `runtime_seconds` (`data/schema.sql`). The damage column is `damage_score`, not `damage_fraction`.
 
-**Built so far:** `GET /graph`, `GET /assets`, `GET /candidates`, `POST /candidates/{asset_id}/confirm`, `GET /attack-paths`, `POST /optimize`, `GET /runs`, `GET /runs/{id}` and `GET /health` (`src/api/main.py`). **Not built:** `PUT /assets/{id}/damage-score` (Damage is still a placeholder, A37), `GET /runs/compare` (Screen 2) and `POST /runs/{id}/explain` (A6).
+**Built so far:** `GET /graph`, `GET /assets`, `GET /candidates`, `GET /plant-facts` (D30), `POST /candidates/{asset_id}/confirm`, `GET /attack-paths`, `POST /optimize`, `GET /runs`, `GET /runs/{id}` and `GET /health` (`src/api/main.py`). **Not built:** `PUT /assets/{id}/damage-score` (Damage is still a placeholder, A37), `GET /runs/compare` (Screen 2) and `POST /runs/{id}/explain` (A6).
 
 `POST /optimize` never returns a placement directly in its response body beyond the `run_id` — the frontend always fetches the actual result via `GET /runs/{id}` afterward. Small deliberate choice: it means every placement the UI ever displays came from a row that's already durably stored, not from an in-flight response that could get lost on a page refresh mid-run.
 
@@ -61,7 +62,7 @@ The interface walkthrough earlier flagged this and left it open. Resolving it he
 
 *Rebuilt by D26:*
 - the three blind cards come first, with the AI's answer hidden until each is confirmed;
-- each card lists the asset's attack-path steps;
+- each card lists the asset's attack-path steps; *since D30 it lists every step of each path through the asset, with the asset's own steps marked, together with the asset's operating profile and connections, the same context the AI's prompt receives. The plant facts head the screen;*
 - answers use four levels, in order, and the first No ends the card;
 - a reason box is required on blind cards, on cards with no AI suggestion, on changed answers, on Mostly No / No, and on an asset that lies on several paths;
 - a blank is never filled with the AI's answer.
@@ -72,16 +73,17 @@ Building order given weekend hours: Screen 3 first, since nothing else works wit
 
 ## 4. Bridging the Colab notebook back into the live system
 
-The plausibility-scoring notebook (`02-ai-role.md` §7–10; `notebooks/plausibility_scoring.ipynb`, written in D26) never touches the live system directly. It clones the repository, builds the prompt from `src/plausibility/prompt.py`, and produces a CSV: `asset_id, asset_name, ai_suggested_decoy_exists, ai_suggested_attacker_reach, ai_suggested_useful_signal, ai_suggested_reliable_indicator, ai_reasoning, ai_model, generated_at, repo_commit, parse_status, notes`. It also writes a JSONL file of the raw outputs, for audit. *(D26 added `asset_name`, which the import checks against the database, together with the model and commit identity and the parse status. Levels use the four-point scale.)* `scripts/import_plausibility_scores.py` reads that CSV and writes it into the matching columns on `candidate_locations` — nothing more. It doesn't touch `criterion_*` or `human_confirmed`; those only get set by an actual human going through Screen 3. The import script's only job is getting the AI's suggestion from a spreadsheet into a database row where the review screen can find it.
+The plausibility-scoring notebook (`02-ai-role.md` §7–10; `notebooks/plausibility_scoring.ipynb`, written in D26) never touches the live system directly. It clones the repository, builds the prompt from `src/plausibility/prompt.py`, and produces a CSV: `asset_id, asset_name, ai_suggested_decoy_exists, ai_suggested_attacker_reach, ai_suggested_useful_signal, ai_suggested_reliable_indicator, ai_reasoning, ai_model, generated_at, repo_commit, context_sha256, parse_status, notes`. *(D30 added `context_sha256`, the hash of the facts the prompt showed.)* It also writes a JSONL file of the raw outputs, for audit. *(D26 added `asset_name`, which the import checks against the database, together with the model and commit identity and the parse status. Levels use the four-point scale.)* `scripts/import_plausibility_scores.py` reads that CSV and writes it into the matching columns on `candidate_locations` — nothing more. It doesn't touch `criterion_*` or `human_confirmed`; those only get set by an actual human going through Screen 3. The import script's only job is getting the AI's suggestion from a spreadsheet into a database row where the review screen can find it.
 
-This is a one-time step per testbed configuration, run manually (`python scripts/import_plausibility_scores.py ai_suggestions.csv`) — not scheduled, not triggered by the API, not something the live system ever calls on its own. *Built in D26.* It refuses three things:
+This is a one-time step per testbed configuration, run manually (`python scripts/import_plausibility_scores.py ai_suggestions.csv`) — not scheduled, not triggered by the API, not something the live system ever calls on its own. *Built in D26.* It refuses four things:
 - a row whose asset id and name do not match the database;
+- *(D30)* a suggestion made from facts other than the database's, judged by `context_sha256`. A CSV without the column predates D30 and is refused whole. Rows whose facts have since changed are named; with `--skip-changed`, used only when a decisions-log entry authorises the change, the rest are imported;
 - a suggestion that breaks the sequential rule;
 - changing or clearing an AI suggestion already stored on a confirmed card. On a normal card the confirmation was made against it; on a blind card it is half of the agreement measure.
 
 An empty suggestion on a confirmed card is filled. That is the expected order for a blind card. A row the notebook could not score clears any older suggestion on an unconfirmed card. The import prints counts and asset names only, and on a blind card it withholds even a rubric error's detail, so it cannot spoil an open blind card.
 
-**The review's committed record (D26).** The database is not tracked, so `scripts/review_io.py export` writes the completed review to `data/review/plausibility_review.csv` for committing. `restore` rebuilds it on a fresh database, re-checking every rule. That CSV, not the database file, is the frozen Filter 1 input.
+**The review's committed record (D26).** The database is not tracked, so `scripts/review_io.py export` writes the completed review to `data/review/plausibility_review.csv` for committing. `restore` rebuilds it on a fresh database, re-checking every rule. *(D30: also the context hash of each card, refusing by name a card whose facts have changed. `check` runs the same checks without touching any database, before one is deleted.)* That CSV, not the database file, is the frozen Filter 1 input.
 
 ## 5. Running it
 

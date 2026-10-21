@@ -6,11 +6,17 @@ the ai_suggested_* columns of candidate_locations, as specified in
 It never writes criterion_*, human_reason or human_confirmed. Only a reviewer
 in Screen 3 writes those (D12, D26).
 
-    python scripts/import_plausibility_scores.py path/to/ai_suggestions.csv
+    python scripts/import_plausibility_scores.py path/to/ai_suggestions.csv [--skip-changed]
 
 Every check below is fatal:
 - each row must name an existing asset by both id and name, so a reordered seed
   cannot shift suggestions onto the wrong asset;
+- each row's context hash must match this database's (D30): the model must have
+  been shown exactly the facts the reviewer sees here, so a notebook run on an
+  older clone cannot be imported. Rows whose facts have changed are named and the
+  import is refused; with --skip-changed, used only when a decisions-log entry
+  authorises the change, the other rows are imported and the named ones are left
+  without a suggestion;
 - each suggestion must obey the rubric's sequential rule (src/plausibility);
 - an AI suggestion already stored on a confirmed card is never changed or
   cleared. On a normal card the confirmation was made against it; on a blind
@@ -33,11 +39,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from src.plausibility import KEYS, check_sequence, RubricError  # noqa: E402
+from src.plausibility.prompt import asset_context, context_hash  # noqa: E402
 
 DB = ROOT / "data" / "deception_placement.db"
 
 
-def main(path):
+def main(path, skip_changed=False):
     rows = list(csv.DictReader(open(path, newline="", encoding="utf-8")))
     if not rows:
         raise SystemExit(f"{path} has no rows")
@@ -46,13 +53,24 @@ def main(path):
     current = {r["asset_id"]: r for r in conn.execute("""
         SELECT cl.*, a.name FROM candidate_locations cl JOIN assets a ON a.asset_id = cl.asset_id""")}
 
-    planned, failed = [], []
+    planned, failed, changed = [], [], []
     for r in rows:
         aid = int(r["asset_id"])
         if aid not in current or current[aid]["name"] != r["asset_name"]:
             raise SystemExit(f"Row for asset {aid} ({r['asset_name']!r}) does not match the database. "
                              "Was the notebook run against a different seed?")
         cur = current[aid]
+        try:
+            expected = context_hash(asset_context(conn, aid))
+        except sqlite3.OperationalError:
+            raise SystemExit("This database was built before D30 and has no operating profile. Stop the backend, "
+                             "delete data/deception_placement.db and run `uv run scripts/setup.py`.")
+        if not r.get("context_sha256"):
+            raise SystemExit("This CSV has no context hash, so the notebook ran on a repository from before D30. "
+                             "Push the current repository and run the notebook again, because Colab clones it.")
+        if r["context_sha256"] != expected:
+            changed.append(r["asset_name"])
+            continue
         ok = r.get("parse_status", "ok") == "ok"
         if ok:
             values = {k: r.get(f"ai_suggested_{k}") or None for k in KEYS}
@@ -72,6 +90,12 @@ def main(path):
                              "or clear it: the review record would no longer match what was shown.")
         planned.append((*new, aid, r["asset_name"]))
 
+    if changed and not skip_changed:
+        raise SystemExit("These suggestions were produced from different facts than this database holds: "
+                         + ", ".join(changed) + ". Run the notebook again on the current repository, after pushing it "
+                         "(Colab clones it). Only if a decisions-log entry authorises the change, run the import again "
+                         "with --skip-changed to import the rest.")
+
     for ordered, reasoning, model, aid, _ in planned:
         conn.execute("""
             UPDATE candidate_locations SET
@@ -88,10 +112,13 @@ def main(path):
     if failed:
         print(f"No usable suggestion for: {', '.join(failed)}. Those cards are scored directly, "
               "with a reason (route B for those assets, D26).")
+    if changed:
+        print(f"Not imported, because their facts have changed: {', '.join(changed)}.")
     print("Answers are not printed here; review them in Screen 3.")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    args = sys.argv[1:]
+    if len(args) not in (1, 2) or args[1:] not in ([], ["--skip-changed"]):
         raise SystemExit(__doc__)
-    main(sys.argv[1])
+    main(args[0], skip_changed="--skip-changed" in args)

@@ -73,7 +73,7 @@ Guide review cycles, viva preparation, formatting to NFSU's submission requireme
 
 ## Where we are right now
 
-**As of D28 (12 October 2026).** Phases A and B are complete. Phase C's core computational build is complete and verified — database, graph model, all five optimizer implementations, the API and two of three screens — with the explanation layer, Screen 2 and the physical testbed outstanding. The Colab notebook was written in D26 and has not yet been run.
+**As of D30 (18 October 2026).** Phases A and B are complete. Phase C's core computational build is complete and verified — database, graph model, all five optimizer implementations, the API and two of three screens — with the explanation layer, Screen 2 and the physical testbed outstanding. The Colab notebook was written in D26 and has not yet been run.
 
 Phase D's inputs were frozen (D20–D22a) and its evaluation code corrected (D23, D24). D25 then found two input defects before any campaign ran:
 - On the seeded candidate set, greedy is optimal by construction.
@@ -92,6 +92,11 @@ D25 also fixed in advance what the thesis may claim. Phase D is gated on:
    *Added 6 October 2026,* from the sources you supplied that day: a fifth, A40 — the criticality formula multiplies centrality by damage where the patent it draws on adds them — and a label fix, A41 — T0832's tactic is Impact — which must land before the notebook runs.
 
    *Added 12–13 October 2026 (D28):* A41 is done, and P2 step 1 now carries T0822, your choice. P freezes, as seeded, when the first blind card is scored. D28 also corrected the repository text that the 6 October sources overturned, including D5's case for weighting operational risk heavily. No number changed. Because D28 changes the seed, the database is rebuilt before the blind cards, and the batch is pushed before the notebook runs.
+
+   *Added 18 October 2026 (D30):* the review restarted from a fresh database. Two earlier fillings of the cards were discarded without being exported.
+   - Route A stands: the seven non-blind cards wait for the notebook.
+   - The testbed's operating profile was added, so the reviewer and the AI judge from the same facts.
+   - Next: pull D30, rebuild the database, and score the three blind cards (A32).
 2. **A12** — the research question's wording together with an evaluation criterion that is not F itself.
 3. **A15** — agreement with the guide that a mixed result is acceptable.
 

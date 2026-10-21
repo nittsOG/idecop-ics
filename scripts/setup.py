@@ -54,7 +54,8 @@ FRONTEND = ROOT / "src" / "frontend"
 
 # Tables the seed fills. Comparing them with a fresh in-memory build shows
 # whether the database on disk was built from the current schema and seed.
-SEEDED_TABLES = ("zones", "conduits", "assets", "edges", "attack_paths", "attack_path_steps")
+SEEDED_TABLES = ("zones", "conduits", "assets", "edges", "attack_paths", "attack_path_steps",
+                 "plant_facts", "asset_profiles")
 # Columns the code writes back after the build (src/graph_model stores its
 # computed scores in assets). They are left out of the comparison.
 COMPUTED_COLUMNS = {"assets": {"sl_aggregate", "central_score", "damage_score", "criticality"}}
@@ -166,7 +167,11 @@ def build(conn: sqlite3.Connection) -> None:
 def snapshot(conn: sqlite3.Connection) -> dict:
     snap = {"table definitions": conn.execute(
         "SELECT type, name, sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' ORDER BY type, name").fetchall()}
+    existing = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
     for table in SEEDED_TABLES:
+        if table not in existing:          # a database built before the table existed (D30's, for example)
+            snap[table] = "missing"
+            continue
         cols = [r[1] for r in conn.execute(f"PRAGMA table_info({table})")
                 if r[1] not in COMPUTED_COLUMNS.get(table, set())]
         snap[table] = conn.execute(f"SELECT {', '.join(cols)} FROM {table} ORDER BY rowid").fetchall()
@@ -210,11 +215,17 @@ def step_database(check_only: bool) -> None:
             f"{confirmed} confirmed, {blind_done} of {blind} blind cards done")
         return
     differs = [k for k in expected if actual.get(k) != expected[k]] or ["the database could not be read"]
-    message = ("The database does not match the current data/schema.sql and data/seed.sql "
-               f"(different: {', '.join(differs)}). It was built from older files, or read in the wrong "
-               "encoding. It was left untouched, because it holds your confirmations. Rebuild it as "
-               f"described in {GUIDE}, 'Your review data': export, stop the backend, delete the file, "
-               "run this script, restore.")
+    if actual.get("plant_facts") == "missing":
+        # D30 restarted the Filter 1 review, so nothing in a database built before it may be carried over.
+        message = ("The database was built before D30, which added the operating profile and restarted the "
+                   "Filter 1 review. It was left untouched. Do not export or restore it: stop the backend, "
+                   "delete data/deception_placement.db, and run this script again.")
+    else:
+        message = ("The database does not match the current data/schema.sql and data/seed.sql "
+                   f"(different: {', '.join(differs)}). It was built from older files, or read in the wrong "
+                   "encoding. It was left untouched, because it holds your confirmations. Rebuild it as "
+                   f"described in {GUIDE}, 'Your review data': export, check, stop the backend, delete the "
+                   "file, run this script, restore.")
     warnings.append(message)
     say("    WARNING  " + message)
 

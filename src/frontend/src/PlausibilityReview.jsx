@@ -83,18 +83,61 @@ function reasonTriggers(candidate, answers) {
   return t;
 }
 
-function PathSteps({ steps }) {
-  if (!steps.length)
-    return <p className="paths none">On no modelled attack path. Interaction is No by §4's rule.</p>;
+// D30: what the card shows about the asset is built by the same function that
+// builds the scoring prompt (src/plausibility/prompt.py, asset_context), so the
+// reviewer and the AI judge from the same facts: the operating profile, the
+// connections, and every step of every path through the asset.
+function AssetContext({ context }) {
+  const { profile, neighbours, paths } = context;
   return (
-    <ul className="paths">
-      {steps.map((s, i) => (
-        <li key={i}>
-          <strong>{s.path}</strong> · step {s.step_order} of {s.path_length} · {s.tactic} ·{" "}
-          {[s.technique_id, s.technique_name].filter(Boolean).join(" ")}
-        </li>
-      ))}
-    </ul>
+    <div className="context">
+      {profile && (
+        <dl className="profile">
+          <dt>Role</dt>
+          <dd>{profile.role}</dd>
+          <dt>Runs</dt>
+          <dd>{profile.runs}</dd>
+          <dt>Routine activity that reaches it</dt>
+          <dd>{profile.routine_activity}</dd>
+        </dl>
+      )}
+      <p className="context-label">Connections</p>
+      {neighbours.length ? (
+        <ul className="connections">
+          {neighbours.map((n, i) => (
+            <li key={i}>
+              {n.direction} {n.asset}
+              {n.protocol ? ` (${n.protocol})` : ""}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="connections none">None recorded.</p>
+      )}
+      <p className="context-label">Attack paths through this asset</p>
+      {paths.length ? (
+        paths.map((p) => (
+          <div key={p.path} className="path-block">
+            <p className="path-title">
+              <strong>{p.path}</strong> — {p.description}
+            </p>
+            <ol className="paths">
+              {p.steps.map((st) => {
+                const here = p.positions.includes(st.order);
+                return (
+                  <li key={st.order} className={here ? "here" : ""}>
+                    {st.asset} · {st.tactic} · {st.technique}
+                    {here ? "  ← this asset" : ""}
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+        ))
+      ) : (
+        <p className="paths none">On no modelled attack path. Interaction is No by §4's rule.</p>
+      )}
+    </div>
   );
 }
 
@@ -166,7 +209,7 @@ function CandidateCard({ candidate, onSaved }) {
         <span className={status[1]}>{status[0]}</span>
       </div>
 
-      <PathSteps steps={candidate.path_steps} />
+      <AssetContext context={candidate.context} />
       {candidate.n_paths > 1 && (
         <p className="hint">
           On {candidate.n_paths} paths: judge Interaction for each path, record the lowest, and give each path's
@@ -248,25 +291,36 @@ function CandidateCard({ candidate, onSaved }) {
 
 export default function PlausibilityReview() {
   const [candidates, setCandidates] = useState(null);
+  const [facts, setFacts] = useState([]);
+  const [factsError, setFactsError] = useState(null);
   const [error, setError] = useState(null);
 
+  // A reply with an error status carries the backend's own message (for example,
+  // a database built before D30); only a failed request means the backend is unreachable.
+  async function getJson(path) {
+    let r;
+    try {
+      r = await fetch(`${API}${path}`);
+    } catch {
+      throw new Error(`Can't reach the backend at ${API}. Is \`uvicorn src.api.main:app\` running?`);
+    }
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.detail ?? `The backend returned ${r.status}.`);
+    return data;
+  }
+
   function load() {
-    fetch(`${API}/candidates`)
-      .then((r) => {
-        if (!r.ok) throw new Error(`Backend returned ${r.status}`);
-        return r.json();
-      })
-      .then(setCandidates)
-      .catch((e) => setError(e.message));
+    getJson("/candidates").then(setCandidates).catch((e) => setError(e.message));
   }
   useEffect(load, []);
+  useEffect(() => {
+    getJson("/plant-facts").then(setFacts).catch((e) => setFactsError(e.message));
+  }, []);
 
   if (error) {
     return (
       <div className="app">
-        <p className="error">
-          Can't reach the backend at {API} — is `uvicorn src.api.main:app` running? ({error})
-        </p>
+        <p className="error">{error}</p>
       </div>
     );
   }
@@ -286,8 +340,20 @@ export default function PlausibilityReview() {
       </p>
       <p className="rules">
         Answer the four criteria in order; the first No ends the card. Write a reason on blind cards, when you
-        change an AI answer, and for any Mostly No or No. Level definitions: formal-problem-definition.md §4.
+        change an AI answer, and for any Mostly No or No. Level definitions and rules: formal-problem-definition.md
+        §4. The plant facts below and each card's profile describe the plant as designed; take them as given.
       </p>
+      {factsError && <p className="error">Could not load the plant facts: {factsError}</p>}
+      {facts.length > 0 && (
+        <div className="plant">
+          <p className="context-label">This plant</p>
+          <ul>
+            {facts.map((f, i) => (
+              <li key={i}>{f}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <h2>Blind cards — score these first</h2>
       {blind.map((c) => (

@@ -46,3 +46,19 @@ h2 { font-size: 15px; margin: 24px 0 10px; color: #333; }
 .card-footer { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
 .hint { font-size: 12px; color: #8a6600; margin: 0 0 8px; }
 .card-footer .hint, .card-footer .error { margin: 0; font-size: 12px; margin-right: auto; }
+
+/* Screen 3 — D30 operating profile and full paths */
+.context { margin-bottom: 10px; }
+.context-label { font-size: 11px; font-weight: 600; color: #555; text-transform: uppercase; letter-spacing: 0.03em; margin: 8px 0 4px; }
+.profile { display: grid; grid-template-columns: max-content 1fr; gap: 3px 10px; font-size: 12px; color: #333; margin: 0 0 4px; line-height: 1.5; }
+.profile dt { color: #666; font-weight: 600; }
+.profile dd { margin: 0; }
+.connections { font-size: 12px; color: #444; margin: 0 0 4px; padding-left: 18px; line-height: 1.6; }
+.connections.none { padding-left: 0; color: #777; }
+.path-block { margin-bottom: 6px; }
+.path-title { font-size: 12px; color: #333; margin: 0 0 2px; }
+ol.paths { margin-bottom: 6px; }
+.paths li.here { font-weight: 600; color: #1a1a1a; }
+.plant { background: #fff; border: 1px solid #e2e2e2; border-radius: 12px; padding: 8px 16px; margin: 0 0 8px; }
+.plant ul { font-size: 12px; color: #444; margin: 0; padding-left: 18px; line-height: 1.6; }
+@media (max-width: 520px) { .profile { grid-template-columns: 1fr; } }

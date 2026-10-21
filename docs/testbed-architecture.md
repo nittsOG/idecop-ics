@@ -16,7 +16,7 @@ Two layers, not one:
 | Attacker | Kali Linux | External | — | Origin of the network-borne paths (P2, P3); not itself a step of any seeded path. P1 and P4 begin on the engineering workstation (removable media, supply chain) |
 | OT Firewall | pfSense | Perimeter | 3.5 (DMZ boundary) | Conduit c(External, DMZ); P3 step 1 |
 | DMZ Jump Host | Linux, minimal services | OT DMZ | 3.5 | P2 step 1; P5 step 1 (D27); also a natural historian/patch-relay stand-in |
-| Engineering WS | Windows 10/11 or Linux, engineering software installed | Supervisory | 3 | P1 steps 1–2; P4 steps 1 and 3 (D21) |
+| Engineering WS | Windows 10/11 or Linux, engineering software installed *(D30: settled as Windows 10/11 in the operating profile)* | Supervisory | 3 | P1 steps 1–2; P4 steps 1 and 3 (D21) |
 | HMI | Node-RED dashboard | Supervisory | 2–3 | P1 step 5 (P3 step 2 moved to Engineering WS-2 by D19) |
 | PLC-01 | OpenPLC | Control | 1–2 | P1 steps 3–4; P5 step 4 (D27), the same target reached by the backup route. The seeded P2 runs through PLC-03, not PLC-01 |
 | PLC-02 | OpenPLC | Control | 1–2 | Redundant control target — gives the optimizer a second asset of comparable criticality, so "which PLC" is a real decision |
@@ -58,6 +58,24 @@ Zone 4 (Process)           — Process Model (OpenPLC-driven simulation)
 
 This is a direct instantiation of `zone(v)` and `c(z_i, z_j)` from Section 1 of the formal problem definition — not a separate diagram that happens to look similar. The optimizer reads this structure directly.
 
+## Operating profile (D30)
+
+What the plant does in normal operation, written down so that a reviewer can judge Filter 1 without inventing it. It was added on 18 October 2026, after the user found the review could not be done without it.
+- **What it holds.** Three plant-wide facts, and for each asset except the Attacker its role, what it runs, and the routine activity that reaches it. It also fills in the eight blank protocols. The Attacker's connection and the firewall rule to Engineering WS-2 carry none.
+- **Where it lives.** `data/seed.sql` (`plant_facts`, `asset_profiles`, and `edges`) is the only copy.
+- **Who sees it.** Each Screen 3 card shows exactly the text its asset's prompt gets, built by one function, `asset_context` in `src/plausibility/prompt.py`. A fact about a connection is written on both assets it joins.
+- **What it may not hold.** Facts only: no judgement about decoys and no rubric level (`formal-problem-definition.md` §4, convention 6).
+- **Four connections added.** D30 added four connections the profile and the paths imply:
+  - HMI → Historian, the Historian's data source;
+  - Engineering WS → Historian, engineers' trend queries and P4's move;
+  - HMI → PLC-03 (RTU), the RTU's master;
+  - OT Firewall → Engineering WS-2, a firewall rule that P3's move uses.
+- **What that changed.**
+  - Crit moves by at most 0.002 on any asset.
+  - The betweenness ranking changes in two places: Engineering WS-2 moves above Engineering WS, and the HMI moves above the Historian and the PLCs. D30 gives the figures, and how they depend on the new edges' placeholder weights.
+  - `data/legacy/d25_candidate_set.sql` removes the four, so the numbers recorded before D30 still reproduce.
+- **Freeze.** It freezes at the first blind-card score on the fresh database. From then, D28's rule for P applies to it as well.
+
 ## Candidate locations, worked example
 
 Running Section 4's two-filter process against this specific graph — included here because a worked example is more useful than an abstract description, and because it should genuinely exclude some nodes, not rubber-stamp everything:
@@ -88,8 +106,8 @@ Running Section 4's two-filter process against this specific graph — included 
 |---|---|
 | P1 (Stuxnet-class) | Engineering WS ✓, PLC ✓, HMI ✓ — all physical |
 | P2 (Industroyer2-class) | DMZ Jump Host ✓ (physical), Control LAN ✓, PLC/RTU — **PLC-03 (modeled)** carries the IEC-104-specific step; PLC-01/02 can carry the generic Modify Parameter step |
-| P3 (reconnaissance-only) | OT DMZ ✓, Engineering WS-2 ✓ — terminates before Control LAN by design |
-| P4 (Dragonfly-class collection) | Engineering WS ✓ (physical), **Historian ✓ (modelled)** — terminates before impact by design |
+| P3 (reconnaissance-only) | OT DMZ ✓, Engineering WS-2 ✓ — terminates before Control LAN by design. *D30: the move from the OT Firewall to Engineering WS-2 now uses a recorded connection* |
+| P4 (Dragonfly-class collection) | Engineering WS ✓ (physical), **Historian ✓ (modelled)** — terminates before impact by design. *D30: its moves now use a recorded connection, Engineering WS → Historian* |
 | P5 (backup conduit, D27) | DMZ Jump Host ✓ (physical), **Backup Control Switch ✓ (modelled)**, PLC-01 ✓ (physical) — every step has a node; the route uses existing edges |
 
 No gaps, P5 included. If a further path is added, check it against this table before assuming the current build supports it.

@@ -35,8 +35,8 @@ Everything below is real, executed code. The database is initialised and queried
 - `data/schema.sql`, `data/seed.sql` — ten tables, transcribed from `docs/02-data-model.md`. A real fix was fed back into that document while building: the original seed never populated `edges`/`conduits`, leaving the graph with zero connectivity.
 - `src/graph_model/` — loads the real graph, computes betweenness centrality (genuinely computed, not placeholder) and `Crit(v)`. SL and damage values are still placeholders pending real elicitation; the module docstring explains why.
 - `src/optimizer/` — all five methods, scored by a single shared `score()` so results stay comparable.
-- `src/api/main.py` — `GET /health`, `/graph`, `/assets`, `/candidates`, `/attack-paths`, `/runs`, `/runs/{id}`; `POST /optimize`, `/candidates/{asset_id}/confirm`.
-- `src/frontend/` — Screen 3 (plausibility review, rebuilt in D26: blind cards, path steps, four levels, reasons) and Screen 1 (single-run dashboard).
+- `src/api/main.py` — `GET /health`, `/graph`, `/assets`, `/candidates`, `/plant-facts`, `/attack-paths`, `/runs`, `/runs/{id}`; `POST /optimize`, `/candidates/{asset_id}/confirm`.
+- `src/frontend/` — Screen 3 (plausibility review, rebuilt in D26: blind cards, path steps, four levels, reasons; since D30 each card shows the testbed's operating profile and the asset's full paths, the same context the AI's prompt gets) and Screen 1 (single-run dashboard).
 - `src/plausibility/`, `scripts/import_plausibility_scores.py`, `scripts/review_io.py` — Filter 1's rules in one place, the notebook import, and the review's committed record (D26).
 
 **Not built yet**
@@ -114,21 +114,27 @@ It then builds the database if there is none, installs the frontend's packages, 
 ```bash
 uv run scripts/setup.py                                  # once; again after a pull that changes requirements.lock
 
-uv run python -m uvicorn src.api.main:app --reload       # backend
-cd src/frontend && uv run npm run dev                    # frontend, in a second terminal; open http://localhost:5173, not 127.0.0.1
+uv run python -m uvicorn src.api.main:app --reload       # backend, in one terminal
+
+cd src/frontend                                          # frontend, in a second terminal
+uv run npm run dev                                       # then open http://localhost:5173, not 127.0.0.1
 ```
 
+The frontend's two commands stay on separate lines because Windows PowerShell 5.1, the version built into Windows, does not accept `&&` (PowerShell 7 does).
+
 - **The database is safe.** The setup script never changes an existing database, because it holds your confirmations.
+- **A database built before D30 is the exception.** D30 restarted the Filter 1 review, so delete it and run the setup script again. Do not export or restore it. The setup script and the backend both say so.
 - **`uv run`** runs a command inside `.venv` without activating it. The commands below write `python` for short: put `uv run` in front, or activate `.venv` first.
 - **UTF-8.** The database is built with UTF-8 named explicitly. The command this README gave until 13 October 2026 did not name it, and on Windows that stores three kinds of value garbled. The guide's *Notes* give the effect: no live result moved. The setup script reports a database built that way.
 
 **The Filter 1 review (A32, D26), in order.**
-1. In Screen 3 (the *Plausibility Review* button), score the three blind cards: DMZ Jump Host, Historian and PLC-03 (RTU).
-2. Run `notebooks/plausibility_scoring.ipynb` in Colab with a GPU (A20). Then run `python scripts/import_plausibility_scores.py ai_suggestions.csv`.
-3. Review the other seven cards in Screen 3.
-4. Run `python scripts/review_io.py export --require-complete`, then commit `data/review/` with the notebook's two output files.
+1. In Screen 3 (the *Plausibility Review* button), score the three blind cards: DMZ Jump Host, Historian and PLC-03 (RTU). Judge from what the screen shows: the plant facts at the top, and each card's profile, connections and paths (D30).
+2. Run `python scripts/review_io.py export`, then commit and push `data/review/plausibility_review.csv`. This is recommended, not required: it dates the blind answers before any AI answer exists.
+3. Run `notebooks/plausibility_scoring.ipynb` in Colab with a GPU (A20). Then run `python scripts/import_plausibility_scores.py ai_suggestions.csv`. The import refuses suggestions made from facts other than your database's (D30), so push first, because Colab clones the repository.
+4. Review the other seven cards in Screen 3.
+5. Run `python scripts/review_io.py export --require-complete`, then commit `data/review/` with the notebook's two output files.
 
-`python scripts/review_io.py restore data/review/plausibility_review.csv` rebuilds the review on a fresh database.
+`python scripts/review_io.py restore data/review/plausibility_review.csv` rebuilds the review on a fresh database. Run `python scripts/review_io.py check data/review/plausibility_review.csv` first, before deleting anything: it runs the same checks and changes nothing.
 
 **The evaluation scripts** run once the review has produced candidates with Filter 2 scores:
 

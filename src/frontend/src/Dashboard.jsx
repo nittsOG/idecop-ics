@@ -39,10 +39,20 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // D30: an error reply carries the backend's own message (for example, a database
+    // built before D30), so it is shown rather than drawn as if it were a graph.
     fetch(`${API}/graph`)
-      .then((r) => r.json())
-      .then(setGraph)
-      .catch((e) => setError(`Can't reach backend: ${e.message}`));
+      .then(
+        async (r) => {
+          const data = await r.json().catch(() => ({}));
+          if (!r.ok) throw new Error(data.detail ?? `The backend returned ${r.status}.`);
+          setGraph(data);
+        },
+        (e) => {
+          throw new Error(`Can't reach backend: ${e.message}`);
+        }
+      )
+      .catch((e) => setError(e.message));
   }, []);
 
   async function runOptimize() {

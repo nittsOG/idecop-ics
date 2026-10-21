@@ -4,7 +4,7 @@ Turns the mathematical objects in `formal-problem-definition.md` into an actual 
 
 ## Design principles
 
-- **One row per formal object.** `assets` is `V`, `edges` is `E`, `candidate_locations` is the output of Section 4's two filters, `attack_paths`/`attack_path_steps` is `P`. No table exists that doesn't correspond to something already defined.
+- **One row per formal object.** `assets` is `V`, `edges` is `E`, `candidate_locations` is the output of Section 4's two filters, `attack_paths`/`attack_path_steps` is `P`. No table exists that doesn't correspond to something already defined. *D30: `plant_facts` and `asset_profiles` hold the testbed's operating profile, which §4's convention 6 defines as an input to Filter 1. They are not symbols of the optimisation model, and nothing in F reads them.*
 - **Computed scores are stored, not just derivable.** `criticality`, the filter outcomes, and every run's metrics get persisted columns rather than being recomputed on every read — this project's testbed is small enough that recomputation would be cheap, but persisting makes the evaluation methodology (Phase D) able to query historical runs directly instead of re-running the optimizer to compare methods.
 - **Every optimizer run is a row, not an overwrite.** `placement_runs` supports exactly what Section 7's baseline comparison needs: Random, Centrality, and Proposed all coexist in the same table, distinguished by `method`, so Phase D's comparison queries are simple `WHERE` clauses, not separate exports.
 
@@ -49,6 +49,22 @@ CREATE TABLE edges (
     target_asset_id  INTEGER NOT NULL REFERENCES assets(asset_id),
     protocol         TEXT,
     weight           REAL DEFAULT 1.0
+);
+
+-- Operating profile (D30): facts about the plant as designed. Screen 3's cards
+-- and the scoring prompt (src/plausibility/prompt.py) both read it, so the
+-- reviewer and the AI judge from the same facts. It holds no judgement about
+-- decoys and no rubric level. It freezes at the first blind-card score (D30).
+CREATE TABLE plant_facts (
+    fact_id  INTEGER PRIMARY KEY AUTOINCREMENT,
+    text     TEXT NOT NULL
+);
+
+CREATE TABLE asset_profiles (
+    asset_id          INTEGER PRIMARY KEY REFERENCES assets(asset_id),
+    role              TEXT NOT NULL,   -- what the asset is for in this plant
+    runs              TEXT NOT NULL,   -- its software and the services it offers
+    routine_activity  TEXT NOT NULL    -- the routine activity that reaches it
 );
 
 -- Candidate locations — L. The two-filter output from §4. Rewritten by D26:
@@ -151,6 +167,8 @@ Populated directly from `testbed-architecture.md`'s 11-node graph and `threat-at
 > - D22/D22a replaced the detectability values.
 >
 > D26 brought the `candidate_locations` block back into line. The other differences remain, and `seed.sql` holds the current values.
+>
+> D30's operating profile (`plant_facts`, `asset_profiles`), the protocols it filled in on `edges`, and the four connections it added appear only in `seed.sql`.
 >
 > D28 corrected one error present here and in `seed.sql` from the start: P1 step 5's tactic. MITRE lists T0832 Manipulation of View under Impact, not Inhibit Response Function (#387). D28 also gave P2 step 1 a technique, T0822 External Remote Services (#383), in both places; it had read "Network-perimeter entry".
 
@@ -256,7 +274,8 @@ INSERT INTO edges (source_asset_id, target_asset_id, protocol, weight) VALUES
 | Endpoint | Method | Purpose |
 |---|---|---|
 | `/graph` | GET | Full `G` — assets + edges as JSON, for Screen 1's network view, drawn as plain SVG *(D28: this said "the Cytoscape.js/React Flow frontend"; neither library is used)* |
-| `/candidates` | GET | Every asset's Filter 1 review state, with its attack-path steps. On an unconfirmed blind card the AI's answer is withheld (D26). `L` is the confirmed subset that passes Filter 1 and has a Filter 2 score |
+| `/candidates` | GET | Every asset's Filter 1 review state, with its attack-path steps. On an unconfirmed blind card the AI's answer is withheld (D26). `L` is the confirmed subset that passes Filter 1 and has a Filter 2 score. Since D30 each row also carries `context`: the asset's operating profile, connections and full paths, from the same `asset_context()` that builds the AI's prompt |
+| `/plant-facts` | GET | The plant-wide lines of the operating profile (D30) |
 | `/candidates/{id}/confirm` | POST | The reviewer's four answers and reason; applies the rules in `src/plausibility` (D26) |
 | `/attack-paths` | GET | `P` with all steps |
 | `/assets/{id}/damage-score` | PUT | Set `Damage(v)` manually during testbed design (§2 — elicited, not computed). *Not built: Damage is still a placeholder (A37)* |
