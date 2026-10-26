@@ -15,7 +15,8 @@ h1 { font-size: 22px; margin-bottom: 4px; }
 .btn-edited { border-color: #b98900; background: #fff8e6; color: #8a6600; }
 
 .badge-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
-.badge-select { font-size: 12px; padding: 3px 6px; border-radius: 6px; border: 1px solid #d6d6d6; background: #f3f3f3; }
+.badge-select { font-size: 13px; padding: 4px 6px; border-radius: 6px; border: 1px solid #9aa3ad; background: #fff; color: #1a1a1a; font-weight: 600; }
+.badge-select:disabled { background: #eceef0; color: #4a4a4a; border-color: #c9ced3; }
 
 .reasoning { font-size: 13px; color: #555; line-height: 1.5; margin: 0; }
 
@@ -42,7 +43,7 @@ h2 { font-size: 15px; margin: 24px 0 10px; color: #333; }
 .agree { color: #0f6e56; }
 .disagree { color: #b3261e; font-weight: 600; }
 .reason { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #444; margin-bottom: 10px; }
-.reason textarea { font: inherit; font-size: 13px; padding: 6px 8px; border: 1px solid #d6d6d6; border-radius: 6px; resize: vertical; }
+.reason textarea { font: inherit; font-size: 13px; padding: 6px 8px; border: 1px solid #9aa3ad; border-radius: 6px; resize: vertical; background: #fff; color: #1a1a1a; }
 .card-footer { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
 .hint { font-size: 12px; color: #8a6600; margin: 0 0 8px; }
 .card-footer .hint, .card-footer .error { margin: 0; font-size: 12px; margin-right: auto; }
