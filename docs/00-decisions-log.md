@@ -838,3 +838,106 @@ A32 step 2, scoring the three blind cards, began on 14 October 2026. Three thing
   - specification: `formal-problem-definition.md` §3–4, `02-ai-role.md` §8–10, `02-data-model.md`, `02-prototype-architecture.md` §2–3, `02-system-flow.md`, `testbed-architecture.md`, `threat-attack-model.md`;
   - guides and trackers: `00-glossary.md`, `00-action-items.md` A32 and A35, `00-project-phases.md`, `04-setup-guide.md`, `README.md`. The last also gets the frontend command split onto two lines, because Windows PowerShell 5.1 rejects `&&`;
   - pointer notes on D26 and D28.
+
+**D31 — A32 step 4: Filter 2 scores for the five assets that passed Filter 1 for the first time, and the first run on the reviewed candidate set. The run is pre-freeze: A35–A38 and A40 are still open, by the user's choice of 26 October 2026.**
+
+**1. Where A32 stood.** Its steps up to the export are done and committed.
+- *Blind cards:* scored first, on the fresh database, before any AI output existed (commit `79830f7`).
+- *AI first pass (A20):* one run of `notebooks/plausibility_scoring.ipynb` in Colab on 24 October 2026, generated at 19:29:20 UTC from commit `79830f7`.
+  - Model: Qwen3-14B at revision `40c069824f42`, in 4-bit nf4, with greedy decoding, on a T4. All ten cards parsed on the first attempt.
+  - A second run in the same session could not load the model, because the first copy was still in GPU memory, and produced no output. The first run is the only one. Its files are `data/review/ai_suggestions.csv` and `data/review/ai_raw_outputs.jsonl`.
+- *Review:* all ten cards confirmed and exported (`cda4c98`). Engineering WS-2's Interaction answer was then set to match its written reason (`a986abd`).
+- *Filter 1 result:* nine assets pass. PLC-02 fails by the path rule, as known in advance (D26, D27).
+
+**2. What the review measured, reported as counts (D26).**
+- *Blind cards, first answers against the AI's suggestions:* 7 of 12 answers agree.
+  - All 5 disagreements are the AI one level higher than the reviewer: Feasibility on all three cards (Yes against Mostly Yes), and Malice fidelity on the DMZ Jump Host and the Historian (Mostly Yes against Mostly No).
+  - The reviewer kept every first answer as final after seeing the AI's.
+- *The seven pre-filled cards:* the reviewer kept 25 of the AI's 26 answers. The one change is Engineering WS-2's Interaction, from Mostly No to Mostly Yes. Its reason: the leftover firewall rule exposes the workstation to the outside, which the AI's reason contradicted. Per D26, this acceptance rate is reported as a limitation, not as evidence that the AI is accurate.
+- *Three cards are not a sample.* The blind measure rests on three cards and twelve answers. D30's limitation stands: the reviewer had scored these cards once before the restart.
+
+**3. A disclosure: Claude's part in three of the reviewer's reasons.** On 25 October 2026 the reviewer asked Claude for help with the three non-blind cards that required a written reason. Claude is the AI assistant used to develop this project, not the scoring model. The three are Engineering WS and PLC-01, which lie on two paths each, and Engineering WS-2, whose AI answer was Mostly No.
+- Claude declined to discuss the blind cards, and did not discuss them.
+- For the three cards, Claude explained each path, gave its own reading of each path's Interaction level, and drafted reason text. The reviewer adopted all three drafts unedited.
+- On Engineering WS-2, Claude argued that the scoring model's reason contradicted the plant facts and leaned to Mostly Yes. The reviewer changed the answer to Mostly Yes and adopted Claude's reason for that change.
+- So on those three cards the record shows the reviewer accepting a second AI's reading, not an independent human check. The levels on Engineering WS and PLC-01 equal the scoring model's. Engineering WS-2's differs from it by the one change above.
+- Claude offered the alternative of rewriting the reasons in the reviewer's own words, and said that keeping them meant recording this disclosure. The reviewer kept them because of the time available before the midsem.
+
+**4. The five Filter 2 scores (A32 step 4).** Five assets entered L for the first time and had no D22a score, so the candidate loader refused to run (D26).
+- *Who decided:* Claude scored them on 26 October 2026, after re-reading #352's full text. The user accepted all five the same day, choosing the anchor for each of the two least-grounded ones.
+- *How:* by the rubric's formula, risk = 0.4·E + 0.3·P_req + 0.3·A, with each asset anchored to the already-scored asset of the same or nearest type.
+
+| Asset | Zone | E | P_req | A | risk | Basis | Confidence |
+|---|---|---|---|---|---|---|---|
+| Engineering WS | Supervisory | 0.5 | 0.6 | 0.6 | 0.56 | Same type and zone as Engineering WS-2 | Verified consistent with D22a |
+| PLC-01 | Control | 0.2 | 0.9 | 0.9 | 0.62 | Same type (OpenPLC) and zone as PLC-02. #352 §5.2: one Modbus request, or one scan, separates PLC honeypots from real PLCs | Verified consistent with D22a |
+| PLC-03 (RTU) | Control | 0.2 | 0.9 | 0.9 | 0.62 | An ICS field device, so #352 §4.9's ICS/OT finding applies. #352 names neither RTUs nor IEC-104, so this is an extension | Likely |
+| OT Firewall | OT DMZ | 0.9 | 0.7 | 0.7 | 0.78 | #352 does not discuss firewalls. Anchored to the HMI: the attacker-facing surface is a web management interface, which endpoint checks and default TLS certificates expose early (§4.4, §6.1) | Unconfirmed |
+| Backup Control Switch | Control | 0.2 | 0.9 | 0.7 | 0.56 | #352 does not discuss switches. Its one interface is SSH, which a single connection fingerprints (§5.2, HASSH; §6.2, default OpenSSH versions). Artifacts anchored to the HMI's one emulated interface | Unconfirmed |
+
+- *Alternatives the user rejected:*
+  - the OT Firewall scored as a real-OS decoy, like the DMZ Jump Host: P_req 0.6, A 0.5, risk 0.69;
+  - the switch scored like the PLCs: risk 0.62.
+
+  Neither alternative changes any placement on the comparison grid (item 6).
+- *Arithmetic:* all ten values were recomputed in code from their factors and match the seed.
+
+**5. Two gaps in the rubric, found while scoring and not changed (A43).**
+- *Artifact exposure has no stated scale.* `02-detectability-rubric.md` §2 gives numbers for E and P_req, but A's values were set by reasoning per asset type. The five new A values are anchored to the existing ones, not derived from a formula.
+- *Exposure is zone-only.* D30's leftover firewall rule (G4) exposes Engineering WS-2 to the outside, which E's zone rule does not see. Scored at the OT DMZ's exposure, WS-2's risk would be 0.72, not 0.56. *Measured:* no placement on the comparison grid changes either way.
+
+**6. The first run on the reviewed set, pre-freeze.** *Verified by `scripts/run_comparison.py`, `scripts/sweep.py` (also with `--sens`) and `scripts/structure_check.py`, on a database rebuilt from this batch's seed with the committed review restored.*
+- *What is open.* This is the first time any result on this candidate set has been seen. Five inputs are still open:
+  - A35, edge weights;
+  - A36, path targets: CritProt still weights P1 by the HMI, its last step;
+  - A37, the placeholder criticality inputs;
+  - A38, the OT DMZ–Control conduit;
+  - A40, the criticality formula's form.
+- *The instance is no longer trivial.* L has nine members, every path meets at least two candidates, and the gain part g is not modular (1,584 violations). D25's Finding 1, that greedy is optimal by construction, no longer holds.
+- *Structure:* F is submodular and not monotone (1,168 monotonicity violations). Distorted greedy's preconditions all hold, so γ = 1.
+- *B = 3, default weights:*
+  - Greedy, distorted greedy, the exact MILP and exhaustive search all place the DMZ Jump Host, Engineering WS and the OT Firewall: F = 2.1108, Coverage 1.00, Early 0.69, CritProt 1.00, Risk 0.51, Cost 0.75. Every path is intercepted at its first step.
+  - Centrality places the Backup Control Switch, the DMZ Jump Host and the OT Firewall: F = 1.0473, Coverage 0.60.
+  - Random averages F = 1.1838 (s.d. 0.3875, 30 trials).
+- *Declared grid, 20 cells:*
+  - Greedy against centrality: 16 wins (10 swap, 6 decline) / 4 ties / 0 losses, resting on 6 distinct placement disagreements.
+  - Greedy equals the exhaustive optimum in 20 of 20, and the MILP is exact in 20 of 20.
+  - Distorted greedy is below plain greedy in 0 of 20.
+  - The smallest rounding margin is 12,580 units, against a bound of 19.
+- *§8's clause 2 holds in 19 of 20.* It fails at B = 1, δ = 3, which is a swap, not a decline. Greedy takes Engineering WS (risk 0.56) instead of the DMZ Jump Host (0.69), with the same coverage and lower CritProt (0.37 against 0.45).
+- *Sensitivity sample (`--sens`):*
+  - 15 to 18 wins, and no loss, in every sampled grid;
+  - greedy equals the optimum in every sampled grid;
+  - the MILP is exact in all 68 sampled configurations;
+  - clause 2 holds in 17 to 20 of 20.
+- *What centrality does here.* It ranks by betweenness alone, so it spends picks on positions that cover the same paths. At B = 4 it places the OT Firewall and Engineering WS-2, both only on P3, and the switch and the DMZ Jump Host, both on P5. It never reaches more than three of the five paths.
+
+**7. What the thesis may claim from this (D25's claim rule).**
+- The instance is non-trivial, so greedy matching the exact optimum in every cell is a finding, for this one instance of nine candidates only. Broader search-quality claims need a family of instances (A12).
+- "0 losses" is still implied by optimality. It says nothing about whether F is a good objective; that needs A12's criterion outside F.
+- Nothing here is a Phase D result, because the inputs are not frozen.
+
+**8. Why pre-freeze, and the order from here.** With the midsem on 28 October 2026 and one evening left, the user chose on 26 October to run before settling A35–A38 and A40, and to settle them after the midsem, before the freeze.
+- *Claude's recommendations, given in conversation earlier the same day, before this run:*
+  - A35: unweighted betweenness;
+  - A36: an explicit target per path. P1 PLC-01, P2 PLC-03 (RTU), P3 Engineering WS-2, P4 the Historian, P5 PLC-01;
+  - A37: the guide's call;
+  - A38: record the conduit;
+  - A40: the additive form, with weights 0.4 / 0.2 / 0.2 / 0.2.
+
+  They are recorded in `00-action-items.md` in this batch.
+- *The rule for each:* each decision, whichever way it goes, gets an entry stating its effect against item 6's numbers, whether that effect is favourable or not.
+- *Then:* the freeze, every check re-run, and the entry stating the effect against D25.
+
+**9. A gap in the setup script's database check, found and fixed.** `scripts/setup.py` compares an existing database with the seed, but it left out `candidate_locations`' seeded Filter 2 score.
+- *The consequence:* on a database built before this batch it reported "matches the current schema and seed", while the five new scores were missing there. Today the optimizer then refuses, with a clear message. But a later change of a score from one value to another, for example under A43, would have run on the old value without any warning.
+- *The fix:* the check now includes `detectability_risk`, so it warns and points to the guide's rebuild procedure (export, check, stop the backend, delete, run the script, restore).
+- *Verified* on a copy of a database built before this batch and holding the committed review:
+  - the check now warns;
+  - an export from it equals the committed `data/review/plausibility_review.csv` byte for byte;
+  - after the rebuild and restore, the check passes and the optimizer runs;
+  - Screen 1 runs both methods in Chromium. At its fixed budget of two, the proposed method places the DMZ Jump Host and Engineering WS (Coverage 0.80), and centrality the DMZ Jump Host and the OT Firewall (0.60).
+
+**Effect on recorded numbers.** None changes: no result on the reviewed set existed before this entry. The legacy reproduction is unchanged. With the legacy set loaded and `--legacy-d25` passed, `run_comparison.py`, `sweep.py --sens` and `structure_check.py` print output identical to the output at commit `4dce7ff`.
+
+*Status: confirmed by the user (the five scores and both anchors, 26 October 2026), implemented and verified as above. Not independently reviewed: the batch was prepared in one evening before the midsem. Reference: `data/seed.sql`, `scripts/setup.py`, `02-detectability-rubric.md` §3–4, `formal-problem-definition.md` §4, `02-data-model.md` (a pointer note), `00-action-items.md` A20, A32, A35–A38, A40 and A43, `00-project-phases.md`, `README.md` (its status lines, and two counts that were already stale: ten endpoints, not nine; twelve tables, not ten), `sources.md` #352.*

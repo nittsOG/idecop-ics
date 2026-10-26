@@ -175,8 +175,11 @@ def snapshot(conn: sqlite3.Connection) -> dict:
         cols = [r[1] for r in conn.execute(f"PRAGMA table_info({table})")
                 if r[1] not in COMPUTED_COLUMNS.get(table, set())]
         snap[table] = conn.execute(f"SELECT {', '.join(cols)} FROM {table} ORDER BY rowid").fetchall()
+    # The seeded columns of candidate_locations, not the review's. The Filter 2
+    # score is seeded, so a seed change to it must be noticed: otherwise an old
+    # database runs the optimizer on stale inputs (D31).
     snap["candidate cards"] = conn.execute(
-        "SELECT asset_id, blind_first FROM candidate_locations ORDER BY asset_id").fetchall()
+        "SELECT asset_id, blind_first, detectability_risk FROM candidate_locations ORDER BY asset_id").fetchall()
     return snap
 
 

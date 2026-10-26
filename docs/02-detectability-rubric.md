@@ -75,8 +75,13 @@ Which of A1, A4, A5, A7, A8 a decoy at this position must get right, weighted by
 | Engineering WS-2 | Supervisory | 0.5 | 0.6 (P2) | 0.6 | **0.56** | Moderate exposure; VM-based, so A5 virtualisation artifacts apply |
 | HMI | Supervisory | 0.5 | 0.7 (P1–P2) | 0.7 | **0.62** | Web-endpoint structure checks identify emulated dashboards early (§4.4) |
 | PLC-02 | Control | 0.2 | **0.9 (P1)** | 0.9 | **0.62** | Deepest zone, so rarely reached — but trivially identified once it is |
+| OT Firewall | OT DMZ | 0.9 | 0.7 (P1–P2) | 0.7 | **0.78** | Heavily scanned. #352 does not discuss firewalls, so it is scored like the HMI: what an attacker sees is a web management interface, which endpoint checks and default TLS certificates expose early (§4.4, §6.1). *Unconfirmed* (D31) |
+| Engineering WS | Supervisory | 0.5 | 0.6 (P2) | 0.6 | **0.56** | Same type and zone as Engineering WS-2, so the same score (D31) |
+| PLC-01 | Control | 0.2 | **0.9 (P1)** | 0.9 | **0.62** | Same type and zone as PLC-02. One Modbus request, or one scan, separates PLC honeypots from real PLCs (§5.2) (D31) |
+| PLC-03 (RTU) | Control | 0.2 | **0.9 (P1)** | 0.9 | **0.62** | An ICS field device, so §4.9's ICS/OT finding applies. #352 names neither RTUs nor IEC-104, so this is an extension. *Likely* (D31) |
+| Backup Control Switch | Control | 0.2 | **0.9 (P1)** | 0.7 | **0.56** | #352 does not discuss switches. Its one interface is SSH, which a single connection fingerprints (§5.2, HASSH; §6.2, default OpenSSH versions); artifacts scored as for the HMI's one emulated interface. *Unconfirmed* (D31) |
 
-*D26: Engineering WS, PLC-01, PLC-03 (RTU), the Backup Control Switch and the OT Firewall have no score yet. Any of them that passes Filter 1 is scored here at A32 step 4, before the candidate set is frozen. The OT Firewall's former 0.0 in the seed was a placeholder for "fails plausibility", not a score, and is now NULL. The candidate loader refuses any candidate without a score.*
+*D26: Engineering WS, PLC-01, PLC-03 (RTU), the Backup Control Switch and the OT Firewall have no score yet. Any of them that passes Filter 1 is scored here at A32 step 4, before the candidate set is frozen. The OT Firewall's former 0.0 in the seed was a placeholder for "fails plausibility", not a score, and is now NULL. The candidate loader refuses any candidate without a score.* *[D31, 26 October 2026: all five passed Filter 1 and are scored above, by Claude after re-reading #352 in full, and accepted by the user. Each is anchored to the already-scored asset of the same or nearest type, because §2 gives A no numeric scale (A43). For the two unconfirmed rows the user chose between two anchors. The rejected ones were the OT Firewall as a real-OS decoy like the DMZ Jump Host (0.69) and the switch scored like the PLCs (0.62). Neither changes any placement on the comparison grid.]*
 
 ### What the correction changed
 
@@ -99,6 +104,12 @@ Version 1 derived probing depth from whether a path in **P** swept or sought the
 **Anchor values are reasoned, not measured.** Measuring them means deploying decoys of each type and running fingerprinting tools against them — a separate study.
 
 **T6 and artifacts A2, A3, A6 are not coded in the article text**, appearing only in figures. The rubric uses only the explicitly coded artifacts.
+
+**A has no numeric scale (found at D31; A43).** §2 tables E and P_req, but A's values were set by reasoning per asset type. New values are anchored to the existing rows by asset type, not derived from a formula.
+
+**E sees only the zone (found at D31; A43).** D30's leftover firewall rule exposes Engineering WS-2 directly to the outside, which a zone-derived E cannot see. At the OT DMZ's exposure WS-2 would score 0.72, not 0.56. No placement on the comparison grid changes either way (D31).
+
+**#352 covers neither network devices nor IEC-104** (re-read 26 October 2026). The OT Firewall's and the Backup Control Switch's scores rest on its web and SSH findings by analogy, and PLC-03's on its general ICS/OT finding.
 
 ---
 

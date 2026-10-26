@@ -170,6 +170,8 @@ Populated directly from `testbed-architecture.md`'s 11-node graph and `threat-at
 >
 > D30's operating profile (`plant_facts`, `asset_profiles`), the protocols it filled in on `edges`, and the four connections it added appear only in `seed.sql`.
 >
+> D31 gave five assets their Filter 2 scores in `seed.sql`: the OT Firewall 0.78, Engineering WS 0.56, PLC-01 0.62, PLC-03 (RTU) 0.62 and the Backup Control Switch 0.56. The `candidate_locations` block below still shows them as NULL, so it no longer matches `seed.sql`.
+>
 > D28 corrected one error present here and in `seed.sql` from the start: P1 step 5's tactic. MITRE lists T0832 Manipulation of View under Impact, not Inhibit Response Function (#387). D28 also gave P2 step 1 a technique, T0822 External Remote Services (#383), in both places; it had read "Network-perimeter entry".
 
 ```sql

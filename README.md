@@ -19,11 +19,11 @@ Everything below is real, executed code. The database is initialised and queried
 | `docs/` | Specification, research, decisions log, project tracking. Naming convention in `docs/00-workflow-and-rules.md` |
 | `src/graph_model/` | Builds `G = (V,E)` from SQLite; weighted betweenness centrality; `Crit(v)` |
 | `src/optimizer/` | `metrics.py` (F(x) and its five components), `baselines.py` (greedy, distorted greedy, random, centrality), `milp.py` (exact validator) |
-| `src/api/` | FastAPI backend — nine endpoints |
+| `src/api/` | FastAPI backend — ten endpoints |
 | `src/frontend/` | React + Vite interface |
 | `src/plausibility/` | Filter 1's rules (sequence, combination, reason) and the AI first-pass prompt, shared by the API, the scripts and the notebook (D26) |
 | `notebooks/` | `plausibility_scoring.ipynb` — the Colab AI first pass for Filter 1 (A20) |
-| `data/` | Schema and seed data; `legacy/` holds the pre-D26 candidate set for reproducing old numbers; `review/` will hold the committed Filter 1 review |
+| `data/` | Schema and seed data; `legacy/` holds the pre-D26 candidate set for reproducing old numbers; `review/` holds the committed Filter 1 review and the AI first pass's output (D31) |
 | `scripts/` | `setup.py` — the one-time setup of the pinned environment, the database and the frontend's packages, with checks (D29); `run_comparison.py` — runs all five methods at one budget; `sweep.py` — the declared 20-cell grid behind every comparative number (D24); `structure_check.py` — exhaustive monotonicity/submodularity/modularity tests, including whether the gain part is modular (D25's claim rule); `import_plausibility_scores.py` and `review_io.py` — the notebook import and the review's committed record (D26) |
 
 ---
@@ -32,7 +32,7 @@ Everything below is real, executed code. The database is initialised and queried
 
 **Built and working**
 
-- `data/schema.sql`, `data/seed.sql` — ten tables, transcribed from `docs/02-data-model.md`. A real fix was fed back into that document while building: the original seed never populated `edges`/`conduits`, leaving the graph with zero connectivity.
+- `data/schema.sql`, `data/seed.sql` — twelve tables (D30 added `plant_facts` and `asset_profiles`), transcribed from `docs/02-data-model.md`. A real fix was fed back into that document while building: the original seed never populated `edges`/`conduits`, leaving the graph with zero connectivity.
 - `src/graph_model/` — loads the real graph, computes betweenness centrality (genuinely computed, not placeholder) and `Crit(v)`. SL and damage values are still placeholders pending real elicitation; the module docstring explains why.
 - `src/optimizer/` — all five methods, scored by a single shared `score()` so results stay comparable.
 - `src/api/main.py` — `GET /health`, `/graph`, `/assets`, `/candidates`, `/plant-facts`, `/attack-paths`, `/runs`, `/runs/{id}`; `POST /optimize`, `/candidates/{asset_id}/confirm`.
@@ -41,13 +41,15 @@ Everything below is real, executed code. The database is initialised and queried
 
 **Not built yet**
 
-Explanation layer (`/runs/{id}/explain` — needs a live Ollama instance), Screen 2 (sensitivity-sweep comparison), and the physical VM testbed. The Colab plausibility-scoring notebook is written (D26) but has not been run; it needs a GPU.
+Explanation layer (`/runs/{id}/explain` — needs a live Ollama instance), Screen 2 (sensitivity-sweep comparison), and the physical VM testbed. The Colab plausibility-scoring notebook (D26) ran once, on 24 October 2026; its output is in `data/review/` (A20, D31).
 
-**The candidate set is empty until the A32 review (D26).** The seed no longer pre-judges which assets are decoy sites, so every script and `POST /optimize` refuse to run until Screen 3's review confirms at least one asset that passes Filter 1 and has a Filter 2 score.
+**The candidate set is empty until the A32 review (D26).** The seed no longer pre-judges which assets are decoy sites, so every script and `POST /optimize` refuse to run until Screen 3's review confirms at least one asset that passes Filter 1 and has a Filter 2 score. *D31 (26 October 2026): the review is committed in `data/review/`. Restore it on a fresh database (see* Running it*), and L has nine candidates. The first run on them is recorded in D31. It is pre-freeze, because five inputs are still open (A35–A38, A40).*
 
 ---
 
 ## Current comparison — read the caveats, not just the numbers
+
+*D31 (26 October 2026): the first run on the reviewed candidate set, nine candidates and five paths, is recorded in D31. It is pre-freeze, so it is not an evaluation result either. The table below is the legacy set's.*
 
 **These numbers come from the legacy D25 candidate set. They are not evaluation results.** Reproduce them with `data/legacy/d25_candidate_set.sql` and `--legacy-d25` (see *Running it*). Budget = 3, five seeded candidates (three of them never scored through §4's plausibility filter, the other two only through demo data — D25), **four** attack paths (P4 added in D21), default weights (α=β=γ=δ=1, ε=0.1). Risk and Cost are divided by the fixed constant K = 4, not by the budget (D25). Produced by `scripts/run_comparison.py`.
 

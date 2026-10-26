@@ -73,6 +73,19 @@ Guide review cycles, viva preparation, formatting to NFSU's submission requireme
 
 ## Where we are right now
 
+**Update, D31 (26 October 2026).**
+- *A32 is done up to the freeze.*
+  - The three blind cards were scored first.
+  - The notebook ran once, on 24 October (A20), and its suggestions were imported.
+  - All ten cards were reviewed and committed: nine assets pass Filter 1, and PLC-02 fails it.
+  - The five new candidates have D22a scores.
+- *The first run on the reviewed set is made, and is pre-freeze.* On nine candidates the instance is no longer modular. Greedy equals the exact optimum in all 20 comparison-grid cells, and beats centrality in 16 with no loss.
+- *Next, after the midsem on 28 October:*
+  1. A35–A38, A40 and A43;
+  2. the freeze, every check re-run, and the entry against D25;
+  3. A12 and A15 with the guide.
+- The text below is as of D30; its statements that the notebook has not run and that the blind cards come next are overtaken by this update.
+
 **As of D30 (18 October 2026).** Phases A and B are complete. Phase C's core computational build is complete and verified — database, graph model, all five optimizer implementations, the API and two of three screens — with the explanation layer, Screen 2 and the physical testbed outstanding. The Colab notebook was written in D26 and has not yet been run.
 
 Phase D's inputs were frozen (D20–D22a) and its evaluation code corrected (D23, D24). D25 then found two input defects before any campaign ran:
