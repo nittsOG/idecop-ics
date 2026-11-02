@@ -3,13 +3,17 @@
 -- Finding 2): three of its five members were never scored through Filter 1,
 -- and the other two only through demo data that D26 removed.
 --
--- Load it only to reproduce numbers recorded in docs/00-decisions-log.md
--- before D26, on a database built from data/schema.sql and data/seed.sql:
+-- Kept as history (D33). It reproduces the numbers recorded in
+-- docs/00-decisions-log.md before D26 only at commit ebcaaa4: check out that
+-- commit, build a database from its data/schema.sql and data/seed.sql, load
+-- this file into it,
 --
 --     conn.executescript(open("data/legacy/d25_candidate_set.sql").read())
 --
--- The scripts then refuse to run unless given --legacy-d25, and they print a
--- banner saying the result is historical. The API never accepts this set.
+-- and pass --legacy-d25 to the scripts there, which print a banner saying the
+-- result is historical. D33 retired that route from the current tree, because
+-- its changes to the objective would no longer reproduce those numbers. The
+-- API never accepted this set.
 -- Nothing here is an evaluation input.
 --
 -- Those numbers were measured on P1-P4, so this file also removes P5, which

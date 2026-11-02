@@ -37,7 +37,7 @@ misleads, so this script reports what it is made of:
     On this instance it therefore cannot score lower on F than any other
     placement: "0 losses" is IMPLIED BY OPTIMALITY. It is not evidence that F
     is a good objective, because F is both what is maximised and the yardstick.
-    And on the legacy D25 candidate set it is not evidence of search quality
+    And on the legacy D25 candidate set (retired, D33) it was not evidence of search quality
     either: every path meets exactly one candidate, so the gain part g is
     modular and greedy is optimal BY CONSTRUCTION (D25). The script tests this
     and says so; that check is D25's claim rule in code.
@@ -69,7 +69,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.graph_model import (load_graph, compute_criticality, load_attack_paths,
-                             candidates_or_exit, legacy_flag)
+                             candidates_or_exit)
 from src.optimizer.baselines import greedy, centrality_baseline, distorted_greedy
 from src.optimizer.milp import solve_milp, SCALE
 from src.optimizer.metrics import score, NORMALISER_K
@@ -98,8 +98,7 @@ TOL = 1e-9
 ROOT = Path(__file__).resolve().parents[1]
 g = load_graph()
 crit = compute_criticality(g)
-LEGACY = legacy_flag(sys.argv)          # D26
-candidates = candidates_or_exit(allow_legacy=LEGACY)
+candidates = candidates_or_exit()   # D33 retired --legacy-d25; pre-D26 numbers reproduce at commit ebcaaa4
 paths = load_attack_paths()
 central_scores = {n: crit[n]["central"] for n in crit}
 names = {n: crit[n]["name"] for n in crit}
@@ -324,6 +323,9 @@ if "--sens" in sys.argv:
         ("delta only {1..5}", (1, 2, 3, 4), delta_only((1.0, 2.0, 3.0, 4.0, 5.0))),
         # B=5 exceeds NORMALISER_K, so Risk and Cost can exceed 1 in this row only.
         # Kept because D24 records this grid as the near-miss; it is a sample.
+        # D33: epsilon varied alone, to show whether any placement depends on it.
+        ("epsilon only {0,0.1,0.3,1,3}", (1, 2, 3, 4),
+         {f"eps={e:g}": (1.0, 1.0, 1.0, 1.0, e) for e in (0.0, 0.1, 0.3, 1.0, 3.0)}),
         ("unpushed D24 draft grid", (1, 2, 3, 4, 5), delta_only((0.5, 1.0, 2.0, 3.0))),
     ]
     print()

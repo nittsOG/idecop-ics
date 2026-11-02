@@ -17,13 +17,13 @@ Everything below is real, executed code. The database is initialised and queried
 | Path | Contents |
 |---|---|
 | `docs/` | Specification, research, decisions log, project tracking. Naming convention in `docs/00-workflow-and-rules.md` |
-| `src/graph_model/` | Builds `G = (V,E)` from SQLite; weighted betweenness centrality; `Crit(v)` |
+| `src/graph_model/` | Builds `G = (V,E)` from SQLite; unweighted betweenness centrality (D33); `Crit(v)` |
 | `src/optimizer/` | `metrics.py` (F(x) and its five components), `baselines.py` (greedy, distorted greedy, random, centrality), `milp.py` (exact validator) |
 | `src/api/` | FastAPI backend — ten endpoints |
 | `src/frontend/` | React + Vite interface |
 | `src/plausibility/` | Filter 1's rules (sequence, combination, reason) and the AI first-pass prompt, shared by the API, the scripts and the notebook (D26) |
 | `notebooks/` | `plausibility_scoring.ipynb` — the Colab AI first pass for Filter 1 (A20) |
-| `data/` | Schema and seed data; `legacy/` holds the pre-D26 candidate set for reproducing old numbers; `review/` holds the committed Filter 1 review and the AI first pass's output (D31) |
+| `data/` | Schema and seed data; `legacy/` holds the pre-D26 candidate set as history: the numbers recorded before D26 reproduce with it only at commit `ebcaaa4` (D33); `review/` holds the committed Filter 1 review and the AI first pass's output (D31) |
 | `scripts/` | `setup.py` — the one-time setup of the pinned environment, the database and the frontend's packages, with checks (D29); `run_comparison.py` — runs all five methods at one budget; `sweep.py` — the declared 20-cell grid behind every comparative number (D24); `structure_check.py` — exhaustive monotonicity/submodularity/modularity tests, including whether the gain part is modular (D25's claim rule); `import_plausibility_scores.py` and `review_io.py` — the notebook import and the review's committed record (D26) |
 
 ---
@@ -33,7 +33,7 @@ Everything below is real, executed code. The database is initialised and queried
 **Built and working**
 
 - `data/schema.sql`, `data/seed.sql` — twelve tables (D30 added `plant_facts` and `asset_profiles`), transcribed from `docs/02-data-model.md`. A real fix was fed back into that document while building: the original seed never populated `edges`/`conduits`, leaving the graph with zero connectivity.
-- `src/graph_model/` — loads the real graph, computes betweenness centrality (genuinely computed, not placeholder) and `Crit(v)`. SL and damage values are still placeholders pending real elicitation; the module docstring explains why.
+- `src/graph_model/` — loads the real graph, computes betweenness centrality (genuinely computed, not placeholder) and `Crit(v)`. Centrality is unweighted, and SL and Damage are declared design inputs read from the database (D33); the module docstring explains both.
 - `src/optimizer/` — all five methods, scored by a single shared `score()` so results stay comparable.
 - `src/api/main.py` — `GET /health`, `/graph`, `/assets`, `/candidates`, `/plant-facts`, `/attack-paths`, `/runs`, `/runs/{id}`; `POST /optimize`, `/candidates/{asset_id}/confirm`.
 - `src/frontend/` — Screen 3 (plausibility review, rebuilt in D26: blind cards, path steps, four levels, reasons; since D30 each card shows the testbed's operating profile and the asset's full paths, the same context the AI's prompt gets) and Screen 1 (single-run dashboard).
@@ -49,9 +49,9 @@ Explanation layer (`/runs/{id}/explain` — needs a live Ollama instance), Scree
 
 ## Current comparison — read the caveats, not just the numbers
 
-*D31 (26 October 2026): the first run on the reviewed candidate set, nine candidates and five paths, is recorded in D31. It is pre-freeze, so it is not an evaluation result either. The table below is the legacy set's.*
+*D33 (2 November 2026): the open inputs are settled, and the run on the reviewed candidate set, nine candidates and five paths, is recorded there. At B = 3 with default weights, greedy, distorted greedy and the MILP place the DMZ Jump Host, Engineering WS and the OT Firewall (F = 2.4175); centrality places the DMZ Jump Host, Engineering WS-2 and the OT Firewall (1.2060); random placements average 1.3229. The run is pre-freeze, so these are not evaluation results. Everything else in this section is the legacy set's and is historical.*
 
-**These numbers come from the legacy D25 candidate set. They are not evaluation results.** Reproduce them with `data/legacy/d25_candidate_set.sql` and `--legacy-d25` (see *Running it*). Budget = 3, five seeded candidates (three of them never scored through §4's plausibility filter, the other two only through demo data — D25), **four** attack paths (P4 added in D21), default weights (α=β=γ=δ=1, ε=0.1). Risk and Cost are divided by the fixed constant K = 4, not by the budget (D25). Produced by `scripts/run_comparison.py`.
+**Historical: these numbers come from the legacy D25 candidate set. They are not evaluation results.** They reproduce at commit `ebcaaa4` with `data/legacy/d25_candidate_set.sql` and `--legacy-d25` (see *Running it*); D33 retired that route from the current tree. Budget = 3, five seeded candidates (three of them never scored through §4's plausibility filter, the other two only through demo data — D25), **four** attack paths (P4 added in D21), default weights (α=β=γ=δ=1, ε=0.1). Risk and Cost are divided by the fixed constant K = 4, not by the budget (D25). Produced by `scripts/run_comparison.py`.
 
 | Method | Placement | F(x) | Coverage | Early | CritProt | Risk | Cost |
 |---|---|---|---|---|---|---|---|
@@ -98,7 +98,7 @@ The objective was corrected in D20 after exhaustive structural testing (`scripts
 
 **`Early(x)` was structurally broken, and only exhaustive testing showed it.** Engineering WS-2 originally contributed to no attack path (D15), fixed by rerouting P3 through it (D19). After that fix greedy selected DMZ Jump Host alone under default weights, and the reason turned out to be structural rather than incidental: a mean over intercepted paths is non-monotone, so adding a late-intercepting decoy lowers the score. D19 observed the symptom; D20 identified the cause by enumerating every subset and verifying the violation count. Changing the denominator to a fixed |P| makes the term monotone and submodular, and — not coincidentally — removes the need for D16's k-enumeration workaround entirely, since the early coefficient stops depending on a quantity the solver is choosing.
 
-**Conduits were named in the novelty claim and computed nowhere.** The claim states that IEC 62443 zone *and conduit* structure are first-class inputs. Zones genuinely were: `SL(zone(v))` enters `Crit(v)`. Conduits were stored, diagrammed, and inert — the clause was false as built. D20 adds `ConduitSL(v)`: a conduit takes the higher SL of the two zones it joins, and an asset inherits the highest SL among conduits incident to its zone. Modular in **x**, so submodularity survives; re-verified after the change.
+**Conduits were named in the novelty claim and computed nowhere.** The claim states that IEC 62443 zone *and conduit* structure are first-class inputs. Zones genuinely were: `SL(zone(v))` enters `Crit(v)`. Conduits were stored, diagrammed, and inert — the clause was false as built. D20 adds `ConduitSL(v)`: a conduit takes the higher SL of the two zones it joins, and an asset inherits the highest SL among conduits incident to its zone. Modular in **x**, so submodularity survives; re-verified after the change. *[D33: an asset now takes the highest SL among the recorded conduits that its own connections cross. The zone step made the term a constant once the OT DMZ–Control conduit was recorded.]*
 
 **The seeded candidate set made greedy optimal by construction (D25).** Each attack path meets exactly one of the five seeded candidates, and PLC-02 meets none, so the gain part of F is modular and greedy is exactly optimal under any weights. The "20 of 20 optimal" result therefore validates the code, not the search. It also traced to a process gap. Three of the five candidates were seeded without ever being scored through §4's plausibility filter. The other two carry demo-data confirmations, and one of those (the DMZ Jump Host) fails the only implemented filter rule. Three assets on attack paths were never assessed. The candidate set is re-derived through the filters next (A32), before Phase D, with the effect stated whichever way it goes. D25 records beforehand what the thesis may claim in either outcome, and `sweep.py` now tests the condition in code rather than relying on prose.
 
@@ -146,14 +146,15 @@ python scripts/sweep.py --sens                  # the 20-cell comparison grid, p
 python scripts/structure_check.py               # monotonicity, submodularity, modularity — exhaustive
 ```
 
-**To reproduce a number recorded before D26,** load the legacy set into a freshly built database, then pass the flag:
+**To reproduce a number recorded before D26,** check out commit `ebcaaa4`, load the legacy set into a database freshly built there, then pass the flag. D33 retired the route from the current tree, because its changes to the objective would no longer reproduce those numbers.
 
 ```bash
+git checkout ebcaaa4
 python -c "import sqlite3; c=sqlite3.connect('data/deception_placement.db'); c.executescript(open('data/legacy/d25_candidate_set.sql', encoding='utf-8').read()); c.commit()"
 python scripts/sweep.py --sens --legacy-d25     # likewise run_comparison.py, structure_check.py
 ```
 
-The output is identical to commit `1a93af9`'s, apart from a banner marking it as historical. The API never accepts the legacy set.
+At that commit the output is identical to commit `1a93af9`'s, apart from a banner marking it as historical. Return with `git checkout main`. The API never accepted the legacy set.
 
 `.venv/`, `node_modules/`, `dist/` and `*.db` are not tracked — `uv run scripts/setup.py` regenerates them. Run it again after pulling a change to `requirements.lock` or `src/frontend/package-lock.json`.
 

@@ -59,7 +59,7 @@ def _solve_for_fixed_coverage(candidates, paths, criticality, detectability_risk
     model.Add(sum(x.values()) <= budget)
 
     y, z = {}, {}
-    max_crit = sum(criticality[p["asset_sequence"][-1]]["criticality"] for p in paths) or 1.0  # D20
+    max_crit = sum(criticality[p["target"]]["criticality"] for p in paths) or 1.0  # D20; D33: declared targets
     obj_terms = []
 
     for i, p in enumerate(paths):
@@ -84,7 +84,7 @@ def _solve_for_fixed_coverage(candidates, paths, criticality, detectability_risk
             prior_z.append(zi)
         model.Add(sum(z[(i, s)] for s, _ in candidate_steps) == yi)
 
-        target_crit = criticality[seq[-1]]["criticality"]
+        target_crit = criticality[p["target"]]["criticality"]
         obj_terms.append(int(round(alpha * SCALE / len(paths))) * yi)
         obj_terms.append(int(round(gamma * SCALE * target_crit / max_crit)) * yi)
         # Early is now correctly normalized by the FIXED k, not a variable.
@@ -97,7 +97,8 @@ def _solve_for_fixed_coverage(candidates, paths, criticality, detectability_risk
             # metrics.score reports — so the "exact" validator returned
             # placements that scored BELOW greedy on the true objective. Same
             # class of defect as D16, in a different place. See D24.
-            w = int(round(early_coef * (1 - (step_idx + 1) / p["length"])))
+            # D33: per-path earliness (n - s)/(n - 1), as metrics.score computes it.
+            w = int(round(early_coef * (p["length"] - (step_idx + 1)) / (p["length"] - 1)))
             obj_terms.append(w * z[(i, step_idx)])
 
     if k is not None:

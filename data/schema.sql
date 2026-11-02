@@ -4,7 +4,8 @@
 CREATE TABLE zones (
     zone_id      INTEGER PRIMARY KEY AUTOINCREMENT,
     name         TEXT NOT NULL UNIQUE,
-    purdue_level TEXT NOT NULL
+    purdue_level TEXT NOT NULL,
+    sl_t_vector  TEXT
 );
 
 CREATE TABLE conduits (
@@ -26,7 +27,8 @@ CREATE TABLE assets (
     central_score REAL,
     damage_score  REAL,
     criticality   REAL,
-    notes         TEXT
+    notes         TEXT,
+    process_share REAL
 );
 
 CREATE TABLE edges (
@@ -91,7 +93,8 @@ CREATE TABLE candidate_locations (
 CREATE TABLE attack_paths (
     path_id     INTEGER PRIMARY KEY AUTOINCREMENT,
     name        TEXT NOT NULL UNIQUE,
-    description TEXT
+    description TEXT,
+    target_asset_id INTEGER NOT NULL REFERENCES assets(asset_id)
 );
 
 CREATE TABLE attack_path_steps (

@@ -70,14 +70,15 @@ def score(x: set[int], paths: list[dict], criticality: dict[int, dict],
     There is deliberately no budget parameter (D25): the budget constrains how
     many decoys a method may place, and never changes what a placement is worth.
 
-    Default epsilon is smaller than the other four. Before D20 Cost was a raw
-    decoy count, and equal weights would have let it dominate. It has been
-    normalised since then, and 0.1 is kept as a light, uniform per-decoy
-    charge, so that the detectability trade-off is carried mainly by delta.
-    This default isn't a claimed 'correct' weighting — it's what makes the
-    sensitivity sweep in formal-problem-definition.md §5 meaningful to run at
-    all; the sweep itself is what actually justifies a final choice, not this
-    default."""
+    Default epsilon (D33): epsilon*Cost charges each placed decoy the same
+    operating burden (deployment, change management, alert handling), apart
+    from its detectability, which delta*Risk prices. At epsilon = 0.1 and K = 4
+    the charge is 0.025 per decoy: one-eighth of the value of catching one more
+    path (alpha/|P| = 0.2), and under a fifth of the smallest detectability
+    charge (0.14). It is a declared convention, not a calibration. Its first
+    reason, that a raw count would dominate, lapsed when D20 normalised Cost.
+    On the declared grid the optimum is the same at epsilon = 0 and 0.1 in
+    every cell; scripts/sweep.py --sens varies it alone."""
     alpha, beta, gamma, delta, epsilon = weights
     n_paths = len(paths)
     hits = _intercepted_paths(x, paths)
@@ -93,18 +94,23 @@ def score(x: set[int], paths: list[dict], criticality: dict[int, dict],
     # P4 -- see D24). A fixed |P| denominator is monotone and
     # submodular. Mean earliness is still reported separately as
     # `mean_stage_earliness` because it is the interpretable statistic.
-    early = sum(1 - (stage / p["length"]) for i, stage in hits.items() for p in [paths[i]]) / n_paths if n_paths else 0.0
+    # D33: a path caught at step s of n scores (n - s)/(n - 1): 1 at the first
+    # step, 0 at the last. Under 1 - s/n the best score depended on how many
+    # steps the path was written with (a first-step catch gave 1 - 1/n).
+    # The loader refuses paths of fewer than two steps.
+    early = sum((p["length"] - stage) / (p["length"] - 1) for i, stage in hits.items() for p in [paths[i]]) / n_paths if n_paths else 0.0
     mean_stage_earliness = (
-        sum(1 - (stage / p["length"]) for i, stage in hits.items() for p in [paths[i]]) / len(hits)
+        sum((p["length"] - stage) / (p["length"] - 1) for i, stage in hits.items() for p in [paths[i]]) / len(hits)
         if hits else 0.0
     )
 
     # CritProt: normalized by the criticality of PATH TARGETS, not of every
     # asset in the graph. The old denominator capped this term near 0.30 even
     # at full coverage, so gamma=1 was silently gamma≈0.3. See D20.
+    # D33 (A36): a path's target is declared per path, not taken as its last step.
     if hits:
-        crit_prot_raw = sum(criticality[paths[i]["asset_sequence"][-1]]["criticality"] for i in hits)
-        target_total = sum(criticality[p["asset_sequence"][-1]]["criticality"] for p in paths) or 1.0
+        crit_prot_raw = sum(criticality[paths[i]["target"]]["criticality"] for i in hits)
+        target_total = sum(criticality[p["target"]]["criticality"] for p in paths) or 1.0
         crit_prot = crit_prot_raw / target_total
     else:
         crit_prot = 0.0

@@ -3,15 +3,14 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import sqlite3
 
-from src.graph_model import load_graph, compute_criticality, load_attack_paths, candidates_or_exit, legacy_flag
+from src.graph_model import load_graph, compute_criticality, load_attack_paths, candidates_or_exit
 from src.optimizer.baselines import greedy, random_baseline, centrality_baseline, distorted_greedy
 from src.optimizer.milp import solve_milp
 from src.optimizer.metrics import NORMALISER_K
 
 g = load_graph()
 crit = compute_criticality(g)
-LEGACY = legacy_flag(sys.argv)          # D26: strips --legacy-d25 before the budget is read
-candidates = candidates_or_exit(allow_legacy=LEGACY)
+candidates = candidates_or_exit()   # D33 retired --legacy-d25; pre-D26 numbers reproduce at commit ebcaaa4
 paths = load_attack_paths()
 central_scores = {n: crit[n]["central"] for n in crit}
 names = {n: crit[n]["name"] for n in crit}

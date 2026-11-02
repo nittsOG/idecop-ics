@@ -941,3 +941,107 @@ A32 step 2, scoring the three blind cards, began on 14 October 2026. Three thing
 **Effect on recorded numbers.** None changes: no result on the reviewed set existed before this entry. The legacy reproduction is unchanged. With the legacy set loaded and `--legacy-d25` passed, `run_comparison.py`, `sweep.py --sens` and `structure_check.py` print output identical to the output at commit `4dce7ff`.
 
 *Status: confirmed by the user (the five scores and both anchors, 26 October 2026), implemented and verified as above. Not independently reviewed: the batch was prepared in one evening before the midsem. Reference: `data/seed.sql`, `scripts/setup.py`, `02-detectability-rubric.md` §3–4, `formal-problem-definition.md` §4, `02-data-model.md` (a pointer note), `00-action-items.md` A20, A32, A35–A38, A40 and A43, `00-project-phases.md`, `README.md` (its status lines, and two counts that were already stale: ten endpoints, not nine; twelve tables, not ten), `sources.md` #352.*
+
+**D32 — From 30 October 2026 the user settles the open methodological questions without consulting the guide. No input, code or number changes.**
+
+On 30 October 2026 the user decided not to consult the guide on the open methodological questions.
+- *Who decides:* A12, A15, A16, A17 and A37, recorded as "the guide's call", are the user's own decisions from that date.
+- *How:* with written independent reviews. Twelve single-item reviews and a combined review were written on 30 October 2026, and an advisor's review of all of them on 2 November 2026. Independent Claude agents wrote them, not people. They are working documents outside the repository, so each decision's own entry states its grounds.
+- *A15:* the advance agreement with the guide, that an honestly reported negative result is acceptable, becomes a dated pre-registration entry of the user's own, committed before any Phase D run.
+- *Unaffected:* the institutional items A7, A10 and A14. The guide's two post-midsem requests, a simulation and a K-fold-style validation, stand as requirements; A12 answers both.
+
+*Status: the user's decision, 30 October 2026; recorded 2 November 2026.*
+
+**D33 — The open inputs are settled before the freeze: A35, A36, A37, A38, A40, A43, the cost weight ε and Early's endpoint. Greedy places the same decoys as D31 in all 20 cells; §8's clause 2 falls from 19 to 18 of 20. The user's choices, 2 November 2026.**
+
+**1. How they were decided (D32).** The reviews of 30 October proposed a slate. The advisor's review of 2 November accepted it with four changes: two belong here (Control's FR4 at 2, and the edge-level ConduitSL), and two belong to A12's and A15's entries. Claude re-ran the advisor's final set and reproduced its outputs byte for byte. The user accepted every value below, as proposed, on 2 November 2026.
+- Every value is a design declaration with stated grounds, not a measurement.
+- Every one was chosen after D31's numbers had been seen, so items 4 and 5 state each one's effect, favourable or not.
+- This is before Phase D, and the inputs are not yet frozen: the freeze follows the A12, A15 and A17 entries.
+
+**2. The decisions.**
+- **A35, edge weights.** Betweenness is unweighted (hop count), for Crit and for the centrality baseline. `weight(e)` stays recorded; no computation uses it.
+  - *Why:* the weights are unmeasured placeholders. NetworkX reads a weight as a distance, so the rare-traffic links (0.5) counted as shortcuts, which is why the Backup Control Switch ranked third. Two edges carry no legitimate traffic at all, so no consistent traffic reading exists.
+  - Betweenness stays directed, while P and A12's simulation move along edges either way. That is a limitation, not a change to D4's baseline.
+- **A36, path targets.** A new column, `attack_paths.target_asset_id`: P1 PLC-01, P2 PLC-03 (RTU), P3 Engineering WS-2, P4 the Historian, P5 PLC-01. The loader refuses a target that is not on its path.
+  - *Why:* CritProt credited P1 to the HMI, where the attack hides its effect, and P4 to the Engineering WS, not to what each scenario attacks.
+  - A written rule gives the same five: the asset of the first step whose tactic is Impair Process Control or Impact; for a path with neither, the first step of its final tactic. It stays out of code, so relabelling a tactic cannot change F.
+  - PLC-01 carries 0.45 of CritProt across P1 and P5. That is two scenarios with one target, not D19's split scenario.
+- **A37, SL and Damage.** Per-zone SL-T vectors over FR1–FR7, with SL = mean ÷ 4:
+  - OT DMZ [3,3,3,2,3,2,1] = 0.607;
+  - Supervisory [3,4,3,2,3,2,3] = 0.714;
+  - Control [4,4,4,2,3,3,4] = 0.857;
+  - External has none, so 0.
+
+  Damage is 1/3 for each of PLC-01, PLC-02 and PLC-03 (RTU), and 0 for every other asset. The values live in their own columns, never in `plant_facts` or `asset_profiles`.
+  - *Why:* each cell takes the SL whose attacker the zone must resist, judged from what a failure of that requirement there would do; `seed.sql` states the rule. This is consequence-led SL-T, a declared adaptation, not an IEC 62443-3-2 allocation. #330 advises against high SL-T for field devices when allocating protection, while Crit measures importance.
+  - Control's FR4 is 2, not 1: P5 sniffs traffic there deliberately (T0842), and SL 1 covers only casual violation.
+  - The operating profile names three controllers and states no ratio between them.
+- **A38, the OT DMZ–Control conduit.** Recorded: the RTU vendor's IEC-104 maintenance sessions and the switch failover route. `load_graph` now refuses an edge between two zones that have no conduit row.
+  - **ConduitSL becomes edge-level, replacing D20(4)'s zone step.** An asset's ConduitSL is the highest SL among the recorded conduits that its own connections cross, in either direction, and 0 if there are none. A conduit's SL is still the higher SL of the two zones it joins (#330).
+  - *Why:* under the zone step the new row would give every internal asset the same ConduitSL (0.857), so the term would be a constant, and the Historian would inherit a boundary that none of its connections touches. §1 defines a conduit as the edges crossing a zone boundary, and §2 says the term exists to mark assets at a high-SL boundary. The edge rule does both.
+  - Now the OT Firewall and the Historian get 0.714, and every other asset 0.857.
+- **A40, Crit's form.** Crit = 0.25·SL + 0.25·Central + 0.25·Damage + 0.25·ConduitSL, with Central on betweenness's normalised [0, 1] scale. The weights are a declared convention and are not swept, so §2's promise of a sweep is withdrawn.
+  - *Why:* Central·Damage zeroed every controller's damage, since every controller has zero betweenness. The additive form is #325's.
+  - Equal weights and 0.4/0.2/0.2/0.2 give identical counts.
+  - On this graph Central adds at most 0.028 to any asset's Crit, and 0.008 to any target's.
+- **A43, Filter 2's two gaps.**
+  - *G1-B:* A's values are declared reasoned anchors. The missing numeric scale stays a stated limitation.
+  - *G2-B:* an asset to which a recorded rule of the perimeter firewall passes connections from the External zone takes the OT DMZ's exposure, E = 0.9. Exposure reached only through another asset's onward connections does not count. Only Engineering WS-2 qualifies (D30's G4): its risk goes from 0.56 to 0.72.
+  - *Why:* a count-based scale for A, written now, would be written knowing the target values, and #352 gives none. The narrow rule does not re-expose the Supervisory and Control assets the Jump Host reaches.
+- **ε, the cost weight.** Kept at 0.1, with its rationale now in `metrics.score`'s docstring: a declared convention that charges 0.025 per decoy at K = 4, one-eighth of the coverage value of one more path. `sweep.py --sens` gains an ε-only row, {0, 0.1, 0.3, 1, 3}.
+  - *Why:* its only written reason lapsed at D20, and it had never been varied.
+- **Early's endpoint.** A path caught at step s of n contributes (n − s)/(n − 1): 1 at the first step, 0 at the last. The loader refuses a path of fewer than two steps. Phase D's F-based comparisons are also reported under D24's 1 − s/n.
+  - *Why:* under 1 − s/n the best possible score depended on how many steps the path was written with. P3, the early-detection test, could never score above 0.5.
+- **The legacy route.** `--legacy-d25` is retired from the three scripts and the loader. `data/legacy/d25_candidate_set.sql` stays, as history, and the numbers recorded before D26 reproduce at commit `ebcaaa4` with that flag.
+  - *Why:* A35, A37, A40 and Early change its output through code, so in the current tree it would no longer reproduce those numbers.
+
+**3. What does not change.**
+- The candidate set L (nine assets), the five paths and their steps, the defaults of α to δ, K = 4, the five methods and the 20-cell grid.
+- No card changes: `asset_context` puts none of these inputs on a card, no edge is added or removed, and no path's name, description or step changes. All 10 committed cards pass the check and restore.
+
+**4. Effect against D31's run.** *Verified by `run_comparison.py 3`, `sweep.py --sens` and `structure_check.py`, on a database rebuilt from this batch with the committed review restored. The outputs are byte-identical to the advisor's final set.*
+- Greedy, distorted greedy and the MILP place the same decoys as D31 in all 20 cells.
+- *B = 3, default weights:*
+  - Greedy places the DMZ Jump Host, Engineering WS and the OT Firewall: F 2.1108 → 2.4175, and Early 0.69 → 1.00. Coverage, CritProt, Risk and Cost are unchanged (1.00, 1.00, 0.51, 0.75). The rise comes from Early's new endpoint alone, since every path is caught at its first step.
+  - Centrality now places the DMZ Jump Host, Engineering WS-2 and the OT Firewall, where D31 had the Backup Control Switch in place of WS-2: F 1.0473 → 1.2060.
+  - Random placements average 1.1838 → 1.3229.
+- *Declared grid:*
+  - Against centrality: 16 wins (10 swap, 6 decline) / 4 ties / 0 losses, unchanged.
+  - Greedy equals the exhaustive optimum in 20 of 20.
+  - The MILP is exact in 20 of 20, and in all 84 sampled configurations.
+  - Distorted greedy is below greedy in 0 of 20.
+  - The smallest rounding margins are 17,426 units on the grid and 15,074 in the sample, against bounds of 19 and 20.
+- *§8's clause 2:* 19 → 18 of 20. It fails at B = 1, δ = 3, a swap, as in D31, and now also at B = 4, δ = 3, a decline.
+- *Structure:* F is submodular and not monotone (1,104 monotonicity violations). Distorted greedy's preconditions hold, and g is not modular.
+- *Early equals Coverage in every cell,* so on this grid Early's timing part is never exercised.
+- *ε:* the optimum is the same at ε = 0 and ε = 0.1 in all 20 cells. It first changes at:
+  - 1.528 under default weights (B = 3–4);
+  - 3.128 under α = 3 or β = 3;
+  - 2.943 under γ = 3;
+  - 2.936 under δ = 3 (B = 2–4).
+
+**5. Each decision's direction,** as measured in the reviews, each against D31 or the slate. *Likely:* those runs were not repeated here, but their combination reproduces exactly.
+- *A35, unfavourable to the method.* It causes the new clause-2 failure, and greedy's lead at B = 4 with default weights falls from 1.2285 to 0.2050.
+- *A43's G2-B, favourable.* Centrality picks WS-2 at B = 3–4, so its F falls in 10 cells.
+- *The edge-level ConduitSL, unfavourable on leads.* Greedy's lead falls by up to 0.0375, and at B = 1, δ = 3 from 0.0342 to 0.0174. In the sample it loses one win and gains one clause-2 cell.
+- *Control's FR4 cell, negligible.* Leads move by −0.0020 to +0.0041, and no count moves.
+- *Early* raises F for every placement that catches a path early, and moves no placement.
+
+**6. Disclosures.**
+- *A close cell.* Greedy's lead at B = 1, δ = 3 is 0.0174. The combined review found that this cell flips only if the RTU's Damage share exceeds about 0.62–0.69, or the OT DMZ's SL falls below about 0.31–0.35. It computed these on the slate's values, before the edge-level change, so the thresholds are likely lower now. They were known when the Damage split was declared, and they are re-measured at the freeze.
+- *A gap in P.* No path continues the outside route through D30's leftover rule, OT Firewall → Engineering WS-2 → PLC-02, to a controller. P cannot change without voiding committed cards, so this is recorded as a limitation. A12's simulation covers the route, and its entry must disclose what was expected of it in advance.
+- *Who proposed the values.* Independent Claude agents proposed every value here (D32), and Claude prepared this batch. The user accepted the values unedited.
+
+**7. Now stale, for the next documentation pass.** Where these differ from this entry, this entry governs.
+- `formal-problem-definition.md`: §2's bullets, and §5's Early and CritProt bullets, carry D33 pointer notes only. §8's question awaits A12.
+- `00-glossary.md`, `02-optimization-formulation.md`, `02-system-flow.md` and `02-prototype-architecture.md`: the old Crit, Early or placeholder wording, and `02-system-flow.md`'s description of the legacy route.
+- `threat-attack-model.md`: the paths do not list their targets yet.
+- *T0811, separately:* D21's and #350's claims are wrong in part. The v17.1 and live pages name Duqu, not Dragonfly 2.0, as the procedure example, and list A0006 Data Historian and A0007 as targeted assets, with no engineering workstation. So P4's Historian target and step 2 stand, while step 3 (T0811 at the Engineering WS) no longer has a listed-target grounding. `sources.md` #350 carries an update line from this batch; D21's wording is corrected in the next pass.
+- `testbed-architecture.md`, `04-setup-guide.md` and `00-repository-structure.md`: their mentions of the legacy route.
+- `02-data-model.md`: the seed transcription, already marked stale there. Its schema copy is updated.
+- `README.md`: the comparison table and the sweep subsection are marked historical, not rewritten.
+- `00-action-items.md`: the rows for A35–A38, A40 and A43 are marked done, and A12 and A15–A17 carry D32's note. Their text is not rewritten.
+- `02-detectability-rubric.md`: the per-asset list of artifact classes and #352 sections that G1-B asks for.
+
+*Status: the user's choices, 2 November 2026, on the reviews that D32 describes; implemented, and verified as in item 4. Reference: `data/schema.sql`, `data/seed.sql`, `data/legacy/d25_candidate_set.sql`, `src/graph_model/__init__.py`, `src/optimizer/metrics.py`, `src/optimizer/milp.py`, `scripts/run_comparison.py`, `scripts/sweep.py`, `scripts/structure_check.py`, `README.md`, `formal-problem-definition.md` §1, §2 and §5 (pointer notes), `02-detectability-rubric.md`, `02-data-model.md`, `00-action-items.md`, `sources.md` #350.*

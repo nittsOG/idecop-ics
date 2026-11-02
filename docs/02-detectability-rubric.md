@@ -43,6 +43,8 @@ A 2026 systematic review stating that decoy **placement** materially changes bot
 
 Zone-derived. The OT DMZ is the most externally scanned zone; the Control zone the least reachable. Supported by the measured corporate-vs-cloud traffic differential above.
 
+*One exception (D33, A43, G2-B):* an asset to which a recorded rule of the perimeter firewall passes connections from the External zone takes the OT DMZ's exposure, E = 0.9. Exposure reached only through another asset's onward connections does not count. Only Engineering WS-2 qualifies, through D30's leftover rule (G4).
+
 | Zone | E |
 |---|---|
 | OT DMZ (PL 3.5) | 0.9 |
@@ -64,6 +66,8 @@ The **simplest probing tier that identifies a decoy at this asset type**. A lowe
 
 Which of A1, A4, A5, A7, A8 a decoy at this position must get right, weighted by the review's own prevalence findings — A1 static banners is the single most-reported vulnerable artifact (21 of 64 studies), A7 default configurations the most common in OT.
 
+*D33 (A43, G1-B):* A's values are declared as reasoned anchors, not derived from a numeric scale. An asset of the same type and position takes the same A; otherwise it takes the nearest type's, and §3 names the anchor. Writing out each asset's artifact classes and #352 sections is left to the next documentation pass.
+
 ---
 
 ## 3. Scored candidates
@@ -72,11 +76,11 @@ Which of A1, A4, A5, A7, A8 a decoy at this position must get right, weighted by
 |---|---|---|---|---|---|---|
 | DMZ Jump Host | OT DMZ | 0.9 | 0.6 (P2) | 0.5 | **0.69** | Heavily scanned, but a generic host needs multi-stage interaction to expose state artifacts |
 | Historian | OT DMZ | 0.9 | 0.5 (P2–P7) | 0.6 | **0.69** | Heavily scanned; data-realism failures need sustained observation, so the required tier is higher |
-| Engineering WS-2 | Supervisory | 0.5 | 0.6 (P2) | 0.6 | **0.56** | Moderate exposure; VM-based, so A5 virtualisation artifacts apply |
+| Engineering WS-2 | Supervisory | **0.9** (G2-B) | 0.6 (P2) | 0.6 | **0.72** | A recorded perimeter-firewall rule (D30's G4) passes outside connections to it, so it takes the OT DMZ's exposure (D33, A43). VM-based, so A5 virtualisation artifacts apply. Was 0.56 at the zone's E = 0.5 |
 | HMI | Supervisory | 0.5 | 0.7 (P1–P2) | 0.7 | **0.62** | Web-endpoint structure checks identify emulated dashboards early (§4.4) |
 | PLC-02 | Control | 0.2 | **0.9 (P1)** | 0.9 | **0.62** | Deepest zone, so rarely reached — but trivially identified once it is |
 | OT Firewall | OT DMZ | 0.9 | 0.7 (P1–P2) | 0.7 | **0.78** | Heavily scanned. #352 does not discuss firewalls, so it is scored like the HMI: what an attacker sees is a web management interface, which endpoint checks and default TLS certificates expose early (§4.4, §6.1). *Unconfirmed* (D31) |
-| Engineering WS | Supervisory | 0.5 | 0.6 (P2) | 0.6 | **0.56** | Same type and zone as Engineering WS-2, so the same score (D31) |
+| Engineering WS | Supervisory | 0.5 | 0.6 (P2) | 0.6 | **0.56** | Same type and zone as Engineering WS-2, so the same P_req and A (D31). No firewall rule passes outside connections to it, so its E stays the zone's 0.5 (D33) |
 | PLC-01 | Control | 0.2 | **0.9 (P1)** | 0.9 | **0.62** | Same type and zone as PLC-02. One Modbus request, or one scan, separates PLC honeypots from real PLCs (§5.2) (D31) |
 | PLC-03 (RTU) | Control | 0.2 | **0.9 (P1)** | 0.9 | **0.62** | An ICS field device, so §4.9's ICS/OT finding applies. #352 names neither RTUs nor IEC-104, so this is an extension. *Likely* (D31) |
 | Backup Control Switch | Control | 0.2 | **0.9 (P1)** | 0.7 | **0.56** | #352 does not discuss switches. Its one interface is SSH, which a single connection fingerprints (§5.2, HASSH; §6.2, default OpenSSH versions); artifacts scored as for the HMI's one emulated interface. *Unconfirmed* (D31) |
@@ -105,9 +109,9 @@ Version 1 derived probing depth from whether a path in **P** swept or sought the
 
 **T6 and artifacts A2, A3, A6 are not coded in the article text**, appearing only in figures. The rubric uses only the explicitly coded artifacts.
 
-**A has no numeric scale (found at D31; A43).** §2 tables E and P_req, but A's values were set by reasoning per asset type. New values are anchored to the existing rows by asset type, not derived from a formula.
+**A has no numeric scale (found at D31; A43).** §2 tables E and P_req, but A's values were set by reasoning per asset type. New values are anchored to the existing rows by asset type, not derived from a formula. *[D33 (A43, G1-B): kept, as a declared limitation.]*
 
-**E sees only the zone (found at D31; A43).** D30's leftover firewall rule exposes Engineering WS-2 directly to the outside, which a zone-derived E cannot see. At the OT DMZ's exposure WS-2 would score 0.72, not 0.56. No placement on the comparison grid changes either way (D31).
+**E sees only the zone (found at D31; A43).** D30's leftover firewall rule exposes Engineering WS-2 directly to the outside, which a zone-derived E cannot see. At the OT DMZ's exposure WS-2 would score 0.72, not 0.56. No placement on the comparison grid changes either way (D31). *[Resolved by D33 (A43, G2-B): WS-2 now takes the OT DMZ's exposure and scores 0.72.]*
 
 **#352 covers neither network devices nor IEC-104** (re-read 26 October 2026). The OT Firewall's and the Backup Control Switch's scores rest on its web and SSH findings by analogy, and PLC-03's on its general ICS/OT finding.
 

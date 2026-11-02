@@ -23,12 +23,18 @@ INSERT INTO assets (name, zone_id, purdue_level, asset_type, is_physical) VALUES
     ('PLC-03 (RTU)',         4, '1-2', 'PLC',                     0),
     ('Backup Control Switch',4, '1-2', 'Switch',                  0);
 
-INSERT INTO attack_paths (name, description) VALUES
-    ('P1', 'Stuxnet-class: engineering-workflow-mediated physical sabotage'),
-    ('P2', 'Industroyer2-class: protocol-specific direct grid impact'),
-    ('P3', 'Reconnaissance-only: early-detection stress test'),
-    ('P4', 'Dragonfly-class: ICS data collection for later operations'),
-    ('P5', 'Backup-conduit: network-device compromise, alternate route to PLC-01');
+-- target_asset_id (D33, A36): the asset whose compromise or use is the
+-- scenario's stated objective, declared per path; it must lie on the path.
+-- CritProt credits a caught path with its target's criticality. Cards never
+-- read it. The same five follow from a written cross-check, kept out of code:
+-- the asset of the first step whose tactic is Impair Process Control or
+-- Impact; for a path with neither, the first step of its final tactic.
+INSERT INTO attack_paths (name, description, target_asset_id) VALUES
+    ('P1', 'Stuxnet-class: engineering-workflow-mediated physical sabotage', (SELECT asset_id FROM assets WHERE name='PLC-01')),
+    ('P2', 'Industroyer2-class: protocol-specific direct grid impact', (SELECT asset_id FROM assets WHERE name='PLC-03 (RTU)')),
+    ('P3', 'Reconnaissance-only: early-detection stress test', (SELECT asset_id FROM assets WHERE name='Engineering WS-2')),
+    ('P4', 'Dragonfly-class: ICS data collection for later operations', (SELECT asset_id FROM assets WHERE name='Historian')),
+    ('P5', 'Backup-conduit: network-device compromise, alternate route to PLC-01', (SELECT asset_id FROM assets WHERE name='PLC-01'));
 
 INSERT INTO attack_path_steps (path_id, step_order, asset_id, tactic, technique_id, technique_name) VALUES
     (1, 1, (SELECT asset_id FROM assets WHERE name='Engineering WS'), 'Initial Access', 'T1091', 'Replication Through Removable Media'),
@@ -85,12 +91,17 @@ INSERT INTO attack_path_steps (path_id, step_order, asset_id, tactic, technique_
 -- modelled path, sorted by name (CPython 3.11). Result: DMZ Jump Host,
 -- Historian, PLC-03 (RTU). See D26. The draw predates P5 (D27), which put the
 -- Backup Control Switch on a path; it stands, as D27 explains.
+-- D33 (A43, G2-B): an asset to which a recorded rule of the perimeter firewall
+-- passes connections from the External zone takes the OT DMZ's exposure,
+-- E = 0.9. Only Engineering WS-2 qualifies (D30's G4): its risk is 0.72, was
+-- 0.56. Exposure reached only through another asset's onward connections does
+-- not count.
 INSERT INTO candidate_locations (asset_id, detectability_risk, blind_first) VALUES
     ((SELECT asset_id FROM assets WHERE name='OT Firewall'),           0.78, 0),
     ((SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),         0.69, 1),
     ((SELECT asset_id FROM assets WHERE name='Historian'),             0.69, 1),
     ((SELECT asset_id FROM assets WHERE name='Engineering WS'),        0.56, 0),
-    ((SELECT asset_id FROM assets WHERE name='Engineering WS-2'),      0.56, 0),
+    ((SELECT asset_id FROM assets WHERE name='Engineering WS-2'),      0.72, 0),
     ((SELECT asset_id FROM assets WHERE name='HMI'),                   0.62, 0),
     ((SELECT asset_id FROM assets WHERE name='PLC-01'),                0.62, 0),
     ((SELECT asset_id FROM assets WHERE name='PLC-02'),                0.62, 0),
@@ -100,7 +111,8 @@ INSERT INTO candidate_locations (asset_id, detectability_risk, blind_first) VALU
 INSERT INTO conduits (zone_a_id, zone_b_id, description) VALUES
     ((SELECT zone_id FROM zones WHERE name='External'),    (SELECT zone_id FROM zones WHERE name='OT DMZ'),      'Firewall rules'),
     ((SELECT zone_id FROM zones WHERE name='OT DMZ'),      (SELECT zone_id FROM zones WHERE name='Supervisory'), 'DMZ→Supervisory rules'),
-    ((SELECT zone_id FROM zones WHERE name='Supervisory'), (SELECT zone_id FROM zones WHERE name='Control'),     'Supervisory→Control rules — the critical boundary');
+    ((SELECT zone_id FROM zones WHERE name='Supervisory'), (SELECT zone_id FROM zones WHERE name='Control'),     'Supervisory→Control rules — the critical boundary'),
+    ((SELECT zone_id FROM zones WHERE name='OT DMZ'),      (SELECT zone_id FROM zones WHERE name='Control'),     'OT DMZ→Control: RTU vendor IEC-104 maintenance sessions and the Backup Control Switch failover route (D33, A38)');
 
 -- D30: eight of the nine blank protocols are filled from the operating profile
 -- (below); the Attacker's connection has none.
@@ -181,3 +193,18 @@ INSERT INTO asset_profiles (asset_id, role, runs, routine_activity) VALUES
      'A managed switch giving a second network route into the Control LAN, to PLC-01 and PLC-02.',
      'Managed-switch firmware with an SSH management interface.',
      'Rare administrator configuration sessions through the jump host. It carries traffic only in the quarterly failover test, when an engineer on the DMZ Jump Host connects through it to PLC-01 and PLC-02.');
+
+-- Declared criticality inputs (D33, A37). Design declarations with stated
+-- grounds, not measurements. They are kept out of plant_facts and
+-- asset_profiles, so no card or its context_hash reads them.
+-- SL-T per zone over FR1..FR7, consequence-led: each cell takes the SL whose
+-- attacker the zone must resist, judged from what a failure of that
+-- requirement there would do (4: acts on the process; 3: gives the means to
+-- act in one more step; 2: exposes data, or a foothold with no route to
+-- control; 1: inconvenience only). SL(v) = mean / 4. External has no SL-T.
+-- Damage: equal thirds over the three controllers, since the operating profile
+-- names three and states no ratio; every other asset 0.
+UPDATE zones SET sl_t_vector = '[3,3,3,2,3,2,1]' WHERE name = 'OT DMZ';
+UPDATE zones SET sl_t_vector = '[3,4,3,2,3,2,3]' WHERE name = 'Supervisory';
+UPDATE zones SET sl_t_vector = '[4,4,4,2,3,3,4]' WHERE name = 'Control';
+UPDATE assets SET process_share = 1.0/3 WHERE name IN ('PLC-01', 'PLC-02', 'PLC-03 (RTU)');

@@ -3,7 +3,7 @@ Empirical structural test of F(x): monotonicity, submodularity and modularity,
 for the LIVE objective (what src/optimizer/metrics.py computes) and the
 superseded PRE-D20 one, kept so D20's before/after stays reproducible.
 
-|L| is small (5 on the legacy D25 set), so every subset enumerates
+|L| is small (9 on the reviewed set), so every subset enumerates
 instantly. No approximation, no sampling.
 
 D25: Risk and Cost in the live objective are divided by the fixed
@@ -14,13 +14,12 @@ and reports whether the gain part g is modular (D25's claim rule).
 """
 import sys, itertools
 sys.path.insert(0, '.')
-from src.graph_model import load_graph, compute_criticality, load_attack_paths, candidates_or_exit, legacy_flag
+from src.graph_model import load_graph, compute_criticality, load_attack_paths, candidates_or_exit
 from src.optimizer.metrics import _intercepted_paths, score, NORMALISER_K
 
 g = load_graph()
 crit = compute_criticality(g)
-LEGACY = legacy_flag(sys.argv)          # D26
-cands = candidates_or_exit(allow_legacy=LEGACY)
+cands = candidates_or_exit()   # D33 retired --legacy-d25; pre-D26 numbers reproduce at commit ebcaaa4
 paths = load_attack_paths()
 
 import sqlite3
@@ -30,7 +29,7 @@ RISK = {r[0]: (r[1] or 0.0) for r in
         _c.execute("SELECT asset_id, detectability_risk FROM candidate_locations")}
 CRIT = {k: v["criticality"] for k, v in crit.items()}
 TOTAL_CRIT = sum(CRIT.values())
-TARGET_CRIT = sum(CRIT[p["asset_sequence"][-1]] for p in paths)
+TARGET_CRIT = sum(CRIT[p["target"]] for p in paths)
 NP = len(paths)
 B = 3          # cardinality constraint for the EXHAUSTIVE OPTIMUM section only (D25)
 
@@ -47,15 +46,15 @@ def early_current(x):                      # mean over INTERCEPTED paths
 
 def early_proposed(x):                     # denominator fixed at |P|
     h = _intercepted_paths(x, paths)
-    return sum(1 - (s / paths[i]["length"]) for i, s in h.items()) / NP
+    return sum((paths[i]["length"] - s) / (paths[i]["length"] - 1) for i, s in h.items()) / NP
 
 def critprot_current(x):                   # normalised by ALL asset criticality
     h = _intercepted_paths(x, paths)
-    return sum(CRIT[paths[i]["asset_sequence"][-1]] for i in h) / TOTAL_CRIT
+    return sum(CRIT[paths[i]["target"]] for i in h) / TOTAL_CRIT
 
 def critprot_proposed(x):                  # normalised by PATH TARGET criticality
     h = _intercepted_paths(x, paths)
-    return sum(CRIT[paths[i]["asset_sequence"][-1]] for i in h) / TARGET_CRIT
+    return sum(CRIT[paths[i]["target"]] for i in h) / TARGET_CRIT
 
 def risk_current(x):  return sum(RISK[l] for l in x)          # unnormalised sum
 def risk_proposed(x): return sum(RISK[l] for l in x) / NORMALISER_K   # D25: fixed K, not B

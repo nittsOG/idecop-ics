@@ -15,7 +15,8 @@ Turns the mathematical objects in `formal-problem-definition.md` into an actual 
 CREATE TABLE zones (
     zone_id      INTEGER PRIMARY KEY AUTOINCREMENT,
     name         TEXT NOT NULL UNIQUE,
-    purdue_level TEXT NOT NULL
+    purdue_level TEXT NOT NULL,
+    sl_t_vector  TEXT
 );
 
 -- Conduits c(z_i, z_j) — permitted communication between zone pairs
@@ -39,7 +40,8 @@ CREATE TABLE assets (
     central_score REAL,                    -- Central(v), betweenness by default (§7 baseline)
     damage_score  REAL,                    -- Damage(v), 0-1, elicited during testbed design
     criticality   REAL,                    -- Crit(v) = w1*sl_aggregate + w2*central_score*damage_score
-    notes         TEXT
+    notes         TEXT,
+    process_share REAL
 );
 
 -- Edges — E. protocol(e), weight(e) from §1.
@@ -109,7 +111,8 @@ CREATE TABLE candidate_locations (
 CREATE TABLE attack_paths (
     path_id     INTEGER PRIMARY KEY AUTOINCREMENT,
     name        TEXT NOT NULL UNIQUE,
-    description TEXT
+    description TEXT,
+    target_asset_id INTEGER NOT NULL REFERENCES assets(asset_id)
 );
 
 CREATE TABLE attack_path_steps (
@@ -171,6 +174,8 @@ Populated directly from `testbed-architecture.md`'s 11-node graph and `threat-at
 > D30's operating profile (`plant_facts`, `asset_profiles`), the protocols it filled in on `edges`, and the four connections it added appear only in `seed.sql`.
 >
 > D31 gave five assets their Filter 2 scores in `seed.sql`: the OT Firewall 0.78, Engineering WS 0.56, PLC-01 0.62, PLC-03 (RTU) 0.62 and the Backup Control Switch 0.56. The `candidate_locations` block below still shows them as NULL, so it no longer matches `seed.sql`.
+>
+> D33 added three columns, `zones.sl_t_vector`, `assets.process_share` and `attack_paths.target_asset_id`, filled in `seed.sql` with the declared SL-T vectors, controller shares and path targets. It also recorded the OT DMZ–Control conduit and raised Engineering WS-2's Filter 2 score from 0.56 to 0.72 (A43). The schema above includes the columns; the transcription below shows only the new score.
 >
 > D28 corrected one error present here and in `seed.sql` from the start: P1 step 5's tactic. MITRE lists T0832 Manipulation of View under Impact, not Inhibit Response Function (#387). D28 also gave P2 step 1 a technique, T0822 External Remote Services (#383), in both places; it had read "Network-perimeter entry".
 
@@ -236,7 +241,7 @@ INSERT INTO candidate_locations (asset_id, detectability_risk, blind_first) VALU
     ((SELECT asset_id FROM assets WHERE name='DMZ Jump Host'),         0.69, 1),
     ((SELECT asset_id FROM assets WHERE name='Historian'),             0.69, 1),
     ((SELECT asset_id FROM assets WHERE name='Engineering WS'),        NULL, 0),
-    ((SELECT asset_id FROM assets WHERE name='Engineering WS-2'),      0.56, 0),
+    ((SELECT asset_id FROM assets WHERE name='Engineering WS-2'),      0.72, 0),   -- D33 (A43): was 0.56
     ((SELECT asset_id FROM assets WHERE name='HMI'),                   0.62, 0),
     ((SELECT asset_id FROM assets WHERE name='PLC-01'),                NULL, 0),
     ((SELECT asset_id FROM assets WHERE name='PLC-02'),                0.62, 0),
