@@ -129,7 +129,7 @@ Four changes, made together because all four are normalisation defects in the sa
 **D21 — P4 added to the attack path set, before the evaluation campaign. First attempt failed; recorded rather than tidied away.**
 `|P|` goes 3 → 4. Motivated by A13: two confirmed candidates — Historian and PLC-02 — appeared on no path at all, so no method could ever select them. They contributed cost and detectability risk with zero possible coverage gain, and the four-value coverage granularity (0, ⅓, ⅔, 1) was coarse.
 
-**Grounding.** Dragonfly / Dragonfly 2.0, an intelligence-gathering campaign against ICS operators. `T0811 Data from Information Repositories` verified directly at attack.mitre.org/techniques/T0811/: Collection tactic, Dragonfly 2.0 listed as a procedure example, and — decisively — its **Targeted Assets list names A0006 Data Historian explicitly**. `T0862 Supply Chain Compromise` verified against MITRE-authored ATT&CK for ICS material as Dragonfly's documented initial-access vector (trojanised vendor software).
+**Grounding.** Dragonfly / Dragonfly 2.0, an intelligence-gathering campaign against ICS operators. `T0811 Data from Information Repositories` verified directly at attack.mitre.org/techniques/T0811/: Collection tactic, Dragonfly 2.0 listed as a procedure example, and — decisively — its **Targeted Assets list names A0006 Data Historian explicitly**. *[D34: Dragonfly 2.0 is not a procedure example on the T0811 page, at v17.1 or live; Duqu is the only one. The targeted-asset claim stands (#350's update).]* `T0862 Supply Chain Compromise` verified against MITRE-authored ATT&CK for ICS material as Dragonfly's documented initial-access vector (trojanised vendor software).
 
 **The first attempt did not work, and the sequence matters.** P4 was first drafted entering at the DMZ Jump Host, mirroring P2's perimeter entry. Re-running showed the Historian *still* unselectable: a decoy at the jump host intercepts P4 at step 1, leaving the Historian redundant. The path was redrafted to enter at the Engineering Workstation via supply-chain compromise.
 
@@ -1045,3 +1045,43 @@ On 30 October 2026 the user decided not to consult the guide on the open methodo
 - `02-detectability-rubric.md`: the per-asset list of artifact classes and #352 sections that G1-B asks for.
 
 *Status: the user's choices, 2 November 2026, on the reviews that D32 describes; implemented, and verified as in item 4. Reference: `data/schema.sql`, `data/seed.sql`, `data/legacy/d25_candidate_set.sql`, `src/graph_model/__init__.py`, `src/optimizer/metrics.py`, `src/optimizer/milp.py`, `scripts/run_comparison.py`, `scripts/sweep.py`, `scripts/structure_check.py`, `README.md`, `formal-problem-definition.md` §1, §2 and §5 (pointer notes), `02-detectability-rubric.md`, `02-data-model.md`, `00-action-items.md`, `sources.md` #350.*
+
+**D34 — A17 decided: a structured search of open indexes, with citation chasing and a patent arm, fixed in a protocol committed before any query. With it, the documentation pass for D33's stale list. No input, code or number changes. The user's choices, 2 November 2026; recorded 3 November 2026.**
+
+**1. A17.** On 2 November 2026 the user accepted the A17 review's recommendation (D32): its option (e), a targeted protocol with citation chasing, packaged with option (d), A29's patent sweep. The protocol is `01-search-protocol.md`, fixed on 3 November 2026 and committed before any query.
+- *What it fixes:*
+  - five strings, built clause by clause from the novelty claim;
+  - OpenAlex and Semantic Scholar as the counted indexes, arXiv as a recency check, and IEEE Xplore's public search if it is usable;
+  - forward citations on eight anchor papers;
+  - a patent arm;
+  - screening tiers T1–T3;
+  - recording that follows PRISMA-S (#394).
+- *Why:* the gap was not too few indexes. No search had been recorded so that it could be re-run, and no citations had been chased. Citation chasing is the one method that has caught a paper the keyword searches missed (#326, #327). The forward-citation searches that #327 assigned, and that A17's 6 October wording dropped, are restored.
+- *Not used for counts:* Google Scholar's keyword search and Crossref, whose counts cannot be re-run.
+- *Route, and a correction:* the searches run from the user's browser. Claude's environment could not reach any index on 30 October 2026 (#402). A17 said "Claude can run the queries", and Claude repeated that to the user on 2 November 2026. Both were wrong.
+- *Timing:* before A12 and the freeze, so that a competing method the search finds can still become a baseline.
+- *What the thesis calls it:* a structured search, never a systematic review. The protocol's §13 fixes the limitation's wording and A28's opening clause.
+
+**2. The documentation pass.** Fixed in place, from D33 item 7:
+- `formal-problem-definition.md`: §2's definitions, §5's Early and CritProt, ε's rationale, the legacy note, and §7's distorted-greedy figures, which were the legacy set's.
+- `00-glossary.md`, `02-optimization-formulation.md`, `02-system-flow.md` and `02-prototype-architecture.md`.
+- `threat-attack-model.md`: a section listing the path targets, and the T0811 corrections at P4. D21 now carries a pointer to them.
+- `testbed-architecture.md`, `04-setup-guide.md` and `00-repository-structure.md`: the legacy route.
+
+Fixed in place, from the A17 review's own stale list:
+- `sources.md`'s legend, which defined only the old meanings of 🟢 and 🔴;
+- `research-synthesis-implementation.md` and `05-thesis-structure.md`;
+- `00-project-timeline.md`, `05-front-matter-pack.md` and `03-honest-review.md`;
+- `00-glossary.md`'s "ten iterations";
+- `01-thesis-citation-shortlist.md`, which gains PRISMA-S;
+- the action items A12, A17, A28, A29, A32, A33 and A42.
+
+**3. Still open, named.**
+- *`02-detectability-rubric.md`: G1-B's per-asset list* of artifact classes and #352 sections. A concern, for the user to decide: A's values were set first, so a class list written now would be written to fit them. §3's reasoning column already records each value's basis.
+- *`README.md`'s comparison section* stays marked historical until Phase D's results replace it.
+- *`02-data-model.md`'s seed transcription* stays marked stale in place; `seed.sql` holds the values.
+- *§8's research question* awaits A12's entry.
+
+**4. Effect.** None. The batch changes only Markdown files in `docs/`, and no code reads `docs/`, so no input, card or number changes (verified: every changed file is a `docs/` Markdown file).
+
+*Status: A17 decided by the user on 2 November 2026; protocol fixed and committed 3 November 2026; nothing run yet. Reference: `01-search-protocol.md`, `sources.md` #393–#404, `00-action-items.md` A17.*

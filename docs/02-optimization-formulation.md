@@ -63,12 +63,12 @@ CritProt(x) = (1/norm) Σ_p y_p · Crit(target(p))
 
 **Cost and Risk** — already linear, no auxiliary variables needed: `Cost(x) = Σ_l x_l`; `Risk(x) = Σ_l risk(l) · x_l` under the independent-contribution model from §1. *(As implemented, both are divided by a constant: D20 introduced a divisor, and D25 fixed it at K = 4 instead of the budget. That leaves them linear, so nothing in this linearisation changes.)*
 
-**Early linearization** — the real work. For each path `p` with steps `1..len(p)`, introduce `s_p` (continuous, `0 ≤ s_p ≤ 1`) representing `(1 − stage_intercepted/len(p))`, and binary `z_{p,i}` for "path p is first intercepted at step i":
+**Early linearization** — the real work. For each path `p` with steps `1..len(p)`, introduce `s_p` (continuous, `0 ≤ s_p ≤ 1`) representing `(len(p) − stage_intercepted)/(len(p) − 1)` (D33; until D33, `1 − stage_intercepted/len(p)`), and binary `z_{p,i}` for "path p is first intercepted at step i":
 ```
 Σ_i z_{p,i} = y_p                              # exactly one interception stage, if covered at all
 z_{p,i} ≤ Σ_{l ∈ covers_at_step(p,i)} x_l       # can only claim step i if a decoy sits there
 z_{p,i} ≤ 1 − Σ_{j<i} z_{p,j}                   # "first" — can't have already been intercepted earlier
-s_p = Σ_i z_{p,i} · (1 − i/len(p))              # linear once z_{p,i} are fixed as binaries
+s_p = Σ_i z_{p,i} · (len(p) − i)/(len(p) − 1)    # linear once z_{p,i} are fixed as binaries (D33)
 Early(x) = (1/Σ_p y_p) Σ_p s_p                  # NOTE: still a ratio — see below
 ```
 

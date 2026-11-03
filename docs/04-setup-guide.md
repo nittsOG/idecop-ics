@@ -297,6 +297,6 @@ source .venv/bin/activate
   - by a decisions-log entry that states the effect;
   - never between the freeze before Phase D and the end of Phase D.
 
-  The command that regenerates it is at the top of `requirements.lock`. After regenerating, run the setup script, step 6 and the legacy reproduction in `README.md` again, and compare the output.
+  The command that regenerates it is at the top of `requirements.lock`. After regenerating, run the setup script and step 6 again, and compare the output. *(D33 retired the legacy reproduction from the current tree.)*
 - **If the code starts writing another column of a seeded table,** add it to `COMPUTED_COLUMNS` in `scripts/setup.py`. Otherwise the script reports a mismatch that isn't there.
 - After any change to `requirements.lock`, `src/frontend/package.json` or `data/seed.sql`, run the setup script and step 6 again, and update the expected text here if it moved.

@@ -59,6 +59,7 @@ If a document upstream in this chain changes in a way that invalidates something
 | `00-local-storage-setup.md` | Meta | Stable | 💾 Offline | `00-repository-structure.md` | Local folder setup, now; migrates directly into the GitHub repo at Phase C |
 | `sources.md` | Research | Living | 💾 Offline | — | `research-synthesis-implementation.md`, every specification document |
 | `01-thesis-citation-shortlist.md` | Research | Stable | 💾 Offline | `sources.md` | Literature Review chapter (Phase E) |
+| `01-search-protocol.md` | Research | Stable (fixed before the first query, D34; changed only by recorded amendments) | 💾 Offline | `sources.md`, the novelty claim (D7, A28), `00-action-items.md` A17 and A29 | `sources.md` run entries; Literature Review chapter (Phase E) and its search appendix; A28's opening clause |
 | `01-original-brief.md` | Research | Stable | 📌 Project Knowledge | — | Everything — this is the origin the whole chain traces back to |
 | `iteration-2-findings.md` … `iteration-10-findings.md` (9 files) | Research | Stable | 💾 Offline | Previous iteration's open-items list | `sources.md`, `research-synthesis-implementation.md` |
 | `research-synthesis-implementation.md` | Research | Stable | 📌 Project Knowledge | `sources.md`, all iteration findings | `formal-problem-definition.md` |

@@ -182,7 +182,7 @@ In order:
 1. **Confirm the final submission date, TA-2 and TA-3 dates, and obtain the template.** Everything in this document is provisional until these exist.
 2. **Resolve B1** — the normalisation question. It blocks the evaluation, which blocks the results chapter, which blocks the conclusion.
 3. **Start Chapter 3** — the largest fully unblocked writing task.
-4. **Request institutional database access** for the systematic review. It has a lead time outside your control, so it should be requested early even though the work itself is later.
+4. **Request institutional database access** for the systematic review. It has a lead time outside your control, so it should be requested early even though the work itself is later. *[Superseded: no institutional access is available (A2, closed 6 October 2026). A17 is a structured search of open indexes, run from your browser (D34, `01-search-protocol.md`).]*
 
 ---
 
@@ -194,6 +194,6 @@ In order:
 | Phase D results do not support the primary question | Medium | High | Agree with the guide *now* that an honestly reported negative result is acceptable; rephrase the question if the tradeoff framing is more accurate |
 | Template arrives late or imposes a page limit | Medium | Medium | Draft in markdown, convert once; content is format-independent |
 | Local inference does not run acceptably on available hardware | Medium | Medium | Explanation layer degrades to a template-based fallback; the architecture already permits this |
-| Systematic database review not obtainable | Medium | Low | Already handled — the review's limitation is stated explicitly in Chapter 2 rather than concealed |
+| Systematic database review not obtainable | Medium | Low | Already handled — the review's limitation is stated explicitly in Chapter 2 rather than concealed; the structured open-index search (D34, `01-search-protocol.md`) narrows the gap |
 | Weekend availability worse than assumed | High | High | Scope reduction decided deliberately at M2, not improvised at M4 |
 | Guide requests major direction change at first review | Low | High | Deliver Chapter 3 early, at M1, so any structural objection surfaces while there is time to act |

@@ -72,8 +72,8 @@ What the plant does in normal operation, written down so that a reviewer can jud
   - OT Firewall → Engineering WS-2, a firewall rule that P3's move uses.
 - **What that changed.**
   - Crit moves by at most 0.002 on any asset.
-  - The betweenness ranking changes in two places: Engineering WS-2 moves above Engineering WS, and the HMI moves above the Historian and the PLCs. D30 gives the figures, and how they depend on the new edges' placeholder weights.
-  - `data/legacy/d25_candidate_set.sql` removes the four, so the numbers recorded before D30 still reproduce.
+  - The betweenness ranking changes in two places: Engineering WS-2 moves above Engineering WS, and the HMI moves above the Historian and the PLCs. D30 gives the figures, and how they depend on the new edges' placeholder weights. *(D33: betweenness is now unweighted, so the weights no longer affect it.)*
+  - `data/legacy/d25_candidate_set.sql` removes the four, so the numbers recorded before D30 still reproduce, at commit `ebcaaa4` with `--legacy-d25` (D33 retired the route from the current tree).
 - **Freeze.** It freezes at the first blind-card score on the fresh database. From then, D28's rule for P applies to it as well.
 
 ## Candidate locations, worked example

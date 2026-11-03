@@ -40,7 +40,7 @@ src/api/main.py        FastAPI — 10 endpoints, 341 lines (D30)
         ├──▶ src/graph_model/__init__.py   263 lines
         │      load_graph()              builds nx.DiGraph from SQLite
         │      compute_centrality()      betweenness, weighted
-        │      compute_criticality()     Crit(v) = w₁·SL + w₂·Central·Damage + w₃·ConduitSL  (D20)
+        │      compute_criticality()     Crit(v) = ¼·(SL + Central + Damage + ConduitSL)  (D33)
         │      write_computed_scores()   persists back to assets
         │      load_candidate_locations()  → L, refusing unreviewed or unscored candidates (D26)
         │      load_attack_paths()         → P
@@ -152,7 +152,7 @@ candidate_locations.is_candidate = 1   ──►  this is L, once Filter 2 has s
 scripts/review_io.py export  →  data/review/plausibility_review.csv  (committed)
 ```
 
-The optimizer reads only `is_candidate=1`. An unconfirmed AI suggestion has no path into the search space. *(D25 found the seed setting `is_candidate=1` on rows no human had confirmed. Since D26 the seed sets nothing, and `load_candidate_locations` refuses any candidate that did not come through the review or has no Filter 2 score. The pre-D26 set survives only as `data/legacy/d25_candidate_set.sql`, for reproducing old numbers behind `--legacy-d25`.)*
+The optimizer reads only `is_candidate=1`. An unconfirmed AI suggestion has no path into the search space. *(D25 found the seed setting `is_candidate=1` on rows no human had confirmed. Since D26 the seed sets nothing, and `load_candidate_locations` refuses any candidate that did not come through the review or has no Filter 2 score. The pre-D26 set survives only as `data/legacy/d25_candidate_set.sql`, for reproducing old numbers behind `--legacy-d25` at commit `ebcaaa4`; D33 retired the flag from the current tree.)*
 
 ### Flow C — A single optimization run
 

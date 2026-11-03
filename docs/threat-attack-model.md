@@ -41,13 +41,13 @@ Deliberately the least severe path — included because it tests whether your pl
 
 Added at D21, before the evaluation campaign. Models an adversary whose objective is intelligence, not impact: it steals the documentation needed to plan a later physical attack. Included because P1–P3 left the Historian on no path at all, and because a collection-motivated campaign is a distinct attacker behaviour the other three do not represent.
 
-Grounded in Dragonfly / Dragonfly 2.0, whose documented behaviour was accessing workstations and servers holding ICS reference material — wiring diagrams, panel layouts, vendor documentation — after entry through trojanised vendor software.
+Grounded in Dragonfly / Dragonfly 2.0, whose documented behaviour was accessing workstations and servers holding ICS reference material — wiring diagrams, panel layouts, vendor documentation — after entry through trojanised vendor software. *(D34: this description of Dragonfly 2.0's behaviour came from the T0811 page's procedure examples as #350 first recorded them. At v17.1 and on the live page, Duqu is the only procedure example (#350's update), so the description is no longer sourced there. The entry vector rests on #351, which is 🟡.)*
 
 | Step | Asset (`v ∈ V`) | Tactic | Technique | Notes |
 |---|---|---|---|---|
 | 1 | Engineering Workstation | Initial Access | **T0862 — Supply Chain Compromise** | Dragonfly's documented vector: legitimate ICS vendor software trojanised at the source and installed by the victim. Verified against MITRE-authored ATT&CK for ICS material |
-| 2 | Historian | Collection | **T0811 — Data from Information Repositories** | Verified at attack.mitre.org/techniques/T0811/ — Collection tactic, and its Targeted Assets list names **A0006 Data Historian** explicitly. Dragonfly 2.0 appears as a procedure example |
-| 3 | Engineering Workstation | Collection | **T0811 — Data from Information Repositories** | Continued collection of ICS reference documents. The same technique page lists Engineering Workstation as a targeted asset. *D30: the network now records the connection steps 1–3 use, Engineering WS → Historian, which engineers use for trend queries; no step changed* |
+| 2 | Historian | Collection | **T0811 — Data from Information Repositories** | Verified at attack.mitre.org/techniques/T0811/ — Collection tactic, and its Targeted Assets list names **A0006 Data Historian** explicitly. Dragonfly 2.0 appears as a procedure example. *(D34: it does not: at v17.1 and on the live page, Duqu is the only procedure example. The Targeted Assets claim stands; the list is A0006 Data Historian and A0007 (#350's update).)* |
+| 3 | Engineering Workstation | Collection | **T0811 — Data from Information Repositories** | Continued collection of ICS reference documents. The same technique page lists Engineering Workstation as a targeted asset. *(D34: it does not: the list is A0006 Data Historian and A0007 only, so this step has no listed-target grounding. P stays as seeded, frozen with the committed review, and the thesis states the gap.)* *D30: the network now records the connection steps 1–3 use, Engineering WS → Historian, which engineers use for trend queries; no step changed* |
 | — | — | — | — | No process impact by design. Success for the placement means interception before the documentation leaves the environment |
 
 **Why the entry point is the engineering workstation and not the DMZ jump host.** Both were drafted. The jump-host version was rejected on two grounds: it is less faithful to Dragonfly, whose documented initial access was supply-chain and watering-hole rather than perimeter intrusion; and it left the Historian contributing nothing, since a decoy at the jump host would intercept P4 at step 1 and make the Historian redundant. The supply-chain version is both historically accurate and structurally useful. The order in which those two facts were established is recorded in D21 rather than presented as a single clean decision.
@@ -66,6 +66,20 @@ P5 combines documented techniques rather than replaying one named campaign, as P
 | 4 | PLC-01 | Impair Process Control | **T0836 — Modify Parameter** | The same step P1 takes at PLC-01, already verified for P1. The more specific T0855 Unauthorized Command Message could not be fetched (#384), so it is not used |
 
 **Why this is not D21's error in reverse.** D21 refused to add a path "solely to make [PLC-02] selectable". P5 does make the switch selectable, but that is a consequence, not the reason. The reasons are documented ones: the testbed's stated purpose for the switch, ATT&CK for ICS's treatment of switches as targets, and VPNFilter's recorded behaviour. The target follows the same stated purpose. PLC-02 still lies on no path, and stays there (D27, option (a)).
+
+## Path targets (D33, A36)
+
+CritProt credits a caught path with its target's criticality (`formal-problem-definition.md` §5). Each target is declared in `data/seed.sql`, in `attack_paths.target_asset_id`: the asset whose compromise or use is the scenario's stated objective. It must lie on the path, and the loader checks that it does. Cards never show it. A written rule gives the same five, as a cross-check kept out of code: the asset of the first step whose tactic is Impair Process Control or Impact; for a path with neither, the first step of its final tactic.
+
+| Path | Target | Why it is the objective |
+|---|---|---|
+| P1 | PLC-01 | Its parameters are modified (T0836) to damage the process; the HMI step only hides that |
+| P2 | PLC-03 (RTU) | Its breakers are what the attack operates |
+| P3 | Engineering WS-2 | Where the reconnaissance ends. A convention: P3 has no impact step |
+| P4 | Historian | Its data is what the collection seeks; T0811's Targeted Assets list names A0006 Data Historian |
+| P5 | PLC-01 | Its parameters are modified (T0836), by the alternate route |
+
+Until D33 the code took each path's last seeded step, which made P1's target the HMI and P4's the Engineering WS. PLC-01 carries 0.45 of CritProt across P1 and P5: two scenarios with one target.
 
 ## How this feeds the rest of the specification
 

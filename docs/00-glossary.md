@@ -40,7 +40,7 @@ A decoy that fits neither goes untouched.
 
 **Coverage** — in this project, specifically *attack-path coverage*: the fraction of defined attack paths that have at least one decoy somewhere along them. Not network coverage, not asset coverage. A placement covering two of the five paths scores 2/5.
 
-**Early detection / earliness** — how far along an attack path interception happens, expressed as a fraction of the path's length. Catching an attacker at step 1 of 5 is better than at step 5 of 5, because the attacker has done less by then. Scored so that earlier is higher: each intercepted path contributes 1 − stage/length, and the sum is divided by |P|, the number of all paths (D20). *(D28: this entry still described the pre-D20 form, a mean over intercepted paths, as "a real property of the formulation, not a bug". D20 found it a defect, since adding a late-intercepting decoy could lower the score. The mean stage is still reported, not optimised.)*
+**Early detection / earliness** — how far along an attack path interception happens, expressed as a fraction of the path's length. Catching an attacker at step 1 of 5 is better than at step 5 of 5, because the attacker has done less by then. Scored so that earlier is higher: each intercepted path contributes (length − stage)/(length − 1), 1 at the first step and 0 at the last, and the sum is divided by |P|, the number of all paths (D20, D33). *(Until D33 each path contributed 1 − stage/length, so the best score depended on how many steps the path was written with.)* *(D28: this entry still described the pre-D20 form, a mean over intercepted paths, as "a real property of the formulation, not a bug". D20 found it a defect, since adding a late-intercepting decoy could lower the score. The mean stage is still reported, not optimised.)*
 
 ---
 
@@ -72,7 +72,7 @@ A decoy that fits neither goes untouched.
 
 **IEC 62443** — the international standard series for industrial automation and control system security. Source of the zone/conduit model and of Security Levels. Used everywhere in industry as a procedural and architectural framework; this project uses it as a *numeric input to an algorithm*, which is the novelty.
 
-**SL — Security Level** — IEC 62443-3-3's measure of the protection a zone requires, expressed as a vector across seven foundational requirements (FR1 identification and authentication, FR2 use control, FR3 system integrity, FR4 data confidentiality, FR5 restricted data flow, FR6 timely response to events, FR7 resource availability). This project aggregates the vector to a scalar and states plainly that SL quantification is a semi-quantitative approximation, not a solved measurement — which the standards community itself acknowledges.
+**SL — Security Level** — IEC 62443-3-3's measure of the protection a zone requires, expressed as a vector across seven foundational requirements (FR1 identification and authentication, FR2 use control, FR3 system integrity, FR4 data confidentiality, FR5 restricted data flow, FR6 timely response to events, FR7 resource availability). This project declares a consequence-led SL-T vector per zone, aggregates it as the mean of the seven divided by 4 (D33), and states plainly that SL quantification is a semi-quantitative approximation, not a solved measurement — which the standards community itself acknowledges.
 
 **Protocols named in this project** — *Modbus*: simple, old, no authentication. *S7comm*: Siemens PLC protocol. *OPC UA*: modern industrial interoperability protocol. *IEC-104*: telemetry protocol for electrical substations, the one Industroyer2 spoke. *IEC 61850 / GOOSE*: substation automation standard and its fast event-messaging mechanism — relevant because the closest prior work (Jay, 2023) is built specifically on GOOSE semantics, which is part of why it does not generalize to this project's problem.
 
@@ -134,7 +134,7 @@ A decoy that fits neither goes untouched.
 
 **Centrality** — a family of measures of how structurally important a node is within a graph.
 
-**Betweenness centrality** — specifically: how many shortest paths between other pairs of nodes pass through this node. A node with high betweenness is a chokepoint. This is the project's named baseline method, and it is named explicitly because "centrality-based" alone is ambiguous. A published critique argues that standard centrality measures miss the source/intermediate/target role structure of lateral movement; this project cites that critique as a stated limitation rather than ignoring it or trying to fix it.
+**Betweenness centrality** — specifically: how many shortest paths between other pairs of nodes pass through this node. A node with high betweenness is a chokepoint. It is computed unweighted, by hop count (D33). This is the project's named baseline method, and it is named explicitly because "centrality-based" alone is ambiguous. A published critique argues that standard centrality measures miss the source/intermediate/target role structure of lateral movement; this project cites that critique as a stated limitation rather than ignoring it or trying to fix it.
 
 **Objective function** — the single number being maximized, combining everything that matters into one comparable score. Here, F(x).
 
@@ -228,7 +228,7 @@ A decoy that fits neither goes untouched.
 
 **Novelty claim** — the precise statement of what this work does that no published work does. Stated narrowly and defensibly, clause by clause, rather than broadly.
 
-**Systematic review vs. broad search** — a systematic review follows a pre-registered, reproducible protocol across named databases. This project's literature work is a broad, persistent, multi-angle search across ten iterations. Both are legitimate; they are *different claims*, and the thesis says which one applies.
+**Systematic review vs. broad search** — a systematic review follows a pre-registered, reproducible protocol across named databases. This project's literature work is a broad, persistent, multi-angle search across thirteen iterations, joined by a *structured search*: strings, indexes and dates fixed in advance and recorded so that anyone can re-run them (`01-search-protocol.md`, D34). Even with it, the review is not a systematic review. Both are legitimate; they are *different claims*, and the thesis says which one applies. *(D34: this said "ten iterations".)*
 
 **Verification marker** — the status tag attached to every logged source: verified, named but unconfirmed, or needs a different access route. Prevents an unread abstract from being cited as if it were a read paper — a failure mode this project has already encountered once, with the Jay paper.
 

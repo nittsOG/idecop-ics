@@ -27,7 +27,7 @@ Templates vary in what they allow. All three versions state the same claims; onl
 >
 > This work formulates deception placement for multi-zone OT/ICS architectures as a constrained optimisation problem. The network is represented as a directed graph whose nodes carry IEC 62443 zone membership, Purdue level and asset type, and whose conduits are the edge subsets crossing zone boundaries. Asset criticality combines the IEC 62443-3-3 Security Level vector with weighted network centrality and operational damage share. Attack scenarios are expressed as ordered sequences of verified MITRE ATT&CK for ICS techniques. Candidate locations are derived through a four-criterion decoy-plausibility rubric, adapted from published work on enterprise ATT&CK techniques and applied to asset positions in the network, followed by a detectability assessment. A composite objective spanning attack-path coverage, earliness of interception, criticality-weighted protection, operational risk and deployment cost is maximised under a decoy budget using a greedy algorithm, validated against an exact mixed-integer formulation. A local language model generates analyst-facing explanations without altering the placement.
 >
-> A literature review of thirteen structured iterations and later targeted checks, recorded in a 390-entry source log, establishes that formal placement optimisation is mature in enterprise IT but effectively absent for multi-zone OT architectures. A working prototype is evaluated against random and centrality baselines on an eleven-node, four-zone virtualised testbed.
+> A literature review of thirteen structured iterations and later targeted checks, recorded in a numbered source log, establishes that formal placement optimisation is mature in enterprise IT but effectively absent for multi-zone OT architectures. A working prototype is evaluated against random and centrality baselines on an eleven-node, four-zone virtualised testbed.
 
 ### 1.3 Keywords
 
@@ -100,7 +100,7 @@ Defined now so the figures can be produced before the template dictates their ca
 | 1.1 | Purdue Enterprise Reference Architecture | Standard layered ICS model, levels 0–5 | Standard reference; redraw, do not copy |
 | 1.2 | Conceptual pipeline | Architecture → model → paths → candidates → optimisation → explanation | `01-original-brief.md` §5 |
 | 2.1 | Research landscape | Two-by-two: domain against generation/placement | TA-1 §3.1 |
-| 2.2 | Literature review process | Thirteen iterations, source counts, shortlisting | `sources.md` |
+| 2.2 | Literature review process | Thirteen iterations, then the structured search fixed in advance (A17, D34); source counts, shortlisting | `sources.md`, `01-search-protocol.md` |
 | 3.1 | System architecture | Five components and their interfaces | `02-system-flow.md` §2 |
 | 3.2 | Testbed zone and conduit structure | Four zones, eleven nodes, conduits marked | `testbed-architecture.md` |
 | 3.3 | Network model G | Directed graph with zone colouring | Generated from the live graph model |

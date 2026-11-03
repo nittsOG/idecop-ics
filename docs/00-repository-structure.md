@@ -17,7 +17,7 @@ The full file/folder layout for when the GitHub repo gets created at the start o
 /scripts           setup, evaluation and data-handling scripts (one-time setup, D29; comparison, sweep, structure check, notebook import, review record)
 /notebooks         the Colab plausibility-scoring notebook (D26)
 /testbed           VM configs, pfSense export, OpenPLC programs, Node-RED flows
-/data              SQLite schema and seed; legacy/ (the pre-D26 candidate set, for reproducing old numbers); review/ (the committed Filter 1 review and the notebook's outputs, D26)
+/data              SQLite schema and seed; legacy/ (the pre-D26 candidate set, kept as history: it reproduces old numbers only at commit ebcaaa4, D33); review/ (the committed Filter 1 review and the notebook's outputs, D26)
 /results           Phase D outputs — logs, CSVs, generated charts
 /submission        final formatted thesis document, once truly final
 ```

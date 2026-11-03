@@ -40,7 +40,7 @@ Requested before implementing the A11/A22 changes. This is an adversarial read o
 
 **Assessment:** the claim survives twelve research iterations and two full-text reads of the nearest competitors. It is stated at defensible strength, and the iteration-11 narrowing removed the one clause that invited a definitional fight. The conduit clause is the remaining liability and is precisely the kind of thing a careful examiner checks, because it is named in the claim itself.
 
-**What would break it:** a paper applying IEC 62443 zone structure to placement optimisation. Twelve iterations have not found one. The residual risk is concentrated in forward-citation searches that have not been run systematically (A17), which is the one honest weakness of the review method.
+**What would break it:** a paper applying IEC 62443 zone structure to placement optimisation. Twelve iterations have not found one. The residual risk is concentrated in forward-citation searches that have not been run systematically (A17), which is the one honest weakness of the review method. *[D34, 3 November 2026: A17's protocol now includes these forward-citation searches, on eight anchor papers, and they run before the freeze (`01-search-protocol.md` §7).]*
 
 ---
 
@@ -168,4 +168,4 @@ Doing this converts the biggest vulnerability in the thesis into one of its bett
 
 **Do not change:** the architecture, the AI role separation, the baseline choice, or the testbed scale.
 
-**Confidence.** The structural findings in §D are verified by exhaustive enumeration on the real instance and are as certain as anything in this project. The novelty assessment in §B is *likely* — twelve iterations of consistent negative results, but no systematic database sweep. §F is judgement, not evidence.
+**Confidence.** The structural findings in §D are verified by exhaustive enumeration on the real instance and are as certain as anything in this project. The novelty assessment in §B is *likely* — twelve iterations of consistent negative results, but no systematic database sweep. *[D34: thirteen iterations by now; a structured open-index search with citation chasing is fixed in `01-search-protocol.md` and has not yet run.]* §F is judgement, not evidence.

@@ -3,7 +3,7 @@
 
 Running catalog of every source surfaced across research iterations. **Appended after each iteration — never rewritten from scratch.** Use this to pull citations for the thesis lit review; verify each before final citation, since some links below are secondary aggregators rather than the primary publisher.
 
-**Legend:** 🟢 link captured (primary or stable secondary) · 🔴 link not captured this pass — search by title/author/venue/DOI
+**Legend:** 🟢 verified · 🟡 named but unconfirmed · 🔴 needs a different access route (`00-workflow-and-rules.md`, rule 3). *(D34: this line used to define only 🟢 "link captured" and 🔴 "link not captured". Entries written before rule 3 use those older meanings.)*
 
 ---
 
@@ -676,3 +676,32 @@ Cited by D29 and `04-setup-guide.md`. https://pypi.org/project/nodejs-wheel/ · 
   - `uv run` on a script carrying inline metadata (a `# /// script` block) runs it in a separate temporary environment, and passes the path of uv in the `UV` variable. `scripts/setup.py` relies on both.
 
 https://pypi.org/project/uv/ · https://docs.astral.sh/uv/
+
+393. **Structured literature search — the protocol for A17 (D34).** Fixed on 3 November 2026 and committed before any query: `docs/01-search-protocol.md`, which holds the strings, the index roles, the anchor papers, the patent arm, the screening tiers and the recording rules. Each run is logged below as its own numbered entry, and a run that keeps nothing as a "Negative result", with its string, date and count.
+
+394. **Rethlefsen M.L. et al., PRISMA-S Group (2021)** — "PRISMA-S: an extension to the PRISMA Statement for Reporting Literature Searches in Systematic Reviews," *Systematic Reviews* 10:39, doi:10.1186/s13643-020-01542-z, CC BY 4.0. 🟢 Its Table 1 checklist of 16 items was read verbatim from the journal in the A17 review (30 October 2026, D32). The protocol meets items 1, 5, 8, 9, 13, 15 and 16, and plans item 12's update search. https://doi.org/10.1186/s13643-020-01542-z
+
+395. **Gusenbauer & Haddaway (2020)** — a comparison of academic search systems for systematic reviews, *Research Synthesis Methods*, doi:10.1002/jrsm.1378. 🟡 Abstract only, read through a secondary page in the A17 review: it calls Google Scholar inappropriate as a principal search system. Read the open full text before citing it.
+
+396. **Wohlin (2014)** — guidelines for snowballing (citation chasing) in systematic literature studies, EASE '14, doi:10.1145/2601248.2601268. 🟡 Bibliographic record only: OpenAlex record W1975675278, read as raw JSON in the A17 review (cited by 3,923 there, 30 October 2026). Read it before citing it.
+
+397. **OpenAlex — API documentation.** 🟢 The Searching and Filtering help pages, the LLM quick reference (revised 15 October 2026) and the recipes page, read in the A17 review. Recorded there: `search.title_and_abstract`; uppercase AND, OR and NOT, with parentheses and quoted phrases; stemming on; URLs up to about 4 KB; `filter=cites:` for forward citations; and a key recommended but not required, with a free daily budget of about 100 searches. https://developers.openalex.org
+
+398. **Semantic Scholar — Academic Graph API tutorial.** 🟢 Read in the A17 review. Bulk search takes `+` for AND, `|` for OR and `-` for NOT, with quotes, `*` and parentheses. Its `total` is described as an estimate. A key is optional; keyless users share one pool, so "429 too many requests" replies are possible. https://webflow.semanticscholar.org/product/api/tutorial
+
+399. **arXiv — API basics.** 🟢 Read in the A17 review. Only the base URL and the `all:` prefix were confirmed there; the page does not give the field syntax. https://info.arxiv.org/help/api/basics.html
+
+400. **Crossref — REST API tips.** 🟢 Read in the A17 review. The page does not document boolean search, so whether a Crossref total counts the records matching a string is unconfirmed. The protocol uses Crossref for DOI and metadata lookups only.
+
+401. **US 10,291,650 — "Automatically generating network resource groups and assigning customized decoy policies thereto."** 🟡 Title only, found in the A17 review (30 October 2026). A lead for A29's patent arm.
+
+402. **Negative result — no scholarly index reachable from Claude's environment (30 October 2026).** Pilot string: `(honeypot OR decoy OR deception) AND placement AND (SCADA OR "industrial control" OR ICS)`, on title and abstract.
+- *From the shell:* proxy 403 for api.openalex.org, api.semanticscholar.org and api.crossref.org, and a DNS failure for export.arxiv.org.
+- *Through the fetch tool:* every query URL was refused by the allowlist; arXiv refused by its robots.txt; an OpenAlex documentation search URL returned a 4xx; the Semantic Scholar and Crossref example URLs were refused.
+- *Web search* returned only single-record OpenAlex URLs.
+
+No count was obtained, so A17's searches run from the user's browser (D34).
+
+403. **Negative result — CATCH (#373), a fourth search for an open copy (30 October 2026).** None found. A33 stands.
+
+404. **Negative result — IEEE Xplore's terms of access (30 October 2026).** No IEEE page surfaced in the A17 review, so whether its public search may be used this way is unverified. The protocol tries it from the user's browser.
