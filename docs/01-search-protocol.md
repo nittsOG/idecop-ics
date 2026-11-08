@@ -58,44 +58,76 @@ Send Claude the counts, or the saved JSON. Keep the raw JSON files on your compu
 
 ## 5. The pilot (about five minutes): ten counts
 
-Open each address, and record its count, the date and the time.
+Open each address, and record its count, the date and the time. Copy only the address itself, from `https` onward: a label copied with it makes the browser search for the text instead of opening it.
 
 **OpenAlex** (count: `meta.count`):
+
+S1
 ```
-S1  https://api.openalex.org/works?search.title_and_abstract=(honeypot OR honeynet OR honeytoken OR decoy OR "cyber deception" OR "defensive deception" OR "deception technology" OR "deceptive defense") AND (placement OR allocation OR deployment OR selection OR positioning) AND ("industrial control" OR SCADA OR ICS OR "operational technology" OR "cyber-physical" OR "programmable logic controller" OR "smart grid" OR substation OR "critical infrastructure" OR IIoT)&per_page=200&select=id,doi,display_name,publication_year
-
-S2  https://api.openalex.org/works?search.title_and_abstract=(honeypot OR honeynet OR honeytoken OR decoy OR "cyber deception" OR "defensive deception" OR "deception technology" OR "deceptive defense") AND (optimization OR optimisation OR optimal OR "integer programming" OR MILP OR submodular OR greedy OR game OR Stackelberg OR "reinforcement learning") AND ("industrial control" OR SCADA OR ICS OR "operational technology" OR "cyber-physical" OR "programmable logic controller" OR "smart grid" OR substation OR "critical infrastructure" OR IIoT)&per_page=200&select=id,doi,display_name,publication_year
-
-S3  https://api.openalex.org/works?search.title_and_abstract=(honeypot OR honeynet OR honeytoken OR decoy OR "cyber deception" OR "defensive deception" OR "deception technology" OR "deceptive defense") AND ("62443" OR "zones and conduits" OR "zone and conduit" OR Purdue)&per_page=200&select=id,doi,display_name,publication_year
-
-S4  https://api.openalex.org/works?search.title_and_abstract=(placement OR allocation OR optimization OR optimisation OR "integer programming") AND ("62443" OR "zones and conduits" OR "zone and conduit")&per_page=200&select=id,doi,display_name,publication_year
-
-S5  https://api.openalex.org/works?search.title_and_abstract=(honeypot OR honeynet OR honeytoken OR decoy OR "cyber deception" OR "defensive deception" OR "deception technology" OR "deceptive defense") AND ("attack path" OR "attack graph" OR MITRE OR "kill chain" OR "lateral movement") AND ("industrial control" OR SCADA OR ICS OR "operational technology" OR "cyber-physical" OR "programmable logic controller" OR "smart grid" OR substation OR "critical infrastructure" OR IIoT)&per_page=200&select=id,doi,display_name,publication_year
+https://api.openalex.org/works?search.title_and_abstract=(honeypot OR honeynet OR honeytoken OR decoy OR "cyber deception" OR "defensive deception" OR "deception technology" OR "deceptive defense") AND (placement OR allocation OR deployment OR selection OR positioning) AND ("industrial control" OR SCADA OR ICS OR "operational technology" OR "cyber-physical" OR "programmable logic controller" OR "smart grid" OR substation OR "critical infrastructure" OR IIoT)&per_page=200&select=id,doi,display_name,publication_year
 ```
 
-**Semantic Scholar** (count: `total`). Here `|` is OR, and `%2B` is a literal `+`, which is AND. "cyber physical" is written without its hyphen, in case the hyphen is read as NOT.
+S2
 ```
-S1  https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=(honeypot | honeynet | honeytoken | decoy | "cyber deception" | "defensive deception" | "deception technology" | "deceptive defense") %2B (placement | allocation | deployment | selection | positioning) %2B ("industrial control" | SCADA | ICS | "operational technology" | "cyber physical" | "programmable logic controller" | "smart grid" | substation | "critical infrastructure" | IIoT)&fields=title,year,externalIds,venue
-
-S2  https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=(honeypot | honeynet | honeytoken | decoy | "cyber deception" | "defensive deception" | "deception technology" | "deceptive defense") %2B (optimization | optimisation | optimal | "integer programming" | MILP | submodular | greedy | game | Stackelberg | "reinforcement learning") %2B ("industrial control" | SCADA | ICS | "operational technology" | "cyber physical" | "programmable logic controller" | "smart grid" | substation | "critical infrastructure" | IIoT)&fields=title,year,externalIds,venue
-
-S3  https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=(honeypot | honeynet | honeytoken | decoy | "cyber deception" | "defensive deception" | "deception technology" | "deceptive defense") %2B ("62443" | "zones and conduits" | "zone and conduit" | Purdue)&fields=title,year,externalIds,venue
-
-S4  https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=(placement | allocation | optimization | optimisation | "integer programming") %2B ("62443" | "zones and conduits" | "zone and conduit")&fields=title,year,externalIds,venue
-
-S5  https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=(honeypot | honeynet | honeytoken | decoy | "cyber deception" | "defensive deception" | "deception technology" | "deceptive defense") %2B ("attack path" | "attack graph" | MITRE | "kill chain" | "lateral movement") %2B ("industrial control" | SCADA | ICS | "operational technology" | "cyber physical" | "programmable logic controller" | "smart grid" | substation | "critical infrastructure" | IIoT)&fields=title,year,externalIds,venue
+https://api.openalex.org/works?search.title_and_abstract=(honeypot OR honeynet OR honeytoken OR decoy OR "cyber deception" OR "defensive deception" OR "deception technology" OR "deceptive defense") AND (optimization OR optimisation OR optimal OR "integer programming" OR MILP OR submodular OR greedy OR game OR Stackelberg OR "reinforcement learning") AND ("industrial control" OR SCADA OR ICS OR "operational technology" OR "cyber-physical" OR "programmable logic controller" OR "smart grid" OR substation OR "critical infrastructure" OR IIoT)&per_page=200&select=id,doi,display_name,publication_year
 ```
 
-These addresses follow each index's documented syntax (#397, #398). Whether each runs as written is unconfirmed, and the pilot is its test. If one returns an error, it is amended once and both versions are recorded. A "429 too many requests" reply from Semantic Scholar means wait a minute and retry, and it is not a result.
+S3
+```
+https://api.openalex.org/works?search.title_and_abstract=(honeypot OR honeynet OR honeytoken OR decoy OR "cyber deception" OR "defensive deception" OR "deception technology" OR "deceptive defense") AND ("62443" OR "zones and conduits" OR "zone and conduit" OR Purdue)&per_page=200&select=id,doi,display_name,publication_year
+```
+
+S4
+```
+https://api.openalex.org/works?search.title_and_abstract=(placement OR allocation OR optimization OR optimisation OR "integer programming") AND ("62443" OR "zones and conduits" OR "zone and conduit")&per_page=200&select=id,doi,display_name,publication_year
+```
+
+S5
+```
+https://api.openalex.org/works?search.title_and_abstract=(honeypot OR honeynet OR honeytoken OR decoy OR "cyber deception" OR "defensive deception" OR "deception technology" OR "deceptive defense") AND ("attack path" OR "attack graph" OR MITRE OR "kill chain" OR "lateral movement") AND ("industrial control" OR SCADA OR ICS OR "operational technology" OR "cyber-physical" OR "programmable logic controller" OR "smart grid" OR substation OR "critical infrastructure" OR IIoT)&per_page=200&select=id,doi,display_name,publication_year
+```
+
+**Semantic Scholar** (count: `total`). Its bulk search refuses the characters `(` `)` `|` `"` written raw (HTTP 400), so they are written encoded: `%28` and `%29` for brackets, `%7C` for OR, `%22` for a quote mark, and `%2B` for AND. "cyber physical" is written without its hyphen, in case the hyphen is read as NOT.
+
+S1
+```
+https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%28honeypot %7C honeynet %7C honeytoken %7C decoy %7C %22cyber deception%22 %7C %22defensive deception%22 %7C %22deception technology%22 %7C %22deceptive defense%22%29 %2B %28placement %7C allocation %7C deployment %7C selection %7C positioning%29 %2B %28%22industrial control%22 %7C SCADA %7C ICS %7C %22operational technology%22 %7C %22cyber physical%22 %7C %22programmable logic controller%22 %7C %22smart grid%22 %7C substation %7C %22critical infrastructure%22 %7C IIoT%29&fields=title,year,externalIds,venue
+```
+
+S2
+```
+https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%28honeypot %7C honeynet %7C honeytoken %7C decoy %7C %22cyber deception%22 %7C %22defensive deception%22 %7C %22deception technology%22 %7C %22deceptive defense%22%29 %2B %28optimization %7C optimisation %7C optimal %7C %22integer programming%22 %7C MILP %7C submodular %7C greedy %7C game %7C Stackelberg %7C %22reinforcement learning%22%29 %2B %28%22industrial control%22 %7C SCADA %7C ICS %7C %22operational technology%22 %7C %22cyber physical%22 %7C %22programmable logic controller%22 %7C %22smart grid%22 %7C substation %7C %22critical infrastructure%22 %7C IIoT%29&fields=title,year,externalIds,venue
+```
+
+S3
+```
+https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%28honeypot %7C honeynet %7C honeytoken %7C decoy %7C %22cyber deception%22 %7C %22defensive deception%22 %7C %22deception technology%22 %7C %22deceptive defense%22%29 %2B %28%2262443%22 %7C %22zones and conduits%22 %7C %22zone and conduit%22 %7C Purdue%29&fields=title,year,externalIds,venue
+```
+
+S4
+```
+https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%28placement %7C allocation %7C optimization %7C optimisation %7C %22integer programming%22%29 %2B %28%2262443%22 %7C %22zones and conduits%22 %7C %22zone and conduit%22%29&fields=title,year,externalIds,venue
+```
+
+S5
+```
+https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%28honeypot %7C honeynet %7C honeytoken %7C decoy %7C %22cyber deception%22 %7C %22defensive deception%22 %7C %22deception technology%22 %7C %22deceptive defense%22%29 %2B %28%22attack path%22 %7C %22attack graph%22 %7C MITRE %7C %22kill chain%22 %7C %22lateral movement%22%29 %2B %28%22industrial control%22 %7C SCADA %7C ICS %7C %22operational technology%22 %7C %22cyber physical%22 %7C %22programmable logic controller%22 %7C %22smart grid%22 %7C substation %7C %22critical infrastructure%22 %7C IIoT%29&fields=title,year,externalIds,venue
+```
+
+*Amended 5 November 2026: the protocol's one amendment.* OpenAlex ran as written. Semantic Scholar refused the first form of all five strings with HTTP 400, and diagnostic tests showed that it accepts the same characters encoded (`sources.md` #410). So the Semantic Scholar strings above are the first form with `(` `)` `|` `"` encoded, and their logic is unchanged. The first form, the tests and every count are in `sources.md` #405–#416. The labels S1–S5 now sit outside the code blocks.
+
+A "429 too many requests" reply from Semantic Scholar means wait a minute and retry. It is not a result.
 
 **What the pilot decides:**
 - *Over about 3,000 unique records in total:* tighten the strings under the stopping rule (§6) before screening.
 - *Under about 30:* the search is cheaper than estimated.
 - *Either way:* the counts are recorded as the first runs.
 
+*Result, 5 November 2026:* 758 records, 375 unique after deduplication. That is under both thresholds, so no string was narrowed (`sources.md` #416).
+
 ## 6. Checks fixed in advance
 
-- **Known-item test, before any screening.** S1 should retrieve Jay (#305) and Mashima (#12); check DecIED (#11) as well. If any is missing, diagnose why, amend the strings once, and record both versions.
+- **Known-item test, before any screening.** S1 should retrieve Jay (#305) and Mashima (#12); check DecIED (#11) as well. If any is missing, diagnose why, amend the strings once, and record both versions. *Passed, 4–5 November 2026: S1 retrieved all three in both indexes (`sources.md` #405, #411).*
 - **Stopping rule.** A string that returns more than 1,500 records in one index is narrowed once before screening, and both runs are recorded.
 - **Self-hits.** This project's own repository and documents are removed from every result list.
 
