@@ -59,7 +59,7 @@ Six chapters. This is the standard shape for an M.Tech project report and maps c
 | 2.9 | Comparative summary table | TA-1 §2.3 |
 | 2.10 | Research gap | TA-1 §3 |
 
-**The one section that needs care:** 2.4. Jay (2023) requires a full paragraph arguing the three distinctions explicitly — single VLAN versus multi-zone, IEC 61850 versus IEC 62443, equilibrium over decoy type versus composite multi-metric objective. Rowe (2025) needs its own disambiguation, being the closest-*sounding* work. Everything else in the chapter can be grouped and summarised.
+**The one section that needs care:** 2.4. Jay (2023) requires a full paragraph arguing the three distinctions explicitly — single VLAN versus multi-zone, IEC 61850 versus IEC 62443, equilibrium over decoy type versus composite multi-metric objective. Rowe (2025) needs its own disambiguation, being the closest-*sounding* work. Everything else in the chapter can be grouped and summarised. *[D35, 11 November 2026: 2.4 must also treat A17's two T2 works, Park & Dagher and Dong et al., with the differences mapped in `01-search-screening-record.md` §3. It must cite Gong et al. from its abstract and say its full text was not accessible (shortlist entries 8, 45 and 46).]*
 
 ---
 
@@ -239,7 +239,7 @@ Carried over from the project's own rigor rules, and worth stating once rather t
 - **Confidence language is explicit.** Verified, likely and unconfirmed are different claims. Write which one applies.
 - **Every claim traces to a source or a result.** If neither exists, it does not go in.
 - **Negative findings are reported.** D16's incorrect formulation, the earliness term's behaviour, and any unfavourable comparison in Chapter 5 are all reported as found.
-- **The novelty claim is stated at its defensible strength** — sparsely populated with a meaningfully narrower closest occupant, never "nobody has done this."
+- **The novelty claim is stated at its defensible strength** — sparsely populated with a meaningfully narrower closest occupant, never "nobody has done this." *[D35: several close occupants now, none of them combining all the claim's clauses; see 2.4's note.]*
 - **Figures are captioned and referenced in text.** A figure nobody points at is decoration.
 - **First use of every acronym is expanded**, in each chapter, not only the first time in the document.
 

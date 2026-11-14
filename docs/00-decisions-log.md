@@ -1085,3 +1085,83 @@ Fixed in place, from the A17 review's own stale list:
 **4. Effect.** None. The batch changes only Markdown files in `docs/`, and no code reads `docs/`, so no input, card or number changes (verified: every changed file is a `docs/` Markdown file).
 
 *Status: A17 decided by the user on 2 November 2026; protocol fixed and committed 3 November 2026; nothing run yet. Reference: `01-search-protocol.md`, `sources.md` #393–#404, `00-action-items.md` A17.*
+
+**D35 — A17's main search screened: no work threatens the claim and two narrow it. Full texts limited to free copies; no new baseline. The user's choices, 10–11 November 2026; recorded 11 November 2026.**
+
+**1. What was screened.** The 375 unique records from the ten runs (#405–#416).
+- *Title stage:* Claude's first pass on 5 November 2026, confirmed by the user on 8 November: 82 to the abstract stage, 5 already assessed, 133 related by title, 155 excluded.
+- *Abstract stage:* 8–11 November. 77 of the 82 were judged on the abstract or more, and 5 on the title alone.
+- *Full-text stage:* 13 records.
+- *Already in `sources.md`:* at least 24 of the 375, not the five the first pass reported (#416).
+- *Record by record:* `01-search-screening-record.md`, new.
+
+**2. The verdicts, confirmed by the user on 11 November 2026** ("Park & Dagher T2. 269 T2. Ward T1. 368 T1. Rest confirmed.").
+- *T3:* none.
+- *T2, narrowing the claim:*
+  - Park & Dagher 2026 (record 43; #192): optimisation-based honeypot allocation. Its version of record runs its scalability tests on synthetic Purdue-style layered graphs and sets payoffs from target values.
+  - Dong et al. 2025 (record 269; #417): budgeted decoy-node placement in a power distribution grid, with a multi-term objective and criticality-weighted nodes.
+  - Clause-by-clause mappings: screening record §3.
+- *T1:* 202. Among them:
+  - Ward 2026 (record 11; #426), the closest in topic, but designed rather than optimised;
+  - Qu et al. 2026 (record 368; #432), which shares honeypots in proportion to vulnerability or risk.
+- *Unresolved:* 8 records whose full text was not obtained (item 3).
+- *Excluded:* 158.
+
+**3. Full texts limited to free copies.** On 10 November 2026 the user decided to use only freely available papers: no paid access, and no waiting for author copies. No library access is available (A2) and the schedule allows no waiting. This narrows the protocol's §11.2 (an open copy, an email to the author, or a supplied PDF). It is recorded as the protocol's second amendment, in §11 and §13.
+- *Effect:* 8 of the 13 full-text candidates were not read (#610):
+  - six are paywalled with no free copy: records 41, 89, 151, 160, 188 and 333;
+  - two have free copies the user could not reach: records 288 and 307.
+
+  Their tiers stay unresolved. The thesis cites them from their abstracts and names them in the limitation.
+- *The cost, stated openly:* record 89, Gong et al. 2027 (#419), has the closest abstract of the search.
+  - What it describes: consequence-driven honeypot placement in a three-layer chemical-park ICS, along attack graphs, under a budget, validated on a water-tank rig and the Tennessee Eastman Process.
+  - It could be T2 or T3, and it was not read.
+  - Its abstract shows none of the claim's distinguishing clauses: no IEC 62443 zones or conduits, no ATT&CK paths, no interception-stage term. The full text could contradict that, and an examiner who has read it could find overlap this project missed.
+
+**4. Effect on the claim (A28).** The draft survives as worded. No work found combines three things: IEC 62443 zones and conduits as numeric inputs; a scored interception stage along ATT&CK-grounded paths; and validation against random and centrality baselines.
+
+It is narrower than the project's earlier framing:
+- *Purdue-style evaluation already exists.* Optimisation-based honeypot placement has been evaluated on Purdue-style layered graphs (Park & Dagher). The earlier conclusion that their paper is "an enterprise/general-network paper, full stop" held for its preprint only (#192). It is corrected in the three files that repeated it.
+- *Budgeted, criticality-weighted placement already exists.* Multi-term decoy-placement optimisation under a budget, with criticality weights, exists for power CPS (Dong et al.).
+- *IEC 62443 levels already enter optimisation as numbers.* Sakata et al. 2026 (record 72; #427) use them to choose one PLC's countermeasures, not for zones, conduits or placement. The thesis may not claim the first numeric use of IEC 62443 levels, only of zones and conduits in a deception-placement objective.
+- *The landscape cell is no longer "one close paper".* `research-synthesis-implementation.md`'s "nearly empty, one close paper" cell is updated.
+
+A28's wording does not change now. Its opening clause waits for the remaining runs and A29 (protocol §13).
+
+**5. Baselines (§11.6).** Neither T2 method becomes a baseline:
+- *Park & Dagher* solve a different problem: a multi-round Bayesian Stackelberg game over attacker types, with honeypots moved every round. Their code is in a private repository (#192).
+- *Dong et al.* combine a GAN, multi-agent reinforcement learning and distributionally robust optimisation across three levels, and released no data or code.
+- *Cost:* re-implementing either would take about a weekend-unit or more, with no way to check the copy against the original.
+- *Deferred:* adding Park & Dagher's greedy rule as an extra comparison is decided with A12, before the freeze, because its worth depends on what Phase D measures. The rule places the honeypot at the node with the highest distance-discounted target value.
+
+No evaluation input changes.
+
+**6. Record-keeping.**
+- `sources.md`:
+  - #417–#609: one entry for each of the 193 kept records not already logged (protocol §10);
+  - #610: the free-copy search, a negative result;
+  - #611: three backward-round candidates from Park & Dagher's references, queued;
+  - #612: a patent lead for A29, US 12,335,308;
+  - update lines on #192, #317, the run entries #405–#409 and #411–#415, and #416.
+- `01-search-protocol.md`: amendment 2, in §11 and in §13's limitation text. The limitation text also records the two titles screened by translation.
+- `01-search-screening-record.md`: new, with its registry row in `00-project-index.md`.
+- *Fixed in place, with D35 notes:*
+  - `iteration-2-findings.md`'s headline correction;
+  - `01-thesis-citation-shortlist.md`: entry 8, plus five new entries, 45–49;
+  - `research-synthesis-implementation.md`'s landscape table.
+  - `05-thesis-structure.md`: section 2.4's plan and the line on the claim's strength.
+- `00-action-items.md`: A17, A28 and A29.
+
+**7. Effort.** The protocol estimated about 1 weekend-unit for the literature part, with 0–3 full texts (§12). The main search sent 13 records to full text, and the abstract stage ran from 8 to 11 November, so the estimate was exceeded. The remaining runs (item 8) are estimated at about 0.5 weekend-unit.
+
+**8. Still open.**
+- the arXiv recency check;
+- IEEE Xplore's public search (S1 and S4), whose pages open in the user's browser;
+- TechRxiv;
+- forward citations on the eight anchors, plus one backward and one forward round for each T2 work (§7.4; three candidates queued, #611);
+- the patent arm (A29);
+- the update re-run within a month of submission.
+
+**9. Effect.** None on any input, card or number. Only Markdown files in `docs/` change (verified: every changed file is a `docs/` Markdown file).
+
+*Status: the verdicts and the free-only rule are the user's (10–11 November 2026); recorded 11 November 2026. Reference: `01-search-screening-record.md`, `sources.md` #405–#416 and #417–#612, `01-search-protocol.md` §11 and §13.*

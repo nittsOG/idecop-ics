@@ -121,6 +121,8 @@ Running catalog of every source surfaced across research iterations. **Appended 
     - **Tier:** proposed T2 under A17's protocol, pending the user's confirmation.
     - **Stale until the verdict and its decisions-log entry:** three statements, for the version of record. They are the headline correction in `iteration-2-findings.md`, entry 8 of `01-thesis-citation-shortlist.md`, and the "Enterprise IT / generic networks" row of `research-synthesis-implementation.md`.
 
+    **Update, 11 November 2026 — 🟢 T2 confirmed (D35).** The user confirmed the proposed T2 on 11 November 2026. The clause-by-clause mapping is in `01-search-screening-record.md` §3. The three statements named above as stale are corrected in D35's batch: `iteration-2-findings.md`, entry 8 of `01-thesis-citation-shortlist.md`, and `research-synthesis-implementation.md`.
+
 ### Expanded related-work (pulled from the two Zambianco papers' bibliographies — real citations, not yet independently verified in full text)
 193. Horák, Bošanský, Tomášek, Kiekintveld, Kamhoua (2019) — "Optimizing honeypot strategies against dynamic lateral movement using partially observable stochastic games," *Computers & Security* 87:101579. 🔴
 194. Al Amin, Shetty, Njilla, Tosh, Kamhoua (2021) — "Hidden Markov Model and Cyber Deception for the Prevention of Adversarial Lateral Movement," *IEEE Access* 9:49662–49682. 🔴
@@ -427,6 +429,10 @@ Run specifically to close the item named in `research-synthesis-implementation.m
 
 ---
 
+    **Update, 11 November 2026 — A17 (D35).** Both papers named here were A17 records:
+    - Tian et al. (2020), record 290, was read in full from the PDF the user supplied. Every bus node gets a honeypot, and the game picks only its mode (high or low interaction), using node values from electrical centrality. There is no choice of positions: **T1**.
+    - Diamantoulakis et al. (2020), record 178, is **T1** from its abstract: the game chooses how many honeypots to run, not where.
+
 ## Post-Iteration-10 Additions (logged after TA-1 reference verification)
 
 323. **Osman, Nadeem, Hemida, Kamhoua (2023)** — "Optimizing Honeypot Placement Strategies with Graph Neural Networks for Enhanced Resilience via Cyber Deception," *GNNet '23: Proc. 2nd Graph Neural Networking Workshop*, Paris, pp. 37–43, DOI 10.1145/3630049.3630169. Completes the bibliographic record for the previously-uncredited GNN placement entry. Note the author list: Kamhoua again — this is the same cluster that has now done placement optimization for AD networks, microservices, epidemic-control networks, drones, and GNN-based generic networks, and still never OT. That strengthens rather than weakens the gap argument. 🟢 https://dl.acm.org/doi/10.1145/3630049.3630169
@@ -723,13 +729,23 @@ No count was obtained, so A17's searches run from the user's browser (D34).
 - **Screening:** under way; the title stage was confirmed on 8 November 2026 (#416). Outcomes are added here as update lines.
 - **Raw JSON:** kept by the user (💾).
 
+    **Update, 11 November 2026 — screening outcome (D35).** Counting all 242 unique records this run returned, including those other runs also returned: title stage A 48, K 4, R 104, X 86; final tiers T3 0, T2 1, T1 143, unresolved 7, assessed earlier 4, excluded 87. Of its 155 kept records, 19 were already logged and 136 have new entries in #417–#609. Per-record detail: `01-search-screening-record.md`.
+
 406. **A17 run 2 — OpenAlex, S2. Received 4 November 2026.** As run 1, with string S2. **Count: 95**, all parsed; 42 new after deduplication in run order (#416). Screening under way.
+
+    **Update, 11 November 2026 — screening outcome (D35).** Counting all 95 unique records this run returned, including those other runs also returned: title stage A 44, K 3, R 19, X 29; final tiers T3 0, T2 1, T1 57, unresolved 5, assessed earlier 3, excluded 29. Of its 66 kept records, 9 were already logged and 57 have new entries in #417–#609. Per-record detail: `01-search-screening-record.md`.
 
 407. **A17 run 3 — OpenAlex, S3. Received 4 November 2026.** As run 1, with string S3. **Count: 12**, all parsed; 6 new (#416). Screening under way.
 
+    **Update, 11 November 2026 — screening outcome (D35).** Counting all 12 unique records this run returned, including those other runs also returned: title stage A 6, K 0, R 3, X 3; final tiers T3 0, T2 1, T1 7, unresolved 1, assessed earlier 0, excluded 3. Of its 9 kept records, 1 were already logged and 8 have new entries in #417–#609. Per-record detail: `01-search-screening-record.md`.
+
 408. **A17 run 4 — OpenAlex, S4. Received 4 November 2026.** As run 1, with string S4, the test with no deception term. **Count: 45**, all parsed; 43 new (#416). Screening under way.
 
+    **Update, 11 November 2026 — screening outcome (D35).** Counting all 43 unique records this run returned, including those other runs also returned: title stage A 6, K 0, R 0, X 37; final tiers T3 0, T2 0, T1 4, unresolved 0, assessed earlier 0, excluded 39. Of its 4 kept records, 0 were already logged and 4 have new entries in #417–#609. Per-record detail: `01-search-screening-record.md`.
+
 409. **A17 run 5 — OpenAlex, S5. Received 4 November 2026.** As run 1, with string S5. **Count: 41**, all parsed; 9 new (#416). Screening under way.
+
+    **Update, 11 November 2026 — screening outcome (D35).** Counting all 41 unique records this run returned, including those other runs also returned: title stage A 15, K 2, R 13, X 11; final tiers T3 0, T2 0, T1 24, unresolved 4, assessed earlier 2, excluded 11. Of its 30 kept records, 4 were already logged and 26 have new entries in #417–#609. Per-record detail: `01-search-screening-record.md`.
 
 410. **A17, Semantic Scholar: the first form refused, and the protocol's one amendment (4 November 2026).**
 - **First form:** the five strings exactly as in `01-search-protocol.md` §5 at commit `6b03a3a`, with `(` `)` `|` `"` written raw and AND as `%2B`. All five returned HTTP 400 in the user's browser.
@@ -744,13 +760,23 @@ No count was obtained, so A17's searches run from the user's browser (D34).
 
 411. **A17 run 6 — Semantic Scholar, S1, amended form. Received 5 November 2026.** Bulk search, `fields=title,year,externalIds,venue`, no other limit. **Total: 194.** Every record came back in one response (`token` null), so the total is the exact number returned: 194 parsed, which is checked against the total, not an estimate. 28 new after deduplication (#416). Known-item test: Jay (#305), Mashima (#12) and DecIED (#11) retrieved. Screening under way.
 
+    **Update, 11 November 2026 — screening outcome (D35).** Counting all 192 unique records this run returned, including those other runs also returned: title stage A 38, K 4, R 87, X 63; final tiers T3 0, T2 1, T1 121, unresolved 2, assessed earlier 4, excluded 64. Of its 128 kept records, 14 were already logged and 114 have new entries in #417–#609. Per-record detail: `01-search-screening-record.md`.
+
 412. **A17 run 7 — Semantic Scholar, S2, amended form. Received 5 November 2026.** As run 6, with string S2. **Total: 71**, all returned and parsed; 1 new (#416). Screening under way.
+
+    **Update, 11 November 2026 — screening outcome (D35).** Counting all 71 unique records this run returned, including those other runs also returned: title stage A 38, K 2, R 14, X 17; final tiers T3 0, T2 1, T1 50, unresolved 1, assessed earlier 2, excluded 17. Of its 54 kept records, 7 were already logged and 47 have new entries in #417–#609. Per-record detail: `01-search-screening-record.md`.
 
 413. **A17 run 8 — Semantic Scholar, S3, amended form. Received 5 November 2026.** As run 6, with string S3. **Total: 6**, all returned and parsed; 2 new (#416). Screening under way.
 
+    **Update, 11 November 2026 — screening outcome (D35).** Counting all 6 unique records this run returned, including those other runs also returned: title stage A 2, K 0, R 1, X 3; final tiers T3 0, T2 0, T1 3, unresolved 0, assessed earlier 0, excluded 3. Of its 3 kept records, 0 were already logged and 3 have new entries in #417–#609. Per-record detail: `01-search-screening-record.md`.
+
 414. **A17 run 9 — Semantic Scholar, S4, amended form. Received 5 November 2026.** As run 6, with string S4. **Total: 27**, all returned and parsed; 1 new (#416). Screening under way.
 
+    **Update, 11 November 2026 — screening outcome (D35).** Counting all 27 unique records this run returned, including those other runs also returned: title stage A 4, K 0, R 0, X 23; final tiers T3 0, T2 0, T1 3, unresolved 0, assessed earlier 0, excluded 24. Of its 3 kept records, 0 were already logged and 3 have new entries in #417–#609. Per-record detail: `01-search-screening-record.md`.
+
 415. **A17 run 10 — Semantic Scholar, S5, amended form. Received 5 November 2026.** As run 6, with string S5. **Total: 24**, all returned and parsed; 1 new (#416). Screening under way.
+
+    **Update, 11 November 2026 — screening outcome (D35).** Counting all 24 unique records this run returned, including those other runs also returned: title stage A 11, K 2, R 6, X 5; final tiers T3 0, T2 0, T1 15, unresolved 2, assessed earlier 2, excluded 5. Of its 19 kept records, 2 were already logged and 17 have new entries in #417–#609. Per-record detail: `01-search-screening-record.md`.
 
 416. **A17 deduplication and the pilot's outcome (5 November 2026).**
 - **758 records, 375 unique.** Matched by DOI first, then by the same normalised title (letters and digits, lower case) within one year, so that preprints merge with their published versions.
@@ -771,3 +797,419 @@ No count was obtained, so A17's searches run from the user's browser (D34).
   - Seven of the 82 abstracts were on publisher pages closed to Claude's fetch tool. The user supplied two the same day, leaving five.
   - Thirteen records went to full text, since none is judged from its abstract (§11). The first is read: the published Park & Dagher (#192's update).
   - The outcome is recorded here when screening ends.
+
+    **Update, 11 November 2026 — screening complete for the main search (D35).**
+    - **Abstract stage (82):** 13 to full text, 61 T1, 3 excluded, and 5 judged on the title (no abstract obtained).
+    - **Full-text stage (13):** free copies only, by the user's rule. 5 read: records 43 and 269 are T2; 368, 290 and 72 are T1. The other 8 were not obtained, and their tiers are unresolved.
+    - **Tiers:** confirmed by the user on 11 November 2026.
+    - **Final:** T3 0, T2 2, T1 202, unresolved 8, assessed earlier 5, excluded 158.
+    - **New entries:** 193 kept records have entries #417–#609; the other 24 were already logged.
+    - **Record by record:** `01-search-screening-record.md`.
+
+### YY. A17 structured search — the kept records (D35, 11 November 2026)
+
+One entry per record kept by A17's screening (`01-search-protocol.md` §10), except the 24 already in this log, which `01-search-screening-record.md` §9 maps to their entries. "Record" numbers are the screening record's, not this log's. Markers: 🟢 full text read; 🟡 judged on its abstract or title only, so verify before citing; 🔴 full text not obtained (the user's free-only rule, D35).
+
+**T2: narrows the claim (1)**
+
+417. **Multi‐Layered Optimization for Adaptive Decoy Placement in Cyber‐Resilient Power Systems Under Uncertain Attack Scenarios** (2025). doi:10.1049/rpg2.70078. A17 record 269: **T2**, judged on its full text. 🟢 Hua Dong, Zhao Wei, Cui Peiyi, Liu Yiqing and Hua Hua, names as printed (Wiley lists the first author as Dong). *IET Renewable Power Generation* 19 (2025), e70078; open access, CC BY. Read in full on 11 November 2026 from the PDF the user supplied. A three-level (defender–attacker–defender) optimisation: binary decoy-node placement under a budget constraint, an objective that combines resilience loss, operating cost and risk, and node weights for load, topology and operational criticality; modified IEEE 123-bus distribution system. Its "zones" are decoy coverage zones, not IEC 62443 zones. No ATT&CK; compared with statistical anomaly detection and "classical optimisation", not with centrality or random placement. No data or code released ("No data are available for this study"). **T2, confirmed by the user on 11 November 2026 (D35);** the clause-by-clause mapping is in `01-search-screening-record.md` §3.
+
+**Tier unresolved: full text not obtained (8)**
+
+418. **Active Defense Simulation Evaluation of Industrial Control Systems Based on Attack-Defense Graph** (2024). doi:10.1007/978-3-031-71467-2_26. A17 record 41: **tier unresolved**, judged on its abstract only (full text not obtained). 🔴 ICS active defence evaluated on an attack-defence graph; simulates honeypot positions, and three honeypots spread across hierarchy levels beat three in one level (+24.4% time-to-compromise). No optimiser in the abstract, and 'hierarchy' is undefined. Probably T1, like Ward. Full text not obtained: paywalled (free-only rule). Cited from its abstract only.
+
+419. **Consequence-driven active defense resource allocation for chemical park cyber-physical systems** (2026). doi:10.1016/j.ress.2026.113562. A17 record 89: **tier unresolved**, judged on its abstract only (full text not obtained). 🔴 Gong, Z., Chen, G., Zhao, Y., Zhou, W., & Chen, H. *Reliability Engineering & System Safety* 278, Part 2 (February 2027), 113562. Abstract, introduction and section snippets read on the ScienceDirect page the user supplied (8 November 2026). Chemical-park CPS in three layers (information, cyber-physical, physical); attack graphs quantify cross-layer paths, Bayesian networks infer physical consequence severity, a coupling index ranks nodes under a budget, and an attack–defence game solved greedily gives the honeypot deployment; validated on a cascaded water-tank rig (Siemens S7-1200) and the Tennessee Eastman Process. Its introduction rejects degree-, closeness- and betweenness-based placement. **The closest abstract of the search; tier unresolved:** paywalled, with no free copy in OpenAlex or a web search (#610), so not read under the user's free-only rule (D35).
+
+420. **Dynamic Deployment Strategy of Decoy Nodes in High-Risk Network Segments Based on Cyber Threat Intelligence** (2025). doi:10.1109/ifeea66847.2025.11388193. A17 record 151: **tier unresolved**, judged on its abstract only (full text not obtained). 🔴 TI-DNDP: threat intelligence plus game theory and RL to 'optimise honeypot placement' in high-risk segments of cyber-physical power systems. Full text not obtained: paywalled (free-only rule). Cited from its abstract only.
+
+421. **Enhancing the security of reconfigurable cyber-physical supply chains: reconstructing vulnerable attack paths using AND/OR/QUORUM graphs** (2025). doi:10.1080/00207543.2025.2608292. A17 record 160: **tier unresolved**, judged on its abstract only (full text not obtained). 🔴 AND/OR/QUORUM attack graphs for cyber-physical supply chains: extracts the most vulnerable paths, then hardens components and deploys a honeypot on them. Full text not obtained: paywalled (free-only rule). Cited from its abstract only.
+
+422. **HoneyCenter: An Intelligent Honeypoint IP Mutation Strategy Optimization Based on Multiagent Reinforcement Learning** (2026). doi:10.1109/tcss.2026.3658002. A17 record 188: **tier unresolved**, judged on its abstract only (full text not obtained). 🔴 HoneyCenter: zero-sum game solved by minimax Q-learning, choosing which host the honeypoint's IP moves to, in smart-grid and ICS settings. Full text not obtained: paywalled (free-only rule). Cited from its abstract only.
+
+423. **Proactive Cyber Deception in Attack Graphs: A Risk-aware Deployment Framework** (2026). doi:10.1109/tce.2026.3714285. A17 record 288: **tier unresolved**, judged on its abstract only (full text not obtained). 🔴 Barkatsa, S., Charatsaris, P., Diamanti, M., Tsiropoulou, E. E., & Papavassiliou, S. *IEEE Transactions on Consumer Electronics*, early access, 16 July 2026 (IEEE Xplore 11612887). OpenAlex marks it open access (hybrid), but the user could not reach the PDF.
+
+424. **Risk-Based Asset Prioritization for Moving Target Defense in Critical Infrastructure** (2026). OpenAlex W7204153552. A17 record 307: **tier unresolved**, judged on its abstract only (full text not obtained). 🔴 A Stockholm University (DiVA) record, apparently a thesis: urn:nbn:se:su:diva-258349 (green open access, OpenAlex). The user could not reach the copy.
+
+425. **Strategic Defense Allocation in Cyber-Physical Sensor Systems Under Dual-Domain Attacks** (2025). doi:10.1007/978-3-032-08067-7_5. A17 record 333: **tier unresolved**, judged on its abstract only (full text not obtained). 🔴 Asghar, Hemida, Kamhoua and Kleinberg (GameSec 2025): the defender places honeypots on cyber access points and physically protects a subset of sensors; double oracle with a greedy oracle that carries a submodular constant-factor guarantee. No zones or criticality in the abstract. Full text not obtained: paywalled, no free copy (free-only rule). Cited from its abstract only.
+
+**T1 from group A, judged on the full text (7)**
+
+426. **A Decoy Placement Model for Engineering Workstations and Historian Systems in Manufacturing OT Networks** (2026). doi:10.5120/ijca54a0f5aecad7. A17 record 11: T1, judged on its full text. 🟢 Ward, D. *International Journal of Computer Applications* 187(127), July 2026, pp. 53–61 (pages from the running heads). Read in full through Claude's fetch tool on 8 November 2026. Decoy placement in a synthetic 26-node manufacturing-OT attack graph, evaluated by Monte Carlo against random, betweenness-centrality, DMZ-heavy and asset-proximal placements. The placement is designed and argued, not optimised (optimisation is named as future work); IEC 62443 appears only in the references. **T1, confirmed by the user on 11 November 2026 (D35);** cited as the closest work in topic, and wherever A28 names its baselines.
+
+427. **Automated Design of Countermeasures for ICS Based on Security Standards** (2026). doi:10.1109/access.2026.3696839. A17 record 72: T1, judged on its full text. 🟢 Sakata, K., Ogura, T., Matsumoto, N., Ando, E., Vera, C., Ishii, H., & Takemoto, S. *IEEE Access* 14 (2026), from p. 85332; open access, CC BY 4.0. Read on 11 November 2026 from the PDF the user supplied (decisive passages). A 0-1 integer program that picks countermeasure features for a PLC under IEC 62443-4-2 security levels, memory and OS limits, with CIA weights and ATT&CK for ICS mapped to the requirements. No zones, conduits, network placement or deception. **T1.** Note for A28: IEC 62443 levels already enter an optimisation as numbers here, so the thesis may not claim to be the first numeric use of IEC 62443 levels — only of zones and conduits in a deception-placement objective.
+
+428. **Generative AI and Gametheory for the development and deployment of Honeypots to enhance the Security of Industrial Automation and Control Systems** (2024). doi:10.18420/inf2024_165. A17 record 180: T1, judged on its full text. 🟢 Generative-AI honeypots for IACS plus a small game: the defender picks 0, 1 or 2 honeypots, solved by a payoff table. No positions, no optimisation, no evaluation.
+
+429. **Honeypot Game Strategy for Distributed Denial of Service in Advanced Metering Infrastructure** (2018). Semantic Scholar d820ce59f277058062573db214b0079742b5b078. A17 record 199: T1, judged on its full text. 🟢 Honeypot strategy against DDoS in AMI, compared with two monitoring models; no placement rule. Read in full through the fetch tool.
+
+430. **Network Softwarization for IACS Security Applications** (2018). Semantic Scholar 3d06d816e066172911c13423228ef5278b5882bb. A17 record 271: T1, judged on its full text. 🟢 Master's dissertation: SDN/NFV architecture for IACS security probes, including a virtual honeypot. No placement method; no IEC 62443. Read through the fetch tool (first fifth).
+
+431. **Towards Optimized Security Attributes for IoT Devices in Smart Agriculture Based on the IEC 62443 Security Standard** (2022). doi:10.3390/app12115653. A17 record 355: T1, judged on its full text. 🟢 Shaaban et al.: removes redundant security attributes across IoT components in a THREATGET model. IEC 62443 zones and levels are background only, not numbers; no deception. Read in full through the fetch tool.
+
+432. **Vulnerability-based and Risk-Aware Honeynet Deployment Framework in Cyber-Physical Power Systems** (2025). doi:10.1016/j.epsr.2025.112247. A17 record 368: T1, judged on its full text. 🟢 Qu, Z., Lv, J., Yang, J., Ma, K., & Wang, Y. *Electric Power Systems Research* 251 (February 2026), 112247; the journal version is paywalled. Read in full on 11 November 2026 from its free SSRN preprint (doi:10.2139/ssrn.5269085), not the journal version. Honeypots are shared across information-layer nodes in proportion to a vulnerability score (static) or to changes in a risk score (dynamic); no objective is optimised. Compared with degree-based and random allocation on IEEE 118-bus with scale-free and tree information layers. **T1, confirmed by the user on 11 November 2026 (D35).**
+
+**T1 from group A, judged on the abstract (50)**
+
+433. **A Dynamic Deceptive Defense Framework for Zero-Day Attacks in IIoT: Integrating Stackelberg Game and Multi-Agent Distributed Deep Deterministic Policy Gradient** (2025). doi:10.32604/cmc.2025.069332. A17 record 12: T1, judged on its abstract. 🟡 Zero-day defence in IIoT: Stackelberg game plus multi-agent RL tunes packet sampling and deception timing. No honeypot positions.
+
+434. **A framework for the design and deployment of a SCADA honeynet** (2014). doi:10.1145/2602087.2602110. A17 record 15: T1, judged on its abstract. 🟡 Design and deployment framework for a SCADA honeynet in the IMUNES simulator. No choice of positions.
+
+435. **A Game Theoretic Framework for Multi Domain Cyber Deception** (2024). doi:10.1109/eurospw61312.2024.00056. A17 record 16: T1, judged on its abstract. 🟡 Game models for deception coordinated across cyber and physical layers. No network positions.
+
+436. **Active cyber defense using intelligent agents in cloud-edge based applications** (2025). doi:10.32469/10355/110389. A17 record 39: T1, judged on its abstract. 🟡 Dissertation, cloud-edge critical infrastructure. Game-theoretic placement of honeypots, honeyfiles and honeytokens along ransomware kill-chain stages: when in the attack, not where in a network. Borderline T1.
+
+437. **Adaptive Cyber Deception: Performance Evaluation of AI-Driven Strategies Against Traditional Honeypots** (2026). doi:10.1109/icpc2t68221.2026.11646292. A17 record 42: T1, judged on its abstract. 🟡 Adaptive CPS deception architecture (emulator, safety filter, RL). Its game layer chooses which services to expose, not where decoys go.
+
+438. **Adaptive Honeypot Defense Deployment: A Stackelberg Game Approach with Decentralized DRL for AMI Protection** (2024). doi:10.1109/icnc59896.2024.10556285. A17 record 44: T1, judged on its abstract. 🟡 AMI honeypot deployment as a Stackelberg game among power suppliers (multi-agent RL): incentives and task allocation, not network positions.
+
+439. **AI-Driven Deception Systems for Advanced Persistent Threat (APT) Mitigation** (2025). doi:10.1109/gcat66372.2025.11368570. A17 record 55: T1, judged on its abstract. 🟡 AI-driven deception engine against APTs in enterprise networks.
+
+440. **An SDN-Enabled Pseudo-Honeypot Strategy for Distributed Denial of Service Attacks in Industrial Internet of Things** (2019). doi:10.1109/tii.2019.2917912. A17 record 64: T1, judged on its abstract. 🟡 Pseudo-honeypot game against DDoS on SDN-managed IIoT; equilibrium strategies, not positions.
+
+441. **Analysis and Optimization of Processes for Integrating Smart Grid Objects into the Critical Infrastructure Cyber Protection System** (2025). doi:10.1109/khpiweek61436.2025.11288406. A17 record 65: T1, judged on its abstract. 🟡 Smart-grid security investment: anomaly detection mapped to ATT&CK for ICS and IEC 62443-3-3, with a Gordon-Loeb budget model. No deception and no placement.
+
+442. **Automatic Expansion and Contraction of Trapping Resources Based on Electric Power Environment** (2025). doi:10.1109/iccea65460.2025.11103308. A17 record 74: T1, judged on its abstract. 🟡 Kubernetes controller that scales honeypot containers in power networks. Resource scaling, not positions.
+
+443. **Balancing Defence and Operational Stability: Resilience-Oriented Reinforcement Learning for Autonomous Critical Infrastructure Cyber Defence** (2025). doi:10.1109/rivf68649.2025.11365238. A17 record 77: T1, judged on its abstract. 🟡 RL agent for critical infrastructure that chooses when to use high- or low-fidelity honeypots under a resilience reward. Not positions. Borderline T1.
+
+444. **Co-ADAM: a co-evolutionary signaling game framework for equilibrium cyber deception in industrial IoT** (2026). doi:10.1038/s41598-026-60920-0. A17 record 87: T1, judged on its abstract. 🟡 Co-ADAM: how much to invest in deception in IIoT (constrained MDP with a signalling game). An investment level, not positions.
+
+445. **Constructing Cost-Effective and Targetable ICS Honeypots Suited for Production Networks** (2015). OpenAlex W618946352. A17 record 90: T1, judged on its abstract. 🟡 Honeyd+: many decoy PLCs proxied to one real PLC. Construction, not positions. Possibly already logged: #304 describes a thesis on cost-effective, targetable ICS honeypot construction, probably this one.
+
+446. **Contract-Based Incentive Mechanisms for Honeypot Defense in Advanced Metering Infrastructure** (2021). doi:10.1109/tsg.2021.3071513. A17 record 94: T1, judged on its abstract. 🟡 Contract theory to make suppliers deploy AMI honeypots and share data honestly.
+
+447. **Decoy-Assisted Detection Metrics for Manufacturing Operational Technology Networks** (2026). doi:10.29322/ijsrp.16.06.2026.p17419. A17 record 122: T1, judged on its abstract. 🟡 Ward: a metrics model for decoy-assisted detection in manufacturing OT. Relevant to evaluation, not placement.
+
+448. **Decoy-based Moving Target defense Against Cyber-physical Attacks On Smart Grid** (2020). doi:10.1109/epec48502.2020.9320029. A17 record 123: T1, judged on its abstract. 🟡 Moving-target defence for smart grids with simulated decoy system models in the control loop; 'decoy' in a control sense.
+
+449. **Defense Strategies Against Network Attacks in Cyber-Physical Systems with Analysis Cost Constraint Based on Honeypot Game Model** (2019). doi:10.32604/cmc.2019.05290. A17 record 129: T1, judged on its abstract. 🟡 Honeypot game for CPS that splits a limited analysis budget between low- and high-interaction honeypots. Not positions.
+
+450. **Design and Deployment of Deception-Based Honeypot Systems for Early Detection of Advanced Persistent Threats** (2025). doi:10.1109/icrera66237.2025.11283915. A17 record 135: T1, judged on its abstract. 🟡 Hierarchical honeypots in segmented zones, with ML analytics, for early APT detection. An architecture.
+
+451. **Design Considerations for Distributed Energy Resource Honeypots and Canaries** (2021). doi:10.2172/1821540. A17 record 138: T1, judged on its abstract. 🟡 Design considerations for DER honeypots and canaries (Sandia report).
+
+452. **Dynamic Bayesian Games for Adversarial and Defensive Cyber Deception** (2019). doi:10.1007/978-3-030-02110-8_5. A17 record 150: T1, judged on its abstract. 🟡 Huang and Zhu: static, signalling and multi-stage Bayesian games of deception (book chapter). Not positions.
+
+453. **Evaluating ICS honeypot attractiveness: The role of interaction level, network type, and geolocation** (2026). doi:10.1016/j.ijcip.2026.100898. A17 record 162: T1, judged on its abstract. 🟡 How interaction level, network type and location affect ICS honeypot attractiveness (16 internet-facing honeypots, three months).
+
+454. **Game-Theoretic and Machine Learning-based Defensive Deception for Dependable and Secure Cyber-Physical Systems** (2025). OpenAlex W7112107853. A17 record 179: T1, judged on its abstract. 🟡 Dissertation on game-theoretic and ML defensive deception for CPS (Foureye, Honey Drones).
+
+455. **Honeyfarm: AI-Based Honeypots for Industrial OPC UA Communication via an On-Demand Deployment Architecture** (2026). doi:10.1007/978-3-032-35576-8_22. A17 record 190: T1, judged on its abstract. 🟡 Honeyfarm: on-demand OPC UA honeypots that take over rerouted attacker traffic; names usable points in the Purdue model, qualitatively.
+
+456. **Honeypot Detection Strategy Against Advanced Persistent Threats in Industrial Internet of Things: A Prospect Theoretic Game** (2021). doi:10.1109/jiot.2021.3080527. A17 record 198: T1, judged on its abstract. 🟡 Bounded-rationality honeypot-APT game on SDN-managed IIoT; choice of collection and analysis periods.
+
+457. **Honeypot game‐theoretical model for defending against APT attacks with limited resources in cyber‐physical systems** (2019). doi:10.4218/etrij.2019-0152. A17 record 200: T1, judged on its abstract. 🟡 Honeypot game for APTs in CPS with low- and high-interaction modes and allocation costs. Equilibrium strategies, not positions.
+
+458. **Honeypot Type Selection Games for Smart Grid Networks** (2019). doi:10.1007/978-3-030-32430-8_6. A17 record 201: T1, judged on its abstract. 🟡 Boumkheld et al.: Bayesian game choosing the honeypot type (low, high or none) in smart-grid AMI.
+
+459. **Honeypot-Enabled Optimal Defense Strategy Selection for Smart Grids** (2021). doi:10.1109/globecom46510.2021.9685397. A17 record 202: T1, judged on its abstract. 🟡 Stochastic game selecting a smart-grid defence strategy, with honeypots among the options.
+
+460. **Honeypots for Automatic Network-Level Industrial Control System Security** (2020). OpenAlex W3017025980. A17 record 204: T1, judged on its abstract. 🟡 Doctoral proposal: ICS honeypots at mixed interaction levels with SDN reconfiguration.
+
+461. **Incentive-Driven Honeypot Defense: A Multi-Agent DRL Framework for Securing Smart Grid Networks** (2026). doi:10.1109/tnsm.2026.3715400. A17 record 226: T1, judged on its abstract. 🟡 AMI honeypot service allocation among suppliers (Stackelberg game, multi-agent RL). Incentives, not positions.
+
+462. **Industrial Cloud-Native Proactive Defense: A Dynamic Cyber Deception Orchestration Framework for IIoT Services** (2026). doi:10.1109/tii.2026.3740984. A17 record 230: T1, judged on its abstract. 🟡 Cloud-hosted IIoT decoys made to look local by emulating hop counts and delays. Fidelity, not positions.
+
+463. **Last Line of Defense: Reliability Through Inducing Cyber Threat Hunting With Deception in SCADA Networks** (2021). doi:10.1109/access.2021.3111420. A17 record 247: T1, judged on its abstract. 🟡 Threat hunting with a decoy farm in a SCADA network.
+
+464. **Metrics-Driven Evaluation and Optimization of Honeypots: Toward Standardized Measures of Deception Effectiveness** (2025). doi:10.12700/aph.22.12.2025.12.19. A17 record 259: T1, judged on its abstract. 🟡 Metrics framework for evaluating honeypots (five dimensions, composite scores).
+
+465. **Mitigating the Lateral Movement of APT in IIoT With an Efficient Moving Target Defense and Cyber Deception Approach** (2026). doi:10.1109/tr.2026.3685261. A17 record 261: T1, judged on its abstract. 🟡 Moving-target defence plus deception against lateral movement in IIoT (Stackelberg game with prospect theory, subnet shuffling). Optimises a defence policy, not decoy positions. Borderline T1.
+
+466. **MLNT: A Multi-Level Network Traps Deployment Method** (2024). doi:10.1109/cscwd61410.2024.10580355. A17 record 263: T1, judged on its abstract. 🟡 MLNT: layered network traps (ports, nodes, security domains) built on FPGA. An architecture, not an optimisation.
+
+467. **Modeling a ransomware attack : a game-theoretic exploration of strategic interplay between attacker and defender** (2024). doi:10.32469/10355/104992. A17 record 264: T1, judged on its abstract. 🟡 Thesis: deception resources across ransomware stages, as an extensive-form game. When, not where.
+
+468. **Network and Device Level Cyber Deception for Contested Environments Using RL and LLMs** (2026). doi:10.48550/arxiv.2603.17272. A17 record 270: T1, judged on its abstract. 🟡 Review of RL- and LLM-based network and device deception, including OT.
+
+469. **Operationalizing Deception Technology in ICS/OiticaT: A Control Mapping Framework for Crl Infrastructure Cybersecurity** (2026). doi:10.35940/ijsce.c3723.16030726. A17 record 278: T1, judged on its abstract. 🟡 Ward: control mapping of ICS/OT deception to NIST, IEC 62443-2-1, CISA and ATT&CK for ICS.
+
+470. **Optimal Honeypot Ratio and Convergent Fictitious-Play Learning in Signaling Games for CPS Defense** (2025). doi:10.48550/arxiv.2507.11113. A17 record 279: T1, judged on its abstract. 🟡 Signalling game giving the optimal share of honeypots in a CPS. A ratio, not positions.
+
+471. **QuantumGuard: A Post-Quantum Resilient Deception-Driven Framework for Proactive Threat Hunting and Cognitive Honeynet Orchestration in 6G-Enabled Cyber-Physical Systems** (2026). doi:10.14569/ijacsa.2026.0170694. A17 record 297: T1, judged on its abstract. 🟡 QuantumGuard: post-quantum deception framework for 6G CPS.
+
+472. **Reinforcement Learning-Driven Honeypots: Tactic-Based Defense for Industrial Control Systems** (2026). doi:10.1109/tmlcn.2026.3684465. A17 record 298: T1, judged on its abstract. 🟡 RL-driven ICS honeypot that shapes responses by ATT&CK for ICS tactic.
+
+473. **Research on the Application of Deception Defense Technology in Smart Grid** (2023). doi:10.1109/icips59254.2023.10404573. A17 record 302: T1, judged on its abstract. 🟡 Review of deception defence in smart grids.
+
+474. **Secure Cyber Deception Architecture and Decoy Injection to Mitigate the Insider Threat** (2018). doi:10.3390/sym10010014. A17 record 311: T1, judged on its abstract. 🟡 Dynamic host mutation with decoy injection against insiders.
+
+475. **Securing Industrial Control Systems: PLC, SCADA, and HMI Protection** (2025). doi:10.1109/icspc68261.2025.11326487. A17 record 316: T1, judged on its abstract. 🟡 ICS defence in depth, with a SCADA honeypot case.
+
+476. **Self-adaptive cyber deception and resilient network defense via adversarial environment simulation** (2026). doi:10.1038/s41598-026-59245-9. A17 record 320: T1, judged on its abstract. 🟡 Self-adaptive deception trained against GAN-generated attacks (DRL).
+
+477. **Stackelberg Games for the “Active Deception” Strategy in the Process of Critical Infrastructure Migration to Post-Quantum Cryptography** (2026). doi:10.3390/jcp6050143. A17 record 329: T1, judged on its abstract. 🟡 Stackelberg game splitting budget between post-quantum migration and decoy infrastructure. A budget split, not positions.
+
+478. **Stochastic games for power grid coordinated defence against coordinated attacks** (2020). doi:10.1049/iet-cps.2020.0002. A17 record 332: T1, judged on its abstract. 🟡 Stochastic game for coordinated power-grid defence (honeypot plus 'weakening vision'), IEEE 14-bus.
+
+479. **Strategic Honeypot Game Model for Distributed Denial of Service Attacks in the Smart Grid** (2017). doi:10.1109/tsg.2017.2670144. A17 record 334: T1, judged on its abstract. 🟡 Honeypot game against DDoS in AMI, on a testbed.
+
+480. **Study on the intelligent honeynet model for containing the spread of industrial viruses** (2021). doi:10.1016/j.cose.2021.102460. A17 record 337: T1, judged on its abstract. 🟡 Epidemic model of an 'intelligent honeynet' containing industrial viruses in SCADA; stability analysis. No placement. Abstract read on Prof. Yu Yao's publication page (Northeastern University), not the publisher's.
+
+481. **Trapping resource orchestration scheme based on electric power environment** (2024). doi:10.1109/dsc63484.2024.00072. A17 record 358: T1, judged on its abstract. 🟡 Kubernetes scheduler for honeypots in power networks.
+
+482. **ZONING, CONDUITING AND SUBNETTING ARCHITECTURE FOR INDUSTRIAL CONTROL SYSTEMS** (2026). doi:10.5281/zenodo.19372328. A17 record 373: T1, judged on its abstract. 🟡 Engineering method for ICS zoning, conduits and subnetting, aligned with IEC 62443 and IEC 61511. No deception; background for the zone model.
+
+**T1 from group A, judged on the title alone (abstract not obtained) (5)**
+
+483. **Attack-Defense Game Modeling on Complex Networks under Asymmetric Topological Information** (2026). doi:10.2139/ssrn.7022022. A17 record 70: T1, judged on its title only (abstract not obtained). 🟡 Attack-defence game on complex networks under asymmetric topology information (SSRN). Abstract not reachable.
+
+484. **Decoding the Human Element in APT Attacks: Unveiling Attention Diversion Techniques in Cyber-Physical System Security** (2024). doi:10.1007/978-3-031-61382-1_1. A17 record 121: T1, judged on its title only (abstract not obtained). 🟡 Attention-diversion techniques in CPS against APTs (Springer). Abstract not reachable.
+
+485. **Defending against multiple IIoT attackers using hybrid hypergame-reinforcement learning with ML-enhanced beliefs** (2026). doi:10.1007/s00521-026-12220-x. A17 record 126: T1, judged on its title only (abstract not obtained). 🟡 Hypergame plus RL against multiple IIoT attackers (Springer NCA 2026). Abstract not reachable.
+
+486. **Honeynet Module Simulation and Dynamic Configuration of Honeypots Based on Online Learning** (2024). doi:10.1007/978-981-97-1010-2_9. A17 record 192: T1, judged on its title only (abstract not obtained). 🟡 Honeynet simulation and online-learning configuration of honeypots (Springer). Abstract not reachable.
+
+487. **Resilient Control Systems** (2019). doi:10.1109/rws47064.2019.8971995. A17 record 303: T1, judged on its title only (abstract not obtained). 🟡 'Resilient Control Systems' (IEEE RWS 2019): the title gives nothing. Abstract not reachable.
+
+**T1 from group R: related by title, not screened further (122)**
+
+488. **"Synchronized Network and Process Telemetry Dataset from an Industrial Oil-Pipeline Honeypot Testbed"** (2026). doi:10.21227/3nmn-tz65. A17 record 1: T1, judged on its title. 🟡
+
+489. **A Comparative Study of ICS Honeypot Deployments** (2025). doi:10.1007/978-3-032-16165-9_8. A17 record 6: T1, judged on its title. 🟡
+
+490. **A Cyber-Twin Based Honeypot for Gathering Threat Intelligence of Critical Infrastructure** (2025). doi:10.1145/3806008.3811698. A17 record 8: T1, judged on its title. 🟡 Possibly already logged: possibly the paper #314 names from its arXiv version.
+
+491. **A Deception Readiness Index for ICS and OT Cybersecurity Programs** (2026). doi:10.22214/ijraset.2026.83810. A17 record 10: T1, judged on its title. 🟡
+
+492. **A Flexible Architecture for Industrial Control System Honeypots** (2015). doi:10.5220/0005522500160026. A17 record 13: T1, judged on its title. 🟡
+
+493. **A Game-theoretic Taxonomy and Survey of Defensive Deception for Cybersecurity and Privacy** (2017). doi:10.1145/3337772. A17 record 17: T1, judged on its title. 🟡
+
+494. **A GAN-based security strategy for WSN networks based on honeypot algorithm** (2023). doi:10.1016/j.phycom.2023.102260. A17 record 18: T1, judged on its title. 🟡
+
+495. **A Novel IDS Securing Industrial Control System of Critical Infrastructure Using Deception Technology** (2022). doi:10.4018/ijdcf.302874. A17 record 23: T1, judged on its title. 🟡
+
+496. **A novel worm propagation model based on SDN dynamic honeypots** (2025). doi:10.1504/ijics.2025.10073162. A17 record 24: T1, judged on its title. 🟡
+
+497. **A Physics-Aware, Cross-Layer ICS Honeypot for Purdue Level 2 Operational Technology Networks Poster** (2026). doi:10.13140/rg.2.2.34718.91201. A17 record 25: T1, judged on its title. 🟡
+
+498. **A research for high interactive honepot based on industrial service** (2017). doi:10.1109/compcomm.2017.8323069. A17 record 30: T1, judged on its title. 🟡
+
+499. **A Resilient Dual-Purpose Web Honeypot for Analyzing Attacks on Industrial Control Systems** (2025). doi:10.24251/hicss.2025.836. A17 record 31: T1, judged on its title. 🟡
+
+500. **A Scalable High-interaction Physical Honeypot Framework for Programmable Logic Controller** (2020). doi:10.1109/vtc2020-fall49728.2020.9348483. A17 record 32: T1, judged on its title. 🟡
+
+501. **A Scalable Honeynet Architecture for Industrial Control Systems** (2015). doi:10.1007/978-3-319-30222-5_9. A17 record 33: T1, judged on its title. 🟡
+
+502. **A Scalable Real-Time Intrusion Detection System Using Honeypots and Hybrid Machine Learning Pipelines** (2026). doi:10.1109/conecct68978.2026.11700758. A17 record 34: T1, judged on its title. 🟡
+
+503. **A Simulation Method for Industrial Control Honeynet Based on Time Series Prediction** (2024). doi:10.1109/ispds62779.2024.10667509. A17 record 35: T1, judged on its title. 🟡
+
+504. **Active Defence Using an Operational Technology Honeypot** (2016). doi:10.1049/cp.2016.0860. A17 record 40: T1, judged on its title. 🟡
+
+505. **Adaptive MQTT Honeypots for IIoT Security Using Extended Mealy Machines** (2025). doi:10.1007/978-3-032-13714-2_28. A17 record 45: T1, judged on its title. 🟡
+
+506. **Adaptive SSH Honeypot for Power Monitoring Systems: A Synergistic Approach Combining Reinforcement Learning and Large Language Models** (2025). doi:10.1109/isaics66888.2025.11350169. A17 record 46: T1, judged on its title. 🟡
+
+507. **Aegis-Edge: Gated Agentic Cyber Defense with Deception-Oriented Control for IoT/IIoT Edge Systems** (2026). doi:10.55041/ijcope.v2i5.262. A17 record 51: T1, judged on its title. 🟡
+
+508. **AI Adoption in Pipeline Security Monitoring: A Systematic Review of AIoT-Driven Honey Frameworks** (2026). doi:10.1109/imcom69009.2026.11360947. A17 record 53: T1, judged on its title. 🟡
+
+509. **AI Vs. AI: Generative Adversarial Networks (Gans) for Dynamic Honeypot Generation in Next-Generation Cyber Defense** (2026). doi:10.55041/ijsmt.v2i4.645. A17 record 54: T1, judged on its title. 🟡
+
+510. **AMINet: An Industrial Honeynet for AMI Systems** (2023). doi:10.1109/bigdata59044.2023.10386375. A17 record 56: T1, judged on its title. 🟡
+
+511. **An exploration of defensive deception in industrial communication networks** (2011). doi:10.1016/j.ijcip.2011.06.002. A17 record 58: T1, judged on its title. 🟡
+
+512. **An ICS Honeynet for Detecting and Analyzing Cyberattacks in Industrial Plants** (2021). doi:10.1109/icecet52533.2021.9698746. A17 record 60: T1, judged on its title. 🟡
+
+513. **An Improved ICS Honeypot Based on SNAP7 and IMUNES** (2018). doi:10.1007/978-3-030-00006-6_27. A17 record 61: T1, judged on its title. 🟡
+
+514. **An intrusion detection method based on log sequence clustering of honeypot for Modbus TCP protocol** (2018). doi:10.1109/icasi.2018.8394581. A17 record 63: T1, judged on its title. 🟡
+
+515. **Analysis of Conpot and Its BACnet Features for Cyber-Deception** (2021). doi:10.1007/978-3-030-71017-0_23. A17 record 66: T1, judged on its title. 🟡
+
+516. **Application of Cyber Deceptive Technology to Strengthen Defense Industry Technology Protection** (2026). doi:10.5762/kais.2026.27.5.437. A17 record 69: T1, judged on its title. 🟡
+
+517. **Automated Generation of Configurable, High-Fidelity, Smart Grid Honeynet** (2025). doi:10.1109/smartgridcomm65349.2025.11204583. A17 record 73: T1, judged on its title. 🟡
+
+518. **Blockchain-Backed ML-Based Zero-Trust Honeypot for Forensic-Ready Cyber-Physical System Security in Industry X** (2025). doi:10.51846/jcsa.v2i2.4636. A17 record 78: T1, judged on its title. 🟡
+
+519. **Characterizing Background Noise in ICS Traffic Through a Set of Low Interaction Honeypots** (2019). doi:10.1145/3338499.3357361. A17 record 81: T1, judged on its title. 🟡
+
+520. **Characterizing Large-Scale Adversarial Activities Through Large-Scale Honey-Nets** (2025). doi:10.1109/uemcon67449.2025.11267576; doi:10.48550/arxiv.2512.06557. A17 record 83: T1, judged on its title. 🟡
+
+521. **Characterizing Network Threats Against Industrial Control Systems Using Honeypot Technology** (2025). doi:10.1109/nana66698.2025.00078. A17 record 84: T1, judged on its title. 🟡
+
+522. **Containerized Cozenage: Exploring the Effectiveness of High Interaction ICS Honeypot Containers** (2025). doi:10.24251/hicss.2025.133. A17 record 91: T1, judged on its title. 🟡
+
+523. **Cyber Security Threats Targeting CPS Systems: A Novel Approach Using Honeypot** (2018). Semantic Scholar e691e257a617acde8c448cbd7f41ff670a877f4b. A17 record 104: T1, judged on its title. 🟡
+
+524. **Cyber-Physical Deception Through Coordinated IoT Honeypots** (2025). Semantic Scholar 0ecc62168ab9faa550945e5f2b39cb55a2788511. A17 record 105: T1, judged on its title. 🟡
+
+525. **CYBER-PHYSICAL SYSTEM SECURITY USING DECOY SYSTEM** (2015). Semantic Scholar 78a058bd565b198e975793716a459f9e7ac2c303. A17 record 106: T1, judged on its title. 🟡
+
+526. **DefRec: Establishing Physical Function Virtualization to Disrupt Reconnaissance of Power Grids' Cyber-Physical Infrastructures** (2020). doi:10.14722/ndss.2020.24365. A17 record 130: T1, judged on its title. 🟡
+
+527. **DEPLOYING AN ICS HONEYPOT IN A CLOUD COMPUTING ENVIRONMENT AND COMPARATIVELY ANALYZING RESULTS AGAINST PHYSICAL NETWORK DEPLOYMENT** (2020). OpenAlex W3137173487. A17 record 132: T1, judged on its title. 🟡
+
+528. **DEPLOYING AND ANALYZING CONTAINERIZED HONEYPOTS IN THE CLOUD WITH T-POT** (2021). OpenAlex W7112467617. A17 record 133: T1, judged on its title. 🟡
+
+529. **Deployment of IoT-based honeynet model** (2018). doi:10.1145/3301551.3301586. A17 record 134: T1, judged on its title. 🟡
+
+530. **Design and Implementation of an IoT Honeypot System for Real-Time Cyber Threat Monitoring and Analysis** (2026). doi:10.25258/ijddt.16.61s.189. A17 record 136: T1, judged on its title. 🟡
+
+531. **Detection of False Data Injection Attacks in Smart Grid: A Honeypot-Based End-Edge-Cloud Collaborative Approach** (2025). doi:10.1109/icpre67300.2025.11273941. A17 record 142: T1, judged on its title. 🟡
+
+532. **DEVELOPING A DUAL-PURPOSE WEB HONEYPOT FOR CHARACTERIZING ATTACKS ON A SIMULATED POWER GRID** (2023). OpenAlex W7112796430. A17 record 144: T1, judged on its title. 🟡
+
+533. **Development of Proactive Cyber Security System using Azure Honeynet Platform** (2024). doi:10.1109/ariia63345.2024.11051894. A17 record 145: T1, judged on its title. 🟡
+
+534. **Did you really hack a nuclear power plant? An industrial control mobile honeypot** (2015). doi:10.1109/cns.2015.7346907. A17 record 146: T1, judged on its title. 🟡
+
+535. **Dynamic Honeypot Configuration for Programmable Logic Controller Emulation** (2016). Semantic Scholar 043b0f876405e52293b6c0ca427ab24784abae03. A17 record 152: T1, judged on its title. 🟡
+
+536. **Energy-grid Threat Analysis Using Honeypots** (2019). OpenAlex W3083209706. A17 record 156: T1, judged on its title. 🟡
+
+537. **Evaluating the Realism of Cyber-Physical Honeynets Against Advanced Attackers** (2026). doi:10.1109/noms69089.2026.11668150. A17 record 163: T1, judged on its title. 🟡
+
+538. **EVPot: A High-Interaction Honeypot for Detecting and Analyzing Attacks Against OCPP-Based Electric Vehicle Charging Infrastructures** (2026). doi:10.1145/3847353.3847494. A17 record 166: T1, judged on its title. 🟡
+
+539. **Fake PLC in the Cloud, We Thought the Attackers Believed that: How ICS Honeypot Deception Gets Impacted by Cloud Deployments?** (2023). doi:10.1109/wfcs57264.2023.10144119. A17 record 170: T1, judged on its title. 🟡
+
+540. **FAKE-OT: An Open Architecture for Threat Detection in OT Environments Using MQTT-Based Honeypots** (2026). doi:10.1109/isdfs69419.2026.11458963. A17 record 171: T1, judged on its title. 🟡
+
+541. **Faking Smart Industry: A Honeypot-Driven Approach for Exploring Cyber Security Threat Landscape** (2022). doi:10.1007/978-3-030-98002-3_23. A17 record 172: T1, judged on its title. 🟡
+
+542. **Faking smart industry: exploring cyber-threat landscape deploying cloud-based honeypot** (2022). doi:10.1007/s11276-022-03057-y. A17 record 173: T1, judged on its title. 🟡
+
+543. **H4PLC: Designing PLC Honeypoints Based on Invariants for Industrial Control System Security** (2026). doi:10.1109/tmc.2026.3678913. A17 record 182: T1, judged on its title. 🟡
+
+544. **HARDENING WINDOWS-BASED HONEYPOTS TO PROTECT COLLECTED DATA** (2022). OpenAlex W7112483478. A17 record 184: T1, judged on its title. 🟡
+
+545. **HIVE-OT Corpus: A 31-Day Industrial Honeypot Capture of 147,553 Protocol Events Across 14 OT/IT Protocols** (2026). doi:10.5281/zenodo.20360674. A17 record 186: T1, judged on its title. 🟡
+
+546. **HoneyCar: A Framework to Configure Honeypot Vulnerabilities on the Internet of Vehicles** (2021). doi:10.1109/access.2022.3210117. A17 record 187: T1, judged on its title. 🟡
+
+547. **HoneyChart: Automated Honeypot Management over Kubernetes** (2023). doi:10.1007/978-3-031-25460-4_18. A17 record 189: T1, judged on its title. 🟡
+
+548. **Honeynet – Deploying a Connected System of Diverse Honeypots Using Open-Source Tools** (2022). doi:10.1201/9781003338512-3. A17 record 193: T1, judged on its title. 🟡
+
+549. **HoneyPlant:A Distributed Hybrid Honeypot System for ICS Security** (2020). Semantic Scholar 2952cf330c2e5d07058a88b0ebd12784cd21b4db. A17 record 194: T1, judged on its title. 🟡
+
+550. **Honeypot and cyber deception as a tool for detecting cyber attacks on critical infrastructure** (2023). doi:10.55056/ceur-ws.org/vol-3374/paper06.pdf. A17 record 196: T1, judged on its title. 🟡
+
+551. **HONEYPOTS AS A PROACTIVE DEFENSE: A COMPARATIVE ANALYSIS WITH TRADITIONAL ANOMALY DETECTION IN MODERN CYBERSECURITY** (2019). doi:10.34218/ijcet_10_05_021. A17 record 203: T1, judged on its title. 🟡
+
+552. **HoneyPrompt: Multi-Sensor Fusion for Detection and Classification of Autonomous AI Agents in Maritime Industrial Control Systems** (2026). doi:10.2139/ssrn.6196620. A17 record 205: T1, judged on its title. 🟡
+
+553. **Honeytoken and Honeypot Systems for IoT Networks: Proof of Concept and Implementation using ESP32-S3** (2026). doi:10.1109/icaiset66439.2026.11541828. A17 record 206: T1, judged on its title. 🟡
+
+554. **HoneyTrap: AI-Powered Honeypot for Cyberattack Detection** (2026). doi:10.5281/zenodo.20615050. A17 record 207: T1, judged on its title. 🟡
+
+555. **Hybrid H-DOC: A bait for analyzing cyber attacker behavior** (2023). doi:10.32985/ijeces.14.1.5. A17 record 210: T1, judged on its title. 🟡
+
+556. **ICS honeypot frameworks : state-of-the-art and future challenges** (2023). OpenAlex W7132173936. A17 record 211: T1, judged on its title. 🟡
+
+557. **ICS Threat Analysis Using a Large-Scale Honeynet** (2015). doi:10.14236/ewic/ics2015.3. A17 record 212: T1, judged on its title. 🟡
+
+558. **ICSHIve: A Framework for Measurable and High-Interactive Honeypots in Industrial Control Systems** (2026). doi:10.1109/tii.2026.3694947. A17 record 214: T1, judged on its title. 🟡
+
+559. **ICSvertase: A Framework for Purpose-based Design and Classification of ICS Honeypots** (2023). doi:10.1145/3600160.3605020. A17 record 217: T1, judged on its title. 🟡
+
+560. **Identifying Anomalous Industrial-Control-System Network Flow Activity Using Cloud Honeypots** (2021). doi:10.1007/978-3-030-84614-5_12. A17 record 218: T1, judged on its title. 🟡
+
+561. **Identifying Anomalous Network Flow Activity Using Cloud-Based Honeypots** (2020). OpenAlex W3178958954. A17 record 219: T1, judged on its title. 🟡
+
+562. **IMPLEMENTATION OF SECURITY INFORMATION AND EVENT MANAGEMENT SOFTWARE IN A HONEYPOT** (2023). OpenAlex W7111850203. A17 record 223: T1, judged on its title. 🟡
+
+563. **Improving container security with honeypot deployment** (n.d.). Semantic Scholar 84a25fd35933bb530b60c0842348c9209385f42d. A17 record 225: T1, judged on its title. 🟡
+
+564. **Industrial Control Honeypot Based on Power Plant Control System** (2022). doi:10.1007/978-3-030-96140-4_6. A17 record 231: T1, judged on its title. 🟡
+
+565. **Inferring Attacks on a Distributed Honeyfarm Using Adversary Emulation and Centralized Threat Detection** (2026). doi:10.24251/hicss.2026.146. A17 record 234: T1, judged on its title. 🟡
+
+566. **Interaction matters: a comprehensive analysis and a dataset of hybrid IoT/OT honeypots** (2022). doi:10.1145/3564625.3564645. A17 record 239: T1, judged on its title. 🟡
+
+567. **INTRUDEX: Intelligent Honeypot-Based Threat Monitoring System** (2025). doi:10.48175/ijarsct-29687. A17 record 242: T1, judged on its title. 🟡
+
+568. **Investigating Threats to ICS and SCADA Systems Via Honeypot Data Analysis and SIEM** (2024). doi:10.33411/ijist/785. A17 record 244: T1, judged on its title. 🟡
+
+569. **Know Your Enemy: Analysing Cyber-threats Against Industrial Control Systems Using Honeypot** (2019). doi:10.1109/raaicon48939.2019.69. A17 record 246: T1, judged on its title. 🟡
+
+570. **Leveraging Cyber-Physical System Honeypots to Enhance Threat Intelligence** (2019). doi:10.1007/978-3-030-34647-8_11. A17 record 249: T1, judged on its title. 🟡
+
+571. **Leveraging LLMs with Honeypots for the Security of Smart Grid SCADA Systems** (2026). doi:10.3390/bdcc10100335. A17 record 250: T1, judged on its title. 🟡
+
+572. **LLM-based Cybersecurity Honeypots Evaluation Metric Development and Persona Shaping via Structured Prompt Engineering** (2025). doi:10.1109/smart66937.2025.11389636. A17 record 251: T1, judged on its title. 🟡
+
+573. **Machine Learning for Attack Tracking in Cyber-Physical Honeynets** (2025). OpenAlex W7224044165. A17 record 253: T1, judged on its title. 🟡
+
+574. **Machine Learning for Cyber Deception in EV Charging Systems** (2026). doi:10.1109/click68749.2026.11742251. A17 record 254: T1, judged on its title. 🟡
+
+575. **Make the Adversary Spend More Energy: Generative Deception against Language-Model Attackers in Critical Infrastructure** (2026). doi:10.48550/arxiv.2610.27739. A17 record 256: T1, judged on its title. 🟡
+
+576. **Multi Platform Honeypot for Generation of Cyber Threat Intelligence** (2019). doi:10.1109/iacc48062.2019.8971584. A17 record 267: T1, judged on its title. 🟡
+
+577. **Next-Generation Smart Grid Cybersecurity: A Systematic Review of OT Cyber Threats, AI-Driven Defense, Cyber Deception Techniques, and Emerging Security Strategies** (2025). doi:10.1109/access.2025.3623834. A17 record 273: T1, judged on its title. 🟡
+
+578. **NIDS: Network intrusion detection system with Deceptive Virtual Hosts for Industrial Control Networks** (2015). Semantic Scholar 9c270a83d27b7e7096d6904ba7d9d4282dce2c09. A17 record 274: T1, judged on its title. 🟡
+
+579. **Orchestrating Cyber Threat Intelligence using T-Pot and MITRE ATT&CK: From Cyber Attack Data Collection to Advanced Insights** (2025). doi:10.1109/iemcon67450.2025.11381043. A17 record 281: T1, judged on its title. 🟡
+
+580. **Poster: Using Honeypots to Understand Attacks to Industrial Control Systems** (2019). OpenAlex W3029643366. A17 record 284: T1, judged on its title. 🟡
+
+581. **Practical Application Layer Emulation in Industrial Control System Honeypots** (2016). doi:10.1007/978-3-319-48737-3_5. A17 record 285: T1, judged on its title. 🟡
+
+582. **Privacy-Preserving Honeypot-Based Detector in Smart Grid Networks: A New Design for Quality-Assurance and Fair Incentives Federated Learning Framework** (2023). doi:10.1109/ccnc51644.2023.10060393. A17 record 287: T1, judged on its title. 🟡
+
+583. **Project Mimic: Dynamic Honeypots With Live Mimicry System** (2026). doi:10.5281/zenodo.21192770. A17 record 289: T1, judged on its title. 🟡
+
+584. **Research on Dynamic Honeynet Technology Based on Machine Learning** (2024). doi:10.1109/swc62898.2024.00367. A17 record 299: T1, judged on its title. 🟡
+
+585. **Research on Intelligent Dynamic Honeynet Technology for Power Industrial Control System** (2023). doi:10.1109/iciba56860.2023.10164895. A17 record 300: T1, judged on its title. 🟡
+
+586. **RIoTPot:a modular hybrid-interaction IoT/OT honeypot** (2021). OpenAlex W7224724682. A17 record 305: T1, judged on its title. 🟡
+
+587. **S7commTrace: A High Interactive Honeypot for Industrial Control System Based on S7 Protocol** (2017). doi:10.1007/978-3-319-89500-0_36. A17 record 309: T1, judged on its title. 🟡
+
+588. **SCADA security using SSH honeypot** (2019). doi:10.1145/3320326.3320328. A17 record 310: T1, judged on its title. 🟡
+
+589. **Secured Data Transmission for Smart Grid System using Blockchain Technology with a Trusted Gaming Token Honeypot Algorithm** (2023). OpenAlex W7217387117. A17 record 315: T1, judged on its title. 🟡
+
+590. **Shodan Indicators Used to Detect Standard Conpot Implementations and Their Improvement Through Sophisticated Customization** (2022). doi:10.1109/dsc54232.2022.9888911. A17 record 322: T1, judged on its title. 🟡
+
+591. **Smart Grid Intrusion Detection for IEC 60870-5-104 With Feature Optimization, Privacy Protection, and Honeypot-Firewall Integration** (2025). doi:10.1109/access.2025.3590151. A17 record 323: T1, judged on its title. 🟡
+
+592. **Smart Traps for Smart Systems: Scalable Honeynets for IIoT Cybersecurity** (2025). doi:10.1109/icccn65249.2025.11133761. A17 record 325: T1, judged on its title. 🟡
+
+593. **SmartHive-IDS: an advanced intrusion detection framework for SDN-HoneyNet enabled ICPS using hybrid explainable ensemble feature selection with optimized Bi-LSTM** (2025). doi:10.1007/s10586-025-05648-8. A17 record 326: T1, judged on its title. 🟡
+
+594. **Solar Energy System Simulation with Respect to Cybersecurity Using Decoy Device** (2025). doi:10.47392/irjash.2025.094. A17 record 327: T1, judged on its title. 🟡
+
+595. **Specialized Honeypots for SCADA Systems** (2015). doi:10.1007/978-3-319-18302-2_16. A17 record 328: T1, judged on its title. 🟡
+
+596. **Study on Active Defense of Honeypot-Based Industrial Control Network** (2021). doi:10.1109/hpcc-dss-smartcity-dependsys53884.2021.00301. A17 record 336: T1, judged on its title. 🟡
+
+597. **The design and implementation of a PLC honeypot for detecting cyber attacks against industrial control systems** (2015). Semantic Scholar 8542dff6763d5e84ef455211cd5f4d0321bcc0b6. A17 record 340: T1, judged on its title. 🟡
+
+598. **The Psychology of Defensive Cyber Deception Technology Adoption Across IT and OT Environments** (2026). doi:10.63671/ijsssr.v4i2.623. A17 record 343: T1, judged on its title. 🟡
+
+599. **Threat Analysis on Industrial Control System Based on Attacker's Behaviors using Honeypots** (2022). doi:10.1109/icares56907.2022.9993566. A17 record 346: T1, judged on its title. 🟡
+
+600. **Threat intelligence using Digital Twin honeypots in Cybersecurity** (2023). doi:10.1109/csr57506.2023.10224997. A17 record 348: T1, judged on its title. 🟡
+
+601. **Toward Automating Web Protocol Configuration for a Programmable Logic Controller Emulator** (2014). OpenAlex W340482956. A17 record 352: T1, judged on its title. 🟡
+
+602. **Towards High-Interaction Virtual ICS Honeypots-in-a-Box** (2016). doi:10.1145/2994487.2994493. A17 record 354: T1, judged on its title. 🟡
+
+603. **TwinFedPot: Honeypot Intelligence Distillation into Digital Twin for Persistent Smart Traffic Security** (2025). doi:10.3390/s25154725. A17 record 360: T1, judged on its title. 🟡
+
+604. **Usefulness of Honeypots Towards Data Security: A Systematic Literature Review** (2023). doi:10.1109/iwaiip58158.2023.10462777. A17 record 362: T1, judged on its title. 🟡
+
+605. **Using Cloud Honeypot Platforms for Gathering Industrial-Control-System Attack Intelligence Cloud Honeypot Platforms** (2022). Semantic Scholar a18c95ffcb7fbb8b2c087a94c75a2666e85aca3b. A17 record 363: T1, judged on its title. 🟡
+
+606. **Using Honeypots for ICS Threats Evaluation** (2019). doi:10.1007/978-3-030-31328-9_9. A17 record 366: T1, judged on its title. 🟡
+
+607. **Utilisation of a Virtual Honeynet to Proactively Secure the South African National Research and Education Network Against Cyberattacks** (2024). doi:10.1007/978-3-031-64881-6_24. A17 record 367: T1, judged on its title. 🟡
+
+608. **Who's Scanning Our Smart Grid? Empirical Study on Honeypot Data** (2019). doi:10.1109/globecom38437.2019.9013835. A17 record 370: T1, judged on its title. 🟡
+
+609. **Προστασία SCADA βιομηχανικών συστημάτων ελέγχου με μια ευέλικτη αρχιτεκτονική λύση ανοιχτού κώδικα** (2018). Semantic Scholar 5ab079f87bd41d87e907459cb9ee647fa6cb26dd. A17 record 374: T1, judged on its title. 🟡
+
+610. **Negative result: free copies of A17's paywalled full-text candidates (9–10 November 2026).** OpenAlex's open-access record for each of the thirteen full-text candidates, read through Claude's fetch tool, marked six closed with no free location (records 89, 333, 151, 188, 41 and 160) and gave free locations for six (288 hybrid; 269 and the two *IEEE Access* papers gold; 368 through its SSRN preprint; 307 through DiVA). One web search each for free copies of records 89 and 333 found none. The user then obtained four (269, 368, 290, 72) and could not reach 288 or 307. 🟢 as a record of what was searched.
+
+611. **Backward round from Park & Dagher's reference list (§7.4), queued, not screened.** Two of its closest references are already logged: Jay 2023 (#305) and Ngo et al. 2024 (#27). Three are not: Tan et al. 2025, *IEEE Transactions on Information Forensics and Security*, honeypoint defence for power-IoT PLCs with a time-delay evolutionary game; Wang et al. 2025, *Neurocomputing*, deception decisions from Bayesian attack graphs and Stackelberg games; Kamdem et al. 2024, *IEEE Access*, a two-layer deception signalling game for CPS. Named from #192's version of record; 🟡 unread. They are screened with the forward-citation round.
+
+612. **US Patent 12,335,308, "System and method for modelling a cyber-physical system to act as a honeypot for cyberattacks" — lead for A29.** Surfaced on 10 November 2026 by an unrelated web search; title and USPTO PDF address only (image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/12335308). 🟡 unread: by its title, it models a CPS to act as a honeypot rather than choosing positions, which A29's sweep should confirm from the claims.

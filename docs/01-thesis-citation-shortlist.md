@@ -1,8 +1,8 @@
 # Thesis Citation Shortlist — Curated from `sources.md`
 
-Compiled when the source log held 322 entries (it holds 390 as of 12 October 2026); this is the subset actually worth citing in the thesis, organized the way the literature review chapter would actually be structured, not the order they were found in. Each entry states what's being drawn from it and why it earns a place, not just the reference. Source numbers in brackets point back to the full entry in `sources.md` for the complete context, link, and verification marker.
+Compiled when the source log held 322 entries (it holds 612 as of 11 November 2026, after A17's kept records, D35); this is the subset actually worth citing in the thesis, organized the way the literature review chapter would actually be structured, not the order they were found in. Each entry states what's being drawn from it and why it earns a place, not just the reference. Source numbers in brackets point back to the full entry in `sources.md` for the complete context, link, and verification marker.
 
-**43 entries.** Not a hard target — a defensible, well-justified set given what's actually verified. Padding to a round number with weak entries would be worse than a shorter, stronger list.
+**49 entries:** D34 added entry 44 without updating this count, and D35 added five, 45–49. Not a hard target — a defensible, well-justified set given what's actually verified. Padding to a round number with weak entries would be worse than a shorter, stronger list.
 
 ---
 
@@ -13,6 +13,15 @@ Compiled when the source log held 322 entries (it holds 390 as of 12 October 202
 
 **2. Jay, D., Goyel, H., Sreejith, A., & Rathi, R.** US Patent 12,425,450 B2, "Method for securing digital substations and system thereof," filed 2024, assigned to GridSentry Private Ltd. [#311]
 *What's drawn from it:* evidence that Jay's research line has been commercialized by a named Indian company, using a *different* mechanism (reactive network-switching, not proactive optimization) than the academic paper. Cited to show "who else is working on this" includes a live commercial entity, not just one paper — and to correctly distinguish the patent's mechanism from the paper's, since they're not the same thing despite the same inventor.
+
+**45. Dong, H., et al. (2025).** "Multi-Layered Optimization for Adaptive Decoy Placement in Cyber-Resilient Power Systems Under Uncertain Attack Scenarios." *IET Renewable Power Generation*, 19, e70078. [#417] *(D35. Authors as printed: Hua Dong, Zhao Wei, Cui Peiyi, Liu Yiqing, Hua Hua.)*
+*What's drawn from it:* one of A17's two T2 works, read in full. It places decoy nodes in a power distribution grid under a budget, through a three-level Stackelberg optimisation with a multi-term objective and criticality-weighted nodes. Section 14 must say why it does not defeat the claim: no IEC 62443 zones or conduits, no ATT&CK-grounded paths or interception-stage term, and no random or centrality baselines (clause by clause in `01-search-screening-record.md` §3).
+
+**46. Gong, Z., Chen, G., Zhao, Y., Zhou, W., & Chen, H. (2027).** "Consequence-driven active defense resource allocation for chemical park cyber-physical systems." *Reliability Engineering & System Safety*, 278 (Part 2), 113562. [#419] *(D35.)*
+*What's drawn from it:* the closest abstract A17 found: consequence-driven honeypot placement in a three-layer chemical-park ICS, along attack graphs, under a budget. **Cite it from its abstract only, and say so.** The full text was not accessible under the free-only rule (D35), so its tier is unresolved. State the differences its abstract shows (no IEC 62443 zones or conduits, no ATT&CK paths, no interception-stage term), and name it in the search limitation.
+
+**47. Ward, D. (2026).** "A Decoy Placement Model for Engineering Workstations and Historian Systems in Manufacturing OT Networks." *International Journal of Computer Applications*, 187(127), 53–61. [#426] *(D35.)*
+*What's drawn from it:* the closest work in topic. It places decoys in an OT network and evaluates them by Monte Carlo against random and betweenness-centrality placement, but the placement is designed and argued, not optimised (T1). Cited in section 14 to show that comparing placements against random and centrality is not new in OT, and in the evaluation chapter as a published comparison design.
 
 ---
 
@@ -34,7 +43,7 @@ Compiled when the source log held 322 entries (it holds 390 as of 12 October 202
 *What's drawn from it:* the "core attack graph" abstraction — concentrating decoys on critical-path nodes rather than the full graph — a related simplification strategy worth citing alongside this project's own two-filter candidate-location reduction (Filter 1 + Filter 2 in §4).
 
 **8. Park, D., & Dagher, G. G. (2026).** "Adaptive honeypot allocation in multi-attacker networks via Bayesian Stackelberg Games." *Computers & Security*, 168, 104949. [#30, #192]
-*What's drawn from it:* full text read specifically to correct an early misreading — this paper's "layered structure" is generic graph-distance layering for solver tractability, *not* a Purdue-Model or IEC 62443 reference architecture, despite surface resemblance. Cited as the nearest thing to an "OT-flavored" precedent that, on close reading, isn't actually OT-specific — an important negative finding for the novelty argument, not just a citation.
+*[D35, 11 November 2026: the description that follows was made from the arXiv preprint. It is superseded for the published version cited above, which runs its scalability tests on synthetic "Purdue-model" six-level graphs and uses level importance in its candidate pruning (#192). It is now one of A17's two T2 works, and needs section I's depth of treatment alongside entry 45 (`01-search-screening-record.md` §3).]* *What's drawn from it (superseded):* full text read specifically to correct an early misreading — this paper's "layered structure" is generic graph-distance layering for solver tractability, *not* a Purdue-Model or IEC 62443 reference architecture, despite surface resemblance. Cited as the nearest thing to an "OT-flavored" precedent that, on close reading, isn't actually OT-specific — an important negative finding for the novelty argument, not just a citation.
 
 **9. Kulkarni, A., Cohen, J., Kamhoua, C., & Fu, J. (2024).** "Integrated Resource Allocation and Strategy Synthesis in Safety Games on Graphs with Deception." arXiv:2407.14436. [#236]
 *What's drawn from it:* a precedent for proving submodularity of a decoy-placement objective — it shows its own objective is monotone and, in structured cases, submodular, which gives greedy a (1−1/e) bound **for that objective**. It does not give this project's plain greedy a guarantee: F(x) is submodular but not monotone (D20), and the bound this project can claim belongs to Distorted Greedy (#353, D23). *(D28: this entry used to say the paper gives "greedy a real (1−1/e) bound" that "directly underlies D1's method choice", which D20 and D23 overtook.)*
@@ -59,6 +68,9 @@ Compiled when the source log held 322 entries (it holds 390 as of 12 October 202
 
 **16. Wushishi, Hussain, Khalid, Hussain, Jamjoom, & Ullah (2026).** "D3O-IIoT: deep reinforcement learning-driven dynamic deception orchestration for industrial IoT security." *Scientific Reports*, 16, 2389 (published online 21 December 2025), doi:10.1038/s41598-025-33426-4. [#250, #324]
 *What's drawn from it:* a precedent for a multi-objective deception design. Its reward combines attack mitigation, deception engagement, a false-positive penalty and resource cost, the same shape as this project's composite objective. Its ablation shows the false-positive term matters when present: without it, the attack-mitigation rate fell from 12.4 to 6.0 while the false-alarm rate also fell, from 2.0% to 0.9% (Table 6). The term penalises deception actions applied to benign traffic, which corresponds to Filter 1's malice-fidelity criterion, not to δ·Risk, the detectability of a deployed decoy. **It is not evidence for weighting operational risk heavily:** the penalty's weight is 0.06, and the authors credit low penalty weights with allowing "aggressive defense". *(D28: this entry used to present the paper as "the direct quantitative justification for weighting operational risk heavily", with author and venue to be confirmed. The full text, read on 6 October 2026, supplied the citation and overturned the justification.)*
+
+**48. Qu, Z., Lv, J., Yang, J., Ma, K., & Wang, Y. (2026).** "Vulnerability-based and Risk-Aware Honeynet Deployment Framework in Cyber-Physical Power Systems." *Electric Power Systems Research*, 251, 112247. [#432] *(D35. Read from its SSRN preprint; the journal version is paywalled.)*
+*What's drawn from it:* a score-based placement rule in power CPS: honeypots are shared in proportion to node vulnerability or risk, and compared, as here, against degree-based and random placement. A precedent for criticality-driven placement without optimisation (T1).
 
 ---
 
@@ -103,6 +115,9 @@ Compiled when the source log held 322 entries (it holds 390 as of 12 October 202
 
 **28. National Institute of Standards and Technology.** NIST SP 800-82 Rev. 3 (2023), *Guide to Operational Technology (OT) Security*. [#55]
 *What's drawn from it:* the standard general reference for OT security terminology and practice, cited for grounding rather than a specific technical claim — one of the three frameworks named in the original brief §13.
+
+**49. Sakata, K., Ogura, T., Matsumoto, N., Ando, E., Vera, C., Ishii, H., & Takemoto, S. (2026).** "Automated Design of Countermeasures for ICS Based on Security Standards." *IEEE Access*, 14. [#427] *(D35.)*
+*What's drawn from it:* IEC 62443-4-2 security levels used as numeric constraints in a 0-1 integer program that selects a PLC's countermeasures, with ATT&CK for ICS mapped to the requirements. It bounds the claim: this project is not the first to use IEC 62443 levels as numbers in an optimisation, only the first found to use zones and conduits in a deception-placement objective.
 
 ---
 
