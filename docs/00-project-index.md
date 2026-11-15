@@ -5,7 +5,7 @@ Master reference for every document produced in this thread. Updated each time a
 ## How to use this
 
 - New to the project? Read in this order: `research-synthesis-implementation.md` → `formal-problem-definition.md` → `threat-attack-model.md` → `testbed-architecture.md`. That's the whole current specification in ~30 minutes, without the research trail behind it.
-- Need a specific citation or fact? `sources.md` is the single running bibliography (312 entries as of this point) — search it before searching the web again.
+- Need a specific citation or fact? `sources.md` is the single running bibliography (988 entries as of 15 November 2026) — search it before searching the web again.
 - Need to see *how* a conclusion was reached, not just the conclusion? The `iteration-N-findings.md` files are the reasoning trail.
 - Need to know *why* a specific choice was made (for the methodology chapter, or a guide question)? `00-decisions-log.md`.
 - Not sure what to do next, or what's still waiting on you specifically? `00-action-items.md` for manual tasks, `00-project-phases.md` for where the project stands overall.
@@ -59,8 +59,8 @@ If a document upstream in this chain changes in a way that invalidates something
 | `00-local-storage-setup.md` | Meta | Stable | 💾 Offline | `00-repository-structure.md` | Local folder setup, now; migrates directly into the GitHub repo at Phase C |
 | `sources.md` | Research | Living | 💾 Offline | — | `research-synthesis-implementation.md`, every specification document |
 | `01-thesis-citation-shortlist.md` | Research | Stable | 💾 Offline | `sources.md` | Literature Review chapter (Phase E) |
-| `01-search-protocol.md` | Research | Stable (fixed before the first query, D34; changed only by recorded amendments) | 💾 Offline | `sources.md`, the novelty claim (D7, A28), `00-action-items.md` A17 and A29 | `sources.md` run entries; `01-search-screening-record.md`; Literature Review chapter (Phase E) and its search appendix; A28's opening clause |
-| `01-search-screening-record.md` | Research | Complete for the main search (D35); later runs are added as they come | 💾 Offline | `01-search-protocol.md`, `sources.md` #405–#416 | D35; `sources.md` #417–#612; Literature Review chapter (Phase E) and its search appendix; A28 |
+| `01-search-protocol.md` | Research | Stable (fixed before the first query, D34; changed only by recorded amendments: 1 on 5 November, 2 in D35, 3 to 7 in D36) | 💾 Offline | `sources.md`, the novelty claim (D7, A28), `00-action-items.md` A17 and A29 | `sources.md` run entries; `01-search-screening-record.md`; Literature Review chapter (Phase E) and its search appendix; A28's opening clause |
+| `01-search-screening-record.md` | Research | Complete for A17 and A29 as the protocol fixed them (D35 for the main search; D36 for the later paper runs and the patent arm) | 💾 Offline | `01-search-protocol.md`, `sources.md` #405–#416 and #613–#643 | D35 and D36; `sources.md` #417–#988; Literature Review chapter (Phase E) and its search appendix; A28 |
 | `01-original-brief.md` | Research | Stable | 📌 Project Knowledge | — | Everything — this is the origin the whole chain traces back to |
 | `iteration-2-findings.md` … `iteration-10-findings.md` (9 files) | Research | Stable | 💾 Offline | Previous iteration's open-items list | `sources.md`, `research-synthesis-implementation.md` |
 | `research-synthesis-implementation.md` | Research | Stable | 📌 Project Knowledge | `sources.md`, all iteration findings | `formal-problem-definition.md` |
