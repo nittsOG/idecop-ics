@@ -10,7 +10,7 @@ A: Foundation ──▶ B: Detailed Design ──▶ C: Build ──▶ D: Evalu
                                                           can start early ─┘
 ```
 
-Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs were frozen and are being corrected before any campaign: the objective's normalisation by D25, and the candidate set under A32. D is gated on A32 and then A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list.
+Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs were frozen and are being corrected before any campaign: the objective's normalisation by D25, and the candidate set under A32. D is gated on A32 and then A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list. *[16 November 2026: A32's review and Filter 2 scores are done (D31), and the inputs left open then were settled in D33. D is now gated on the freeze; see "Where we are right now".]*
 
 ## Phase A — Foundation ✅ Complete (its one open item was closed on 6 October 2026)
 
@@ -20,6 +20,8 @@ Literature review; analysis of existing OT deception solutions and existing plac
 **Documents:** `sources.md`, `iteration-2` through `iteration-10-findings.md`, `research-synthesis-implementation.md`, `formal-problem-definition.md`, `threat-attack-model.md`, `testbed-architecture.md`
 **Exit criteria (all met):** novelty claim tested against the closest available prior art via primary-source read, not just an abstract; tested again via a targeted water/manufacturing sector check; the optimization problem has a precise mathematical statement; the testbed has a verified path for every step of every attack scenario.
 **One open item, tracked not blocking:** the full text of `sources.md` #315 (a manufacturing-sector paper) hasn't been read yet — logged in `00-action-items.md` rather than held as a phase gate, since it can be resolved in parallel with Phase B. *Closed 6 October 2026:* #315 was read in full and is not a placement competitor (A4). The same batch of supplied sources closed A8, A9 and A39 and the claims half of A29; CATCH (A33) remains unobtainable.
+
+*Added 16 November 2026:* after Phase A closed, its literature review was extended by a structured search of open indexes with a patent arm (A17, A29). The protocol was fixed before any query (`01-search-protocol.md`, D34), and every record screened is in `01-search-screening-record.md` (D35, D36). No work found threatens the novelty claim. Two papers narrow it (D35), and one patent is proposed as narrowing it, pending your ruling (D36). Phase A's exit criteria are unchanged.
 
 ## Phase B — Detailed Design ✅ Complete
 
@@ -44,6 +46,8 @@ The actual construction: standing up the 7 physical VMs, implementing the graph 
 
 **Status as of D24 (28 September 2026).** *Built and verified:* the SQLite database; `graph_model` (betweenness centrality; `Crit(v)` including `ConduitSL`, D20); the optimizer — five implementations sharing one `score()`: greedy, distorted greedy (D23), random, centrality and the exact MILP (corrected in D24); the FastAPI backend with nine endpoints; the React frontend's Screen 3 (plausibility review) and Screen 1 (single-run dashboard); and three scripts — `run_comparison.py`, `sweep.py` and `structure_check.py`. *Not yet built:* the explanation layer `/runs/{id}/explain` (A6, needs Ollama); Screen 2, the sensitivity-sweep comparison view; the Colab plausibility-scoring notebook (A20); and the physical VM testbed (A21, scope under A16).
 
+*Since D24 (added 16 November 2026):* the scoring notebook was written (D26) and run once (A20, 24 October 2026; D31). Screen 3 was rebuilt for the review (D26) and now shows the operating profile (D30). The backend has ten endpoints. Still not built: the explanation layer (A6), Screen 2 and the physical testbed (A21, scope under A16).
+
 **Exit criteria:** every method (random, centrality, and the proposed method with its MILP validation — five implementations since D23) runs end-to-end against the testbed and produces comparable output. *Met against the modelled graph, not yet against a physical testbed* — whether that matters depends on A16 and on the evaluation design chosen under A12.
 
 **Realistic expectation:** the core build (testbed, optimizer, explanation layer, UI) is still very likely the single largest time cost in the whole project — the Colab notebook doesn't change that, it's a small, early, parallel-track item, not a schedule risk of its own. If the core build slips, everything after it slips with it — worth surfacing schedule problems here early rather than discovering them at Phase D.
@@ -53,6 +57,8 @@ The actual construction: standing up the 7 physical VMs, implementing the graph 
 Run every method against P1–P5 (P5 added by D27) on the comparison grid held in `scripts/sweep.py` (D24), collect Coverage / Early / CritProt / Risk / Cost / runtime for each, run the weight-sensitivity sweep from `formal-problem-definition.md` §5, and produce the comparison tables and charts.
 
 **Inputs frozen (D20–D22a); evaluation code corrected (D23, D24); two input defects corrected before any campaign — Risk and Cost now divided by a fixed K = 4 (D25), and the candidate set re-derived by §4's filters (A32, pending; its rules fixed by D26). Gated on A32, with A35–A38 and A40 settled before the freeze (A41, the one item due before the scoring notebook, was done in D28), then A12.** On the seeded candidate set greedy equals the exhaustive optimum in every cell *by construction* (D25: every attack path meets exactly one candidate). Comparing methods on F alone is implied by optimality and cannot test whether F is a good objective. An evaluation criterion outside F must be chosen — held-out attack paths, input-perturbation robustness, synthetic larger instances or testbed attack simulation — and frozen before the campaign runs.
+
+*[16 November 2026: A32 is done (D31). Nine assets pass Filter 1, and on that set the gain part of F is not modular, so greedy's optimality is no longer by construction (D31, D33); the paragraph above describes the seeded set. A35–A38, A40 and A43 were settled in D33, and the inputs are not frozen yet. The freeze follows the A12, A15 and A16 entries (A32's row), and A12 still has to choose the criterion outside F.]*
 
 **Original roadmap item covered:** 11
 **Exit criteria:** results speak to the primary research question in `formal-problem-definition.md` §8 — including honestly, if they don't support it as strongly as hoped. A negative or mixed result, reported honestly, is a valid thesis outcome; a result quietly reframed to look better than it is isn't.
@@ -72,6 +78,18 @@ Guide review cycles, viva preparation, formatting to NFSU's submission requireme
 **Exit criteria:** submitted and defended.
 
 ## Where we are right now
+
+**Update, D32–D36 (16 November 2026).**
+- *The inputs left open at D31 are settled (D33, 2 November):* A35–A38, A40 and A43, the cost weight ε and Early's endpoint. Greedy places the same decoys as in D31 in all 20 comparison-grid cells, and still beats centrality in 16 with no loss. §8's second clause holds in 18 of 20. The inputs are not frozen yet.
+- *Who decides (D32, 30 October):* A12, A15, A16, A17 and A37 are your own decisions, not the guide's, made with written reviews by independent Claude agents. A15 becomes your dated pre-registration entry, committed before any Phase D run. The guide's two post-midsem requests, a simulation and a K-fold-style validation, stand as requirements, and A12 answers both.
+- *The structured literature search and the patent sweep have run (A17, A29).* The protocol was fixed before any query (D34, 3 November). The main search found two papers that narrow the novelty claim and none that threatens it (D35, 11 November). The remaining paper runs and the patent arm found no threat either: one patent is proposed as narrowing the claim, and two are borderline (D36, 15 November). A28's draft survives as worded, and no method found becomes a baseline.
+- *Next:*
+  1. your rulings on D36 item 11, among them whether to run the widened re-run of the OT keywords, which comes before A12 if you accept it;
+  2. the A12, A15 and A16 entries: the research question's wording and an evaluation criterion outside F, decided together with the testbed's scope; whether to add an extra comparison, Park & Dagher's greedy rule (D35 item 5) or a coverage-style comparator (D36 item 6); and your pre-registration;
+  3. the freeze, every check re-run, and the entry against D25;
+  4. Phase D.
+- *Outside that order:* A14's dates (TA-1 is still not rescheduled); A28's validation clause, which becomes true only when Phase D runs; and the update re-run of the searches within a month of submission (A17).
+- The updates below are overtaken where they list A35–A38, A40 and A43 as next, and where they settle A12 and A15 with the guide (D32).
 
 **Update, D31 (26 October 2026).**
 - *A32 is done up to the freeze.*
