@@ -60,6 +60,8 @@ Run every method against P1–P5 (P5 added by D27) on the comparison grid held i
 
 *[16 November 2026: A32 is done (D31). Nine assets pass Filter 1, and on that set the gain part of F is not modular, so greedy's optimality is no longer by construction (D31, D33); the paragraph above describes the seeded set. A35–A38, A40 and A43 were settled in D33, and the inputs are not frozen yet. The freeze follows the A12, A15 and A16 entries (A32's row), and A12 still has to choose the criterion outside F.]*
 
+*[D37, 16 November 2026: A12 is settled. Leave-one-path-out and an attack simulation are the criteria outside F, with a coverage-only comparator (`03-evaluation-methodology.md`). The freeze follows the re-run's screening and A15.]*
+
 **Original roadmap item covered:** 11
 **Exit criteria:** results speak to the primary research question in `formal-problem-definition.md` §8 — including honestly, if they don't support it as strongly as hoped. A negative or mixed result, reported honestly, is a valid thesis outcome; a result quietly reframed to look better than it is isn't.
 
@@ -78,6 +80,20 @@ Guide review cycles, viva preparation, formatting to NFSU's submission requireme
 **Exit criteria:** submitted and defended.
 
 ## Where we are right now
+
+**Update, D37–D38 (16 November 2026).**
+- *TA-2 is on 27 November 2026*, A14's first known date. Your target: the project ready by then; tuning and the physical testbed after it.
+- *A12 is decided:* leave-one-path-out, an attack simulation from every non-controller foothold and a coverage-only comparator, beside the existing grid, with the research question reworded in your accepted wording. `03-evaluation-methodology.md` fixes it before any run on the testbed. The code is built and checked on a toy network only.
+- *A16 is decided:* the physical testbed comes last. *A6:* the explanation layer is built before TA-2.
+- *D36's rulings are made*, all as proposed: CN 122339846 A/B and CN 121012683 A narrow the claim (T2), and CN 117675308 A is related (T1).
+- *The widened OT-keyword re-run is made and screened (D38):* one more paper narrows the claim, Zhan et al. 2026, no patent does, and the claim survives as worded.
+- *Next:*
+  1. your pre-registration (A15);
+  2. the freeze (`scripts/freeze.py`), every check re-run, and the entry against D25;
+  3. Phase D;
+  4. the explanation layer;
+  5. the TA-2 presentation.
+- The D32–D36 update below is overtaken where it lists your D36 rulings and the A12 and A16 entries as next, and where it calls two patents borderline.
 
 **Update, D32–D36 (16 November 2026).**
 - *The inputs left open at D31 are settled (D33, 2 November):* A35–A38, A40 and A43, the cost weight ε and Early's endpoint. Greedy places the same decoys as in D31 in all 20 comparison-grid cells, and still beats centrality in 16 with no loss. §8's second clause holds in 18 of 20. The inputs are not frozen yet.

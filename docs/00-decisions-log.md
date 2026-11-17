@@ -1279,3 +1279,129 @@ No evaluation input changes.
 **12. Effect.** None on any input, card or number: no code, data, parameter, attack path, objective or candidate changes. Only Markdown files in `docs/` change. Nothing that feeds the evaluation is touched.
 
 *Status: the nine borderline calls are the user's (15 November 2026); the tiers, the proposals, amendments 6 and 7 and the screening are Claude's first pass; searching for A17 and A29 closes with this entry as the protocol fixed it, apart from the re-run recommended in item 6; recorded 15 November 2026. Reference: `01-search-screening-record.md` §12–§17, `sources.md` #613–#988, `01-search-protocol.md` amendments 3–7.*
+
+**D37 — Phase D's evaluation is fixed before any run on the testbed: leave-one-path-out, an attack simulation from every non-controller foothold, a coverage-only comparator, and the research question reworded (A12). D36's rulings are made, the physical testbed comes last (A16), and the explanation layer is built before TA-2 (A6). The user's choices, 16 November 2026.**
+
+**1. Why now.** The user reported that TA-2 is on 27 November 2026, the first of A14's dates to become known, and asked that the project be ready by then: "at least project should be ready, tunning and test bad can be done after TA 2". TA-2's format, TA-3 and the final submission date are still unknown (A14).
+
+**2. D36's rulings (its item 11).** All the user's, 16 November 2026, each on Claude's lean:
+- *Tiers:*
+  - CN 122339846 A/B is T2.
+  - CN 117675308 A is T1.
+  - CN 121012683 A is T2, because §9's definition counts a Jay-type allocation as formal deception-placement optimisation in OT.
+  - CN 121603304 B stays T1.
+- *The OT gate:* it stands for CN 121356815 A and CN 120658528 A, and a zone level inside a score does not count toward the zone clause.
+- *Exclusions:* the four patent exclusions stand (CN 116318314 B, CN 115914014 B, CN 117834239 A and CN 304151907 S), and so does the paper row Arunagirinathan et al. (2025).
+- *A28's opening clause* becomes "open scholarly indexes, granted patents and published patent applications". The draft claim's "including granted patents" becomes "including granted patents and published patent applications".
+- *Protocol amendments 6 and 7* are kept.
+- *The widened re-run of block O* (D36 item 6) goes ahead. Its run sheet went to the user on 16 November, with the six power-network words as a separate block, so each query returns only records that carry one of them. Its results are screened in a later entry, before the freeze, as the protocol puts the literature part before it (§12). *[D38: screened, 16 November 2026.]*
+
+The works that narrow the claim are now Park & Dagher and Dong et al. (D35), CN 122339846 A/B and CN 121012683 A. None threatens it, and A28's draft survives with the new opening clause. CN 121012683 A joins the citation shortlist as entry 56, as the shortlist said it would if ruled T2; entry 50, the synthesis table and `05-thesis-structure.md` §2.4 record the rulings.
+
+**3. The testbed (A16): the modelled network carries the evaluation, and the physical build comes last.** The user: "test bed is least priority if everything else is done then we will go to testbed." Every Phase D number is computed on the modelled network; the VMs would demonstrate, not measure. A21 stays open.
+
+**4. A12: the evaluation and the research question.** `03-evaluation-methodology.md`, new in this batch, fixes them before any of the new tests has run on the testbed. The user accepted Claude's three-part design ("this should be done"):
+- *Leave-one-path-out* (§2), the guide's K-fold-style request (D32). Each path is held out in turn, and the placement chosen from the other four is scored on it.
+- *An attack simulation* (§3), the guide's simulation request (D32). It takes every loop-free route, at most one hop longer than the shortest, from every non-controller foothold to every controller and path target, through the recorded connections in either direction. Every route is enumerated, so the result is exact and needs no seed.
+- *The existing grid, weight sweep and structure check*, reported as before.
+
+Two more things were added on 16 November:
+- *A coverage-only comparator* (§4). It answers D36 item 6's question: does F's five-term objective add anything over attack-path blocking alone? Its primary form averages over every placement that reaches the highest coverage; the frozen greedy run on coverage alone is reported beside it. The user chose the averaged form once Claude raised greedy's arbitrary tie-break.
+- *The research question* (§5), accepted by the user as worded:
+
+> On the modelled testbed, does choosing decoy positions by the composite objective F — found by greedy and confirmed exact by MILP — catch attacks the optimiser was not given, at least as often and as early as betweenness-centrality placement, random placement and a coverage-only optimiser, at equal budget? The attacks are each attack path when it is held out of the optimisation, and simulated attack routes from every non-controller foothold to every objective.
+
+The D20 wording is still reported against, with D24's caveat that its first clause follows from optimality.
+- *Hypotheses and rules:* §5 fixes hypotheses H1–H3 and the rules that classify each as supported, mixed or not supported. The user's pre-registration (A15) restates them, and `scripts/evaluate.py` applies them.
+- *Expectations:* §7 states what is expected before any run, including the expectation D33 asked for on the route OT Firewall → Engineering WS-2 → PLC-02.
+- *Not added:* Park & Dagher's greedy rule (D35 item 5). Their rule places a honeypot at the node with the highest distance-discounted target value. That needs target values and a discount defined for their game, and this model has neither, so a copy could not be checked against theirs. The coverage-only comparator tests the composite objective directly instead. The user can still add the rule before the freeze, with its own entry.
+
+**5. Two corrections Claude made while designing, stated rather than folded in.**
+- *The footholds.* Claude's first design started the simulated attackers at P's three entry assets: the Engineering WS, the DMZ Jump Host and the OT Firewall. Greedy's published placement at B = 3 is exactly those three (D31, D33), so it would have caught every route at its first step by construction, which repeats F's Early term instead of testing it. The footholds were widened to every non-controller asset. The documented-entry population is kept as a secondary result, with that caveat.
+- *The comparator.* The greedy form the user first approved breaks ties by scan order (§4 above).
+
+*Disclosure:* Claude designed the populations and the comparator knowing D31's and D33's published placements. No leave-one-path-out or simulation output on the testbed existed when they were fixed. `scripts/evaluate.py` cannot produce one before the freeze, because it refuses to run without the freeze manifest.
+
+**6. The explanation layer (A6) is built before TA-2.** The user's choice ("this must be done before ta 2").
+- *Model:* `qwen3:4b`, Q4_K_M, 2.5 GB on the Ollama registry (#989, checked 16 November 2026). It fits the graphics memory of the user's laptop: an NVIDIA GeForce RTX 2050 with 4 GB, 16 GB RAM, from the user's screenshots of 16 November.
+- *Settings:* temperature 0 and thinking off, as the scoring notebook used greedy, non-thinking decoding (D26).
+- *Checks:* every number and asset in an explanation is checked against the run, with a template fallback (`03-evaluation-methodology.md` §6). That section fixes now how the secondary research question is evaluated.
+- *Timing:* the layer is built in a later batch. It is not an evaluation input, so it is not frozen.
+
+**7. "Tuning".** The user listed tuning, with the testbed, as work for after TA-2.
+- Under the evaluation-integrity rule no weight, K, rubric or input changes after the freeze. The weight sweep reports how the results move with the weights; that is reporting, not tuning.
+- A change the user means by tuning that would alter an input is made before the freeze with its own entry, or after Phase D as a separately reported study.
+
+**8. Verified on 16 November 2026, before this batch.**
+- *Reproduction:* a fresh clone of `7c88be5` builds with `scripts/setup.py` and restores the committed review. Its three scripts reproduce D33 item 4 exactly:
+  - `run_comparison.py 3`: greedy F 2.4175, centrality 1.2060, random mean 1.3229;
+  - `sweep.py --sens`: 16 wins / 4 ties / 0 losses, and clause 2 in 18 of 20. The MILP is exact in all 20 cells and in all 84 sampled configurations;
+  - `structure_check.py`: F is submodular and not monotone (1,104 violations), and g is not modular.
+- *Self-test:* `scripts/evaluation_selftest.py` passes on its toy network. It matches every hand-computed value, runs every method unchanged end to end, and shows that the freeze check refuses a missing or changed manifest.
+- *Not run:* `scripts/evaluate.py` was not run on the testbed.
+
+**9. Effect.** No input, card, weight, method or number changes. The new code adds criteria: `src/evaluation/`, `scripts/evaluate.py`, `scripts/freeze.py` and `scripts/evaluation_selftest.py`. It calls the frozen methods unchanged.
+
+**10. Next.**
+1. The re-run's results, screened.
+2. The user's pre-registration (A15).
+3. The freeze: `scripts/freeze.py`, every check re-run, and the entry against D25.
+4. Phase D.
+5. The explanation layer.
+
+*Status: the user's choices, 16 November 2026, on Claude's proposals; design fixed before any run on the testbed. Reference: `03-evaluation-methodology.md`, `src/evaluation/`, `scripts/evaluate.py`, `scripts/freeze.py`, `scripts/evaluation_selftest.py`, `formal-problem-definition.md` §8, `testbed-architecture.md`, `01-search-protocol.md` §13, `01-search-screening-record.md` §15, `01-thesis-citation-shortlist.md` entries 50 and 56, `research-synthesis-implementation.md`, `05-thesis-structure.md` §2.4, `00-action-items.md` A6, A12, A14, A15, A16, A17, A28, A29 and A32, `00-project-phases.md`, `00-project-index.md`, `README.md`, `sources.md` #989.*
+
+**D38 — The widened re-run of block O is screened: one more paper narrows the claim, Zhan et al. 2026 (T2, the user's ruling); no patent does; A28 survives as worded. 16 November 2026.**
+
+**1. What ran (protocol amendment 8).** D36 item 6's re-run, which the user approved in D37. He ran it on 16 November 2026 from the run sheet Claude sent:
+- R1–R6: S1, S2 and S5 on OpenAlex and Semantic Scholar;
+- R7, run P1c: S1 on Google Patents, narrowed to title, abstract and claims as P1n was.
+
+The six missing words formed a separate block O′ in place of block O, so each query returned only records carrying one of them, and records the first runs had returned were dropped. That gives the new records of a full widened run, except works added to the indexes since the first runs that carry only block O's words; the update re-run (A17) covers those. R7's first attempt was typed into the browser's address bar, and Brave Search refused it as too long; it was re-run on Google Patents from a direct link. The classification run P3b also uses block O and was not repeated, as D36 item 6 did not include it; the thesis limitation says so (`01-search-protocol.md` §13).
+
+**2. Papers.** R1–R6 returned 53, 28, 6, 39, 22 and 4 records: 73 distinct, 45 of them returned before. Zhan et al.'s backward round (§7.4) added 55 references new to the search; its forward round found none. The 83 new records are numbered 563–645:
+- T2: 1, Zhan et al. (item 3);
+- related (T1): 11. The most useful to cite is Kalinin et al. 2022 (#1010): it switches a hybrid honeypot's virtual topology in energy networks by rules, from an attack-development graph and ATT&CK techniques, with no objective function;
+- excluded: 71. Of the 19 from the runs, 10 use a deception word in another sense, 6 have no deception asset and 3 are not works. The 52 references excluded carry no deception asset in their titles.
+
+*A correction:* Claude's first pass marked Spitzner (2003), one of the references, as returned by the first runs. It was not, so it is a new record, related (T1).
+
+**3. Zhan et al. 2026 is T2, the user's ruling** (#1000).
+- *What it does:* a stochastic trilevel model, reduced to one MILP with CVaR, decides which grid components to protect and where to deploy honeypots against insider-enabled load-redistribution attacks, under a protection budget, on the IEEE 14-bus system.
+- *What it lacks,* so far as its abstract shows: zones and conduits, ATT&CK-grounded paths and an interception stage, and random or centrality baselines.
+- *Basis:* its full text is not free (D35), so the tier rests on the abstract, read on the page the user saved. It is now one of the [n] = 11 works the thesis cites from abstracts alone.
+- *Why only now:* its abstract says "smart power grids", which block O's "smart grid" does not match.
+- *Not a baseline* (§11.6): a different threat model, and only its abstract is free.
+
+**4. Patents.** P1c returned about 145 publication numbers: 43 already in the patent arm and 102 new.
+- *First round:* 7 pages read; the rest judged on titles and list snippets. The user's rulings on 16 November 2026, on Claude's leans:
+  - *CN 117439810 A: T1.* It assigns honeynet trap nodes to host devices to cut the honeynet's own communication cost: where the honeynet runs, not where decoys meet attackers.
+  - *CN 111756687 B: T1.* It maximises survivability under a budget by allocating six kinds of defence measure, honeypots among them, per service of a power-grid information system: general defence allocation, not decoy positions.
+  - *CN 122293365 A: excluded,* confirmed under §9. It conceals grid nodes and lines from physical attackers: physical grid planning, not cyber deception.
+- *Second round, Claude's, after the first draft of this entry:* the first round fell short of the first arm's standard. There, round 3 opened every excluded title of run P1n naming a cyber, industrial or power subject, and the arm's only T2 at that time had come from such a neutral title (`01-search-screening-record.md` §14.4).
+  - 31 more pages were opened: 18 excluded titles of that kind, and 13 related titles suggesting a strategy, a configuration, an attack path or a power-sector honeypot.
+  - All 13 related stay related. Of the 18 excluded, 5 prove related (T1): honeypots as side elements in power or nuclear systems, or as a data source. The other 13 stay excluded: decoy states, optimisers named after honeypots and similar.
+  - None decides positions by an objective. The nearest, CN 118484310 A, assigns honeypots to host nodes by load, the kind ruled T1 in CN 117439810 A.
+- *Result:* related (T1) 32, excluded 70, T2 0, T3 0; 38 pages read (#1012–#1049). The arm counts 1,496: T2 2, related (T1) 743, excluded 751.
+
+**5. Effect on the claim (A28).** It survives as worded. *Confidence: likely,* resting on Zhan et al.'s abstract, page summaries read through a fetch tool, and machine translation.
+- The works that narrow the claim are now Park & Dagher, Dong et al. and Zhan et al., CN 122339846 A/B and CN 121012683 A.
+- Budgeted, formally optimised decoy placement in a power grid now has two papers, Dong et al. and Zhan et al. D36 already ruled out any claim to be first there.
+- No work found combines IEC 62443 zones and conduits as numeric inputs, a scored interception stage along ATT&CK-grounded attack paths, and validation against random and centrality baselines.
+
+**6. What else it shows.**
+- *The gap was real:* the one work that narrows the claim was returned only through the new words.
+- *The title rule's exclusions are again unsafe* (D36 item 8): 5 of the 18 opened proved related, though none proved T2.
+
+**7. Record-keeping.**
+- `01-search-protocol.md`: amendment 8 (§4, §8) and the limitation (§13), with its old wording kept;
+- `01-search-screening-record.md`: §18 (new), its header and notes on the totals and limitations;
+- `sources.md` #990–#1049: the amendment, the runs, the citation rounds, the outcome, the T2, the kept papers and every patent page read; update lines on #623 and #642;
+- `01-thesis-citation-shortlist.md`: entry 57, Zhan et al.;
+- `research-synthesis-implementation.md`'s landscape table and `05-thesis-structure.md` §2.4;
+- `00-action-items.md` A17, A28 and A29;
+- `00-project-phases.md` and `00-project-index.md`.
+
+**8. Effect.** None on any input, card or number. Only Markdown files in `docs/` change.
+
+*Status: the user's rulings, 16 November 2026; the rest of the screening is Claude's first pass, which he can question before the freeze. Searching for A17 and A29 closes here, apart from the update re-run within a month of submission (A17). Reference: `01-search-screening-record.md` §18, `01-search-protocol.md` §4, §8 and §13, `sources.md` #990–#1049.*

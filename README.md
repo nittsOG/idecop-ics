@@ -22,9 +22,10 @@ Everything below is real, executed code. The database is initialised and queried
 | `src/api/` | FastAPI backend — ten endpoints |
 | `src/frontend/` | React + Vite interface |
 | `src/plausibility/` | Filter 1's rules (sequence, combination, reason) and the AI first-pass prompt, shared by the API, the scripts and the notebook (D26) |
+| `src/evaluation/` | Phase D's criteria outside F (D37): leave-one-path-out, the attack simulation and the coverage-only comparator; the design is `docs/03-evaluation-methodology.md` |
 | `notebooks/` | `plausibility_scoring.ipynb` — the Colab AI first pass for Filter 1 (A20) |
 | `data/` | Schema and seed data; `legacy/` holds the pre-D26 candidate set as history: the numbers recorded before D26 reproduce with it only at commit `ebcaaa4` (D33); `review/` holds the committed Filter 1 review and the AI first pass's output (D31) |
-| `scripts/` | `setup.py` — the one-time setup of the pinned environment, the database and the frontend's packages, with checks (D29); `run_comparison.py` — runs all five methods at one budget; `sweep.py` — the declared 20-cell grid behind every comparative number (D24); `structure_check.py` — exhaustive monotonicity/submodularity/modularity tests, including whether the gain part is modular (D25's claim rule); `import_plausibility_scores.py` and `review_io.py` — the notebook import and the review's committed record (D26) |
+| `scripts/` | `setup.py` — the one-time setup of the pinned environment, the database and the frontend's packages, with checks (D29); `run_comparison.py` — runs all five methods at one budget; `sweep.py` — the declared 20-cell grid behind every comparative number (D24); `structure_check.py` — exhaustive monotonicity/submodularity/modularity tests, including whether the gain part is modular (D25's claim rule); `import_plausibility_scores.py` and `review_io.py` — the notebook import and the review's committed record (D26); `evaluate.py` — Phase D's leave-one-path-out and attack simulation for every method, which refuses to run before the freeze (D37); `freeze.py` — writes the freeze manifest; `evaluation_selftest.py` — checks the evaluation code on a toy network |
 
 ---
 
