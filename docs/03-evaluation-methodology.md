@@ -35,10 +35,12 @@ The existing comparison grid and weight sweep are still run and reported (§5). 
 
 The population is enumerated in full, so the result is the exact average over every route. There is no random draw and no seed: it is the limit of simulating ever more attackers.
 
-**Detection.** A decoy at a candidate l sits on l's segment (D26), so a route meets it where the route reaches l. A route is detected at the first position k that holds a decoy. Position 1 is the foothold, where initial access happens, as at P's first steps. For each placement three numbers are reported:
-- *detection rate:* the share of routes detected anywhere;
-- *detected before the objective:* the share detected before the route's last asset;
-- *earliness:* the average of (n − k)/(n − 1) for a route of n assets, with an undetected route counting 0. It is 1 when an attacker is caught at the foothold and 0 when caught at the objective.
+**Detection.** A decoy at a candidate l sits on l's segment (D26), so a route meets it where the route reaches l. A route is detected at the first position k that holds a decoy. Position 1 is the foothold, where initial access happens, as at P's first steps. For each placement three numbers are reported, each over the routes with the weights above, so each foothold–objective pair weighs the same and its routes share that weight:
+- *detection rate:* the weighted share of routes detected anywhere;
+- *detected before the objective:* the weighted share detected before the route's last asset;
+- *earliness:* the weighted average of (n − k)/(n − 1) for a route of n assets, with an undetected route counting 0. It is 1 when an attacker is caught at the foothold and 0 when caught at the objective.
+
+*(D39 stated the weights in these three lines. Until then they said "the share of routes" and "the average", which could be read as counting every route equally; the code has always weighted them as above.)*
 
 **Populations reported.**
 
@@ -82,7 +84,7 @@ The simulation reads no term of F.
 
 The D20 wording (`formal-problem-definition.md` §8) is still reported against, with D24's caveat that its first clause follows from optimality.
 
-**Hypotheses, at the default weights (1, 1, 1, 1, 0.1) and budgets B = 1 to 4.** A comparison *holds* at a budget when greedy is not below its comparator; a tie holds.
+**Hypotheses, at the default weights (1, 1, 1, 1, 0.1) and budgets B = 1 to 4.** A comparison *holds* at a budget when greedy is not below its comparator by more than 10⁻⁹ (absolute; `TOL` in `scripts/evaluate.py`); a smaller difference is a tie, and a tie holds. *(D39 stated the tolerance, which the code already applied.)*
 
 | | Criterion | Greedy compared with |
 |---|---|---|
@@ -90,7 +92,7 @@ The D20 wording (`formal-problem-definition.md` §8) is still reported against, 
 | H2 | simulated detection rate and earliness, primary population (§3) | centrality; random (mean) |
 | H3 | simulated detection rate and earliness, and held-out interceptions | coverage-only, ties averaged |
 
-Each hypothesis is **supported** if all its comparisons hold at every budget, **not supported** if they hold at none, and **mixed** otherwise. Strict wins, ties and losses are reported with it, so a result made only of ties is not presented as a win.
+At a budget, a hypothesis holds if every one of its comparisons holds there. It is **supported** if it holds at all four budgets, **not supported** if it holds at none (even where some of its comparisons hold), and **mixed** otherwise. Strict wins, ties and losses are reported with it, so a result made only of ties is not presented as a win, and a supported verdict with no win is labelled "supported (ties only)". *(D39: clarified to state the rule `scripts/evaluate.py` applies. It read: "Each hypothesis is supported if all its comparisons hold at every budget, not supported if they hold at none, and mixed otherwise", which could also be read as counting comparisons rather than budgets.)*
 
 **Secondary, reported as counts:**
 - every comparison over all 20 cells of the declared grid (`scripts/sweep.py`'s BUDGETS × WEIGHTINGS, read from that file);
@@ -99,7 +101,7 @@ Each hypothesis is **supported** if all its comparisons hold at every budget, **
 - criticality-weighted protection and detection before the objective;
 - the F-based grid, the weight sweep and the structure check (`scripts/sweep.py --sens`, `scripts/run_comparison.py`, `scripts/structure_check.py`), as before.
 
-The pre-registration (A15) is the user's own entry. It restates these hypotheses and rules, and `scripts/evaluate.py` applies exactly them. If the user changes a rule there, the code changes to match before the freeze.
+The pre-registration (A15) is the user's own entry. It restates these hypotheses and rules, and `scripts/evaluate.py` applies exactly them. If the user changes a rule there, the code changes to match before the freeze. *D39 (18 November 2026): committed. The user adopted Claude's draft, corrected after an independent review, as his own entry. It changes no rule: it states two that the code already applied, the tolerance and the verdict rule above. Where it is more specific than this file, it governs.*
 
 ## 6. The explanation layer's evaluation (secondary research question, A6)
 
@@ -112,20 +114,22 @@ An explanation that fails either check is replaced by a template built from the 
 - the failures, by kind;
 - how long each took on the user's laptop.
 
+*D39: the prompt, the model tag (`qwen3:4b`, Q4_K_M) and both checks are committed before the four counted explanations are generated, and "the first generation" means the first after that commit.*
+
 The user rates the four explanations as clear, partly clear or unclear for a reader new to the project, reported as counts. This is a small check of faithfulness and readability, not a user study.
 
 ## 7. Expectations stated before any run
 
 These come from the placements published in D31 and D33. No leave-one-path-out or simulation output on the testbed existed when they were written.
 - *Documented population.* Greedy's placement at B = 3 holds all three of P's entry assets, so it is expected to catch every route there at its first step. It is reported for that reason, not counted toward H2.
-- *Primary population.* H2 is at risk. Routes that start at the HMI, Historian, Engineering WS-2 or the Backup Control Switch pass none of P's entry assets, and centrality favours assets that many shortest routes cross. So centrality may detect more routes there than greedy does.
-- *Leave-one-path-out.* Holding out P1 or P4 leaves the Engineering WS on the other path, and holding out P2 or P5 leaves the DMZ Jump Host on the other. Those four are therefore expected to be caught at the held-out path's first step whenever the budget lets greedy keep those assets. P3 is the only path through the OT Firewall, so with P3 held out greedy is expected to miss it unless spare budget or Engineering WS-2 covers it.
+- *Primary population.* H2 is at risk. Routes that start at the HMI, the Historian, Engineering WS-2 or the Backup Control Switch do not start at any of P's entry assets, so a placement of those assets cannot catch them at their foothold. Centrality favours assets that many shortest paths of the recorded network cross, so it may detect more routes there than greedy does. *(D39: corrected. This bullet said such routes "pass none of P's entry assets", which is false: the Historian connects to the OT Firewall and to Engineering WS, so routes from it can pass an entry asset after their foothold. It also said "many shortest routes", where betweenness counts the shortest paths of the recorded, directed network.)*
+- *Leave-one-path-out.* Holding out P1 or P4 leaves the Engineering WS on the other path, and holding out P2 or P5 leaves the DMZ Jump Host on the other. Those four are therefore expected to be caught at the held-out path's first step whenever the budget lets greedy keep those assets. P3 is the only path through the OT Firewall and Engineering WS-2, so with P3 held out greedy cannot catch it at any budget: it adds a decoy only when that raises F, and a decoy on no training path raises no gain term. Centrality, random and the coverage-only optimiser can still place those assets. *(D39: corrected. It read "greedy is expected to miss it unless spare budget or Engineering WS-2 covers it"; greedy's stopping rule, in `baselines.greedy`, rules out both.)*
 - *The route D33 asked about.* D33 recorded that no path continues the outside route OT Firewall → Engineering WS-2 → PLC-02, and asked that A12's simulation state in advance what it expected there. The route is in the primary population (foothold OT Firewall, objective PLC-02). A placement holding the OT Firewall catches it at the foothold, one holding Engineering WS-2 catches it at step 2, and any other placement misses it. Greedy's published placements hold the OT Firewall only from B = 3.
 
 ## 8. Order, freeze and what is frozen
 
 1. D37 and this file are committed: the design is fixed, and nothing has run on the testbed.
-2. The user's pre-registration (A15) is committed.
+2. The user's pre-registration (A15) is committed. *(D39, 18 November 2026.)*
 3. **The freeze.** `scripts/freeze.py` writes `data/freeze/manifest.json` with the SHA-256 of every file that feeds the evaluation, and it refuses if any of those files has uncommitted changes. The frozen files are:
    - the lock file;
    - the schema, the seed and the committed review;
@@ -133,10 +137,14 @@ These come from the placements published in D31 and D33. No leave-one-path-out o
    - `scripts/evaluate.py`, `sweep.py`, `run_comparison.py` and `structure_check.py`.
 
    Every check is re-run, and the freeze entry states the effect against D25.
-4. Phase D runs. `scripts/evaluate.py` refuses to run unless every frozen file still matches the manifest.
+4. Phase D runs. `scripts/evaluate.py` refuses to run unless every frozen file still matches the manifest. How it runs (D39 item 5):
+   - on a database rebuilt from the frozen seed with the committed review restored; an export from it must equal `data/review/plausibility_review.csv` byte for byte;
+   - as `uv run python scripts/evaluate.py --json data/results/phase-d.json`, with the results file committed with the results;
+   - wins, ties, losses and every count the script does not print are tallied from that file by the same 10⁻⁹ rule;
+   - after the run, the F of greedy's and the MILP's placements in every cell and fold, and whether any other placement reaches greedy's F, are computed from that file with the frozen `metrics.score`.
 5. The results are recorded in their own entry, whichever way they go.
 
-A defect found after the freeze gets its own entry stating its effect on every result. It is then fixed and frozen again, and both runs are reported.
+A defect found after the freeze gets its own entry stating its effect on every result. It is then fixed and frozen again, and both runs are reported. *D39 item 1 defines a defect, code that does not do what D39 and §2–§5 state, and makes the corrected run the result.*
 
 ## 9. Limitations
 

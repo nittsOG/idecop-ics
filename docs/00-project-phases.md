@@ -60,7 +60,7 @@ Run every method against P1–P5 (P5 added by D27) on the comparison grid held i
 
 *[16 November 2026: A32 is done (D31). Nine assets pass Filter 1, and on that set the gain part of F is not modular, so greedy's optimality is no longer by construction (D31, D33); the paragraph above describes the seeded set. A35–A38, A40 and A43 were settled in D33, and the inputs are not frozen yet. The freeze follows the A12, A15 and A16 entries (A32's row), and A12 still has to choose the criterion outside F.]*
 
-*[D37, 16 November 2026: A12 is settled. Leave-one-path-out and an attack simulation are the criteria outside F, with a coverage-only comparator (`03-evaluation-methodology.md`). The freeze follows the re-run's screening and A15.]*
+*[D37, 16 November 2026: A12 is settled. Leave-one-path-out and an attack simulation are the criteria outside F, with a coverage-only comparator (`03-evaluation-methodology.md`). The freeze follows the re-run's screening and A15.]* *[D38 and D39: both done; the freeze is next.]*
 
 **Original roadmap item covered:** 11
 **Exit criteria:** results speak to the primary research question in `formal-problem-definition.md` §8 — including honestly, if they don't support it as strongly as hoped. A negative or mixed result, reported honestly, is a valid thesis outcome; a result quietly reframed to look better than it is isn't.
@@ -80,6 +80,15 @@ Guide review cycles, viva preparation, formatting to NFSU's submission requireme
 **Exit criteria:** submitted and defended.
 
 ## Where we are right now
+
+**Update, D39 (18 November 2026).**
+- *Your pre-registration is committed (D39):* the hypotheses, the verdict rule, the definitions, how Phase D runs and what is expected are fixed before any Phase D run. You adopted Claude's draft after an independent review checked it against the code; no code changed.
+- *Next:*
+  1. the freeze (`scripts/freeze.py`) on a clean clone, every check re-run, and the entry against D25;
+  2. Phase D;
+  3. the explanation layer;
+  4. the TA-2 presentation.
+- The D37–D38 update below is overtaken where it lists the pre-registration as next.
 
 **Update, D37–D38 (16 November 2026).**
 - *TA-2 is on 27 November 2026*, A14's first known date. Your target: the project ready by then; tuning and the physical testbed after it.
