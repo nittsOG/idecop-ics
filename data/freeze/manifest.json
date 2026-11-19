@@ -1,0 +1,26 @@
+{
+ "frozen_at": "2026-11-19",
+ "commit": "bc93d859540be41f16c16a059e622236b95d2d08",
+ "note": "Inputs and code frozen before Phase D (D37). scripts/evaluate.py refuses to run if any file below changes.",
+ "files": {
+  "requirements.lock": "b0895fd55c2ac2e8a976e93ba5d92bfbbcad3ed242575e18cc86062f659cf14a",
+  "data/schema.sql": "135f160eaad3ec4ee64b0428228fe980ff67fd71728e8e5f45394042bc630b72",
+  "data/seed.sql": "0b3911972b67e8cf50c9b2a898595492b53fe9456ce2b4c92b947eb48ed43b95",
+  "data/review/plausibility_review.csv": "f61f51ab4cfd8ca7bdce142f648011de8bf4bc9f1e6071f78b2917a11e8296eb",
+  "scripts/evaluate.py": "27fe3200733d03e10cd2cc98e4e53b09df2004ab89252f4fd8fe52e82442e393",
+  "scripts/sweep.py": "5222dc9b2243d4be51137b93d8e257880be411aed30326bb63b68aa4b6eeffa7",
+  "scripts/run_comparison.py": "d632117898f55a35824646c63bccc475c3ea2df2b4f1cb32792fd9c34de61996",
+  "scripts/structure_check.py": "c0a47c172170f966a4c43295901f371f3519056541f8dcd9baa411aa5c52136b",
+  "src/graph_model/__init__.py": "73bf3ac4980aa8170f2bee6a304d274f4c3a939469da27a3aed99972870bc6f6",
+  "src/optimizer/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "src/optimizer/baselines.py": "41953adc65bf3da3c5644ce47d28bc163fb48b8a5ac75e8a8e355baccaedb055",
+  "src/optimizer/metrics.py": "6a8552fe099488cf1e0d479ef1db67df0e879676afc4fc73b21e139c6043b842",
+  "src/optimizer/milp.py": "42d51427e02c7b9b7f3ac2d5fef51c42570dbdb22df72d1a21b35b6dc0670cf7",
+  "src/evaluation/__init__.py": "7964b0bbd5c4cdaf560aebedef0f7a02b6ec4579306bb11305a9424f402a1c95",
+  "src/evaluation/comparators.py": "b5dd140dcb58f0cef5f16cf44f03525ed2508f54f4b8ed222f974645d5bbb991",
+  "src/evaluation/holdout.py": "5823606754aae1e7d9140f0d1c06d3468e6a89f2f3bead5a62ba5048a53375e9",
+  "src/evaluation/simulation.py": "c9399c52ab8600c236a1748485a5d78084d576454625b77723a6f587cf750a90",
+  "src/plausibility/__init__.py": "92bb748be565a788a04f6af38481ea30ba0249f40476de86ea5b23555ffb9663",
+  "src/plausibility/prompt.py": "ca09d510d26bdac81d8684d428f910ddd35f8591c26c0696bd97df95d6f05465"
+ }
+}

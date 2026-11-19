@@ -17,8 +17,8 @@ The full file/folder layout for when the GitHub repo gets created at the start o
 /scripts           setup, evaluation and data-handling scripts (one-time setup, D29; comparison, sweep, structure check, notebook import, review record)
 /notebooks         the Colab plausibility-scoring notebook (D26)
 /testbed           VM configs, pfSense export, OpenPLC programs, Node-RED flows
-/data              SQLite schema and seed; legacy/ (the pre-D26 candidate set, kept as history: it reproduces old numbers only at commit ebcaaa4, D33); review/ (the committed Filter 1 review and the notebook's outputs, D26)
-/results           Phase D outputs — logs, CSVs, generated charts
+/data              SQLite schema and seed; legacy/ (the pre-D26 candidate set, kept as history: it reproduces old numbers only at commit ebcaaa4, D33); review/ (the committed Filter 1 review and the notebook's outputs, D26); freeze/ (the freeze manifest, D40)
+/results           Phase D outputs — logs, CSVs, generated charts (but D39 put Phase D's results file in data/results/; see the table below)
 /submission        final formatted thesis document, once truly final
 ```
 
@@ -36,8 +36,9 @@ No `04-*` in `/docs` — the implementation roadmap lives entirely in `00-projec
 | VM configs, pfSense export, OpenPLC programs | `/testbed` |
 | The SQLite database, seed/fixture data | `/data` |
 | The exported Filter 1 review and the scoring notebook's two output files | `/data/review` (committed: the database itself is not tracked) |
+| The freeze manifest, written by `scripts/freeze.py` | `/data/freeze` (committed with D40) |
 | A Colab notebook | `/notebooks` |
-| Evaluation logs, CSVs, generated charts | `/results` |
+| Evaluation logs, CSVs, generated charts | `/results` *(D40: D39 item 5 fixed Phase D's results file at `data/results/phase-d.json`, so it lives under `/data/results`. D39 governs; its batch missed this row and the layout above.)* |
 | The final formatted thesis | `/submission` |
 
 ## Linking `/references` to `sources.md`

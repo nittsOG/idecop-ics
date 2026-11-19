@@ -10,7 +10,7 @@ A: Foundation ──▶ B: Detailed Design ──▶ C: Build ──▶ D: Evalu
                                                           can start early ─┘
 ```
 
-Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs were frozen and are being corrected before any campaign: the objective's normalisation by D25, and the candidate set under A32. D is gated on A32 and then A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list. *[16 November 2026: A32's review and Filter 2 scores are done (D31), and the inputs left open then were settled in D33. D is now gated on the freeze; see "Where we are right now".]*
+Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs were frozen and are being corrected before any campaign: the objective's normalisation by D25, and the candidate set under A32. D is gated on A32 and then A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list. *[16 November 2026: A32's review and Filter 2 scores are done (D31), and the inputs left open then were settled in D33. D is now gated on the freeze; see "Where we are right now".]* *[D40, 19 November 2026: the inputs are frozen; Phase D is next.]*
 
 ## Phase A — Foundation ✅ Complete (its one open item was closed on 6 October 2026)
 
@@ -60,7 +60,7 @@ Run every method against P1–P5 (P5 added by D27) on the comparison grid held i
 
 *[16 November 2026: A32 is done (D31). Nine assets pass Filter 1, and on that set the gain part of F is not modular, so greedy's optimality is no longer by construction (D31, D33); the paragraph above describes the seeded set. A35–A38, A40 and A43 were settled in D33, and the inputs are not frozen yet. The freeze follows the A12, A15 and A16 entries (A32's row), and A12 still has to choose the criterion outside F.]*
 
-*[D37, 16 November 2026: A12 is settled. Leave-one-path-out and an attack simulation are the criteria outside F, with a coverage-only comparator (`03-evaluation-methodology.md`). The freeze follows the re-run's screening and A15.]* *[D38 and D39: both done; the freeze is next.]*
+*[D37, 16 November 2026: A12 is settled. Leave-one-path-out and an attack simulation are the criteria outside F, with a coverage-only comparator (`03-evaluation-methodology.md`). The freeze follows the re-run's screening and A15.]* *[D38 and D39: both done; the freeze is next.]* *[D40, 19 November 2026: frozen, and every check re-run reproduces D33; Phase D is next.]*
 
 **Original roadmap item covered:** 11
 **Exit criteria:** results speak to the primary research question in `formal-problem-definition.md` §8 — including honestly, if they don't support it as strongly as hoped. A negative or mixed result, reported honestly, is a valid thesis outcome; a result quietly reframed to look better than it is isn't.
@@ -80,6 +80,15 @@ Guide review cycles, viva preparation, formatting to NFSU's submission requireme
 **Exit criteria:** submitted and defended.
 
 ## Where we are right now
+
+**Update, D40 (19 November 2026).**
+- *The inputs are frozen (D40):* `data/freeze/manifest.json` fingerprints the 19 files that feed Phase D, and `scripts/evaluate.py` refuses to run if any of them changes. Every check, re-run on a fresh clone, reproduces D33's numbers exactly.
+- *Against D25:* on F, the method's record against centrality is stronger (16 wins on 6 distinct disagreements, where D25 had 5 on 2), on an instance that is no longer trivial. §8's clause 2 is weaker (18 of 20, where D25 had 20), and the close cell at B = 1, δ = 3 is more fragile than D33 estimated. None of this is a Phase D result.
+- *Next:*
+  1. Phase D, on a fresh clone of the pushed commit (D39 item 5);
+  2. the explanation layer;
+  3. the TA-2 presentation.
+- The D39 update below is overtaken where it lists the freeze as next.
 
 **Update, D39 (18 November 2026).**
 - *Your pre-registration is committed (D39):* the hypotheses, the verdict rule, the definitions, how Phase D runs and what is expected are fixed before any Phase D run. You adopted Claude's draft after an independent review checked it against the code; no code changed.

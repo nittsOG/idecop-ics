@@ -1029,7 +1029,7 @@ On 30 October 2026 the user decided not to consult the guide on the open methodo
 - *Early* raises F for every placement that catches a path early, and moves no placement.
 
 **6. Disclosures.**
-- *A close cell.* Greedy's lead at B = 1, δ = 3 is 0.0174. The combined review found that this cell flips only if the RTU's Damage share exceeds about 0.62–0.69, or the OT DMZ's SL falls below about 0.31–0.35. It computed these on the slate's values, before the edge-level change, so the thresholds are likely lower now. They were known when the Damage split was declared, and they are re-measured at the freeze.
+- *A close cell.* Greedy's lead at B = 1, δ = 3 is 0.0174. The combined review found that this cell flips only if the RTU's Damage share exceeds about 0.62–0.69, or the OT DMZ's SL falls below about 0.31–0.35. It computed these on the slate's values, before the edge-level change, so the thresholds are likely lower now. They were known when the Damage split was declared, and they are re-measured at the freeze. *[D40: re-measured on the frozen inputs, by the method D40 item 4 states: about 0.491 and 0.463. D40 item 4 compares them with these figures.]*
 - *A gap in P.* No path continues the outside route through D30's leftover rule, OT Firewall → Engineering WS-2 → PLC-02, to a controller. P cannot change without voiding committed cards, so this is recorded as a limitation. A12's simulation covers the route, and its entry must disclose what was expected of it in advance.
 - *Who proposed the values.* Independent Claude agents proposed every value here (D32), and Claude prepared this batch. The user accepted the values unedited.
 
@@ -1450,3 +1450,94 @@ This entry is committed before any leave-one-path-out or attack-simulation resul
 - An independent review, by a separate agent that had not seen the draft written, checked it against the methodology and the code on 18 November 2026. Claude verified each finding against the code; all twelve are reflected above.
 
 *Status: drafted by Claude, the project's AI assistant, on 17 November 2026, restating `03-evaluation-methodology.md` §5 and §7; corrected on 18 November 2026 after the independent review; read and adopted, unedited, by Naitik as his pre-registration on 18 November 2026, before any Phase D run. Reference: `03-evaluation-methodology.md` §2–§8, `scripts/evaluate.py`, `src/evaluation/`, D24, D32, D37, D38, `00-action-items.md` A15.*
+
+**D40 — The evaluation inputs are frozen: `data/freeze/manifest.json` holds the SHA-256 of the 19 files that feed Phase D, at commit `bc93d85`. Every check, re-run on a fresh clone, reproduces D33 exactly. Against D25, greedy's record against centrality rises from 5 to 16 wins, §8's clause 2 falls from 20 to 18 of 20, and the instance is no longer modular. No input or code changes. 19 November 2026.**
+
+**1. What is frozen.** `scripts/freeze.py` (D37) wrote the manifest on a fresh clone of `bc93d85`, the D39 commit, with a clean working tree. It lists the files of `03-evaluation-methodology.md` §8:
+- `requirements.lock`;
+- `data/schema.sql`, `data/seed.sql` and `data/review/plausibility_review.csv`;
+- the eleven Python files of `src/graph_model/`, `src/optimizer/`, `src/evaluation/` and `src/plausibility/`;
+- `scripts/evaluate.py`, `sweep.py`, `run_comparison.py` and `structure_check.py`.
+
+`scripts/evaluate.py` refuses to run if any of them differs from the manifest. The manifest is committed with this entry (2,077 bytes, SHA-256 `6b0626391ccb…`). None of these files has changed since `7c88be5`, where D37 item 8 last reproduced D33, except `src/evaluation/` and `scripts/evaluate.py`, which were new in `400e17a` and are unchanged since.
+
+**2. How it was checked** *(verified, 19 November 2026)*.
+- `uv run scripts/setup.py` built the pinned environment on the fresh clone (Python 3.13.18, every package as in `requirements.lock`, Node.js v24.19.0 from `.venv`) and a database from the frozen schema and seed.
+- `review_io.py check` passed, and `restore` restored the 10 confirmed cards. An export with `--require-complete` (10 of 10 confirmed, 9 pass Filter 1) equals the committed `data/review/plausibility_review.csv` byte for byte (SHA-256 `f61f51ab4cfd…`).
+- `check_frozen`, imported from `scripts/evaluate.py` without running it, accepts the manifest. `scripts/evaluate.py` was not run.
+
+**3. Every check re-run on that database.** Each output matches D33 item 4 exactly.
+- *`run_comparison.py 3`:* greedy, distorted greedy and the MILP place the DMZ Jump Host, Engineering WS and the OT Firewall (F 2.4175). Centrality places the DMZ Jump Host, Engineering WS-2 and the OT Firewall (1.2060), and random placements average 1.3229.
+- *`sweep.py --sens`:*
+  - against centrality, 16 wins (10 swap, 6 decline) / 4 ties / 0 losses, resting on 6 distinct placement disagreements;
+  - greedy equals the exhaustive optimum in 20 of 20 cells;
+  - the MILP is exact in all 20, and in all 84 sampled configurations. The smallest rounding margins are 17,426 units on the grid and 15,074 in the sample, against bounds of 19 and 20;
+  - distorted greedy is below greedy in 0 of 20;
+  - §8's clause 2 holds in 18 of 20. It fails at B = 1, δ = 3 (a swap) and at B = 4, δ = 3 (a decline).
+- *`structure_check.py`:* F is submodular and not monotone (1,104 violations). Distorted greedy's preconditions hold, and the gain part g is not modular (1,584 violations).
+- *`evaluation_selftest.py`:* passes on its toy network, the only network it reads.
+
+**4. The close cell, re-measured as D33 item 6 required.** At B = 1, δ = 3 greedy places Engineering WS (F 0.7265) and centrality the DMZ Jump Host (0.7091), a lead of 0.0174.
+- *Method:* each declared input below was varied alone, in memory only, on the frozen code. Crit was recomputed by `compute_criticality`, greedy and centrality were run at B = 1 with weights (1, 1, 1, 3, 0.1), and a bisection found the value at which greedy's lead falls within 10⁻⁹.
+- *The RTU's process share,* s, with PLC-01 and PLC-02 at (1 − s)/2 each: the lead reaches zero at s ≈ 0.491. The declared share is 1/3.
+- *The OT DMZ's SL,* t, set as seven equal SL-T cells of 4t: the lead reaches zero at t ≈ 0.463. The declared SL is 0.607.
+- Past either value greedy places the DMZ Jump Host, the cell becomes a tie, and clause 2 holds there. A scan of each range at 201 points found no other crossing.
+
+*Against D33's figures.* D33 quoted "about 0.62–0.69" and "about 0.31–0.35". The combined review computed them on the slate's values, before the edge-level ConduitSL, and D33 expected the thresholds to be lower now.
+- The share's threshold is lower, as expected.
+- The SL's is higher, so a smaller fall flips the cell. Read literally, D33's expectation was wrong for it.
+- Both now lie nearer the declared values, so the cell is more fragile than D33's figures said.
+- The review's method is not recorded in the repository, so how much of the difference comes from method rather than inputs is *unconfirmed*.
+
+**5. The effect against D25** (D31 item 8; `03-evaluation-methodology.md` §8). D25's numbers were recorded on 30 September 2026. Every D25 number in the table below was reproduced today at commit `ebcaaa4` with `--legacy-d25`, except the fragility row's threshold, which is quoted from D25's text.
+
+*What changed in between.* Each change had its own entry, which stated its effect at the time.
+- *L:* five seeded candidates that bypassed Filter 1 (the DMZ Jump Host, the Historian, Engineering WS-2, the HMI and PLC-02) became the nine that passed the review (D26, D30, D31), with five new Filter 2 scores (D31).
+- *P and E:* P5 was added (D27), two step labels changed (D28), four connections were added (D30), and each path got an explicit target (D33, A36).
+- *F's inputs, all D33:* unweighted betweenness (A35); declared SL-T vectors and process shares (A37); the edge-level ConduitSL (A38); Crit's additive form (A40); Engineering WS-2's risk, raised under A43; and Early's (n − s)/(n − 1) endpoint.
+- *Unchanged:* the defaults of α to ε, K = 4, the five methods and the 20-cell grid.
+
+| | D25 | Frozen inputs | Which way it cuts |
+|---|---|---|---|
+| Instance | 5 candidates, 4 paths. g is modular: no path meets two candidates | 9 candidates, 5 paths. g is not modular: all five paths meet two or more | For the method: greedy equalling the optimum is now a finding for this one instance, not a construction (D25's claim rule) |
+| B = 3, default weights | All four methods place the DMZ Jump Host, Engineering WS-2 and the Historian (F 1.2170); random mean 0.8942 | Greedy: the DMZ Jump Host, Engineering WS and the OT Firewall (2.4175). Centrality: the DMZ Jump Host, Engineering WS-2 and the OT Firewall (1.2060). Random mean 1.3229 | The methods now disagree at the headline budget. F values are not comparable across the two columns, because F's inputs and Early's endpoint differ |
+| Grid against centrality | 5 wins (5 swap, 0 decline) / 15 ties / 0 losses, on 2 distinct disagreements | 16 wins (10 swap, 6 decline) / 4 ties / 0 losses, on 6 | For the method on its face. But 0 losses is implied by optimality in both columns, so the count measures disagreement, not whether F is a good objective |
+| §8's clause 2 | 20 of 20 | 18 of 20 | Against the method |
+| Greedy = exhaustive optimum | 20 of 20, by construction | 20 of 20 | — |
+| MILP exact | 20 of 20, and all 68 sampled configurations | 20 of 20, and all 84 sampled | — |
+| Smallest rounding margin | 3,826 units (bound 16); 413 in the sample (bound 17) | 17,426 (bound 19); 15,074 in the sample (bound 20) | Wider: the exactness checks sit further from rounding |
+| Distorted greedy below greedy | 3 of 20, all at δ = 3 | 0 of 20 | Reported, not claimed: one instance says nothing about the guarantee's value in practice |
+| F's structure | Submodular, not monotone (16 violations) | Submodular, not monotone (1,104) | — |
+| Fragility | δ = 3 sits just below the first decline threshold (the HMI's, at 3.025) | The close cell's lead is 0.0174 (item 4) | Both depend on where the declared values sit |
+
+*Overall.*
+- On F, the proposed method's standing against centrality is stronger than at D25: more wins, on more distinct disagreements, on an instance that is no longer trivial.
+- Clause 2 is weaker, and the close cell is fragile.
+- None of this is a Phase D result. On F greedy cannot lose here, because it is optimal (D24; D39 item 6). Every change since D25 was made with D25's numbers known, and D33's with D31's known too (D33 item 1).
+- The research question is answered by H1–H3, on held-out paths and simulated routes. No held-out or simulation result on the testbed existed when any of these inputs was chosen.
+
+**6. What the freeze means from now.** Each point follows from rules already recorded; none is new.
+- No frozen file changes before Phase D runs. A change needs its own entry stating its effect, and a new freeze. A defect is handled as D39 item 1 states.
+- A method found by the update re-run (A17) can no longer become a Phase D baseline. Neither can Park & Dagher's rule, which D37 item 4 left open until the freeze. Either would be related work, or a separately reported study after Phase D (D37 item 7), as tuning is.
+- The explanation layer (A6) is not an evaluation input (D37 item 6). It is built outside the four frozen packages, so building it changes no frozen file.
+
+**7. Made with this entry** (record-keeping; no input or code changes).
+- `03-evaluation-methodology.md` §8: step 3 is marked done.
+- `00-action-items.md`: A12, A16, A20, A29 and A32 are marked done. A20 had been done since D31, A12 and A16 since D37 (with A12's rules fixed by D39), and A29's searching since D38, but their IDs were not struck. A32 closes with this entry. A11's row has had one cell too many since before D37; it is repaired, and its words are kept.
+- `00-project-phases.md`: a D40 update, and notes on the overview and Phase D.
+- `README.md`: the data row names `data/freeze/`. The line calling D33's run pre-freeze gets a note, and so does the line saying five inputs are still open, which has been stale since D33.
+- `formal-problem-definition.md` §4: the same "pre-freeze" line, stale since D33, gets a note.
+- `00-repository-structure.md`: `data/freeze/` is added. The file also put Phase D's outputs in a top-level `/results`, while D39 item 5 fixed the results file at `data/results/phase-d.json`. The D39 batch missed this; a note now says D39 governs.
+- D33 item 6: an inline note gives the re-measured thresholds.
+
+*Now stale, for the next documentation pass:*
+- `02-system-flow.md` §8 says "§7.3 continues as A12, which now gates Phase D"; A12 is done.
+- `05-thesis-structure.md`'s priority list, item 3, says Phase D is gated on A32, A35–A38, A40, A12 and A15; all are done.
+- `03-honest-review.md` says a re-run of the OT keywords is recommended before the freeze; D38 made it.
+
+**8. Next.**
+1. Phase D, on a fresh clone of the pushed commit, as D39 item 5 states. Its results get their own entry, whichever way they go.
+2. The explanation layer (A6).
+3. The TA-2 presentation.
+
+*Status: Claude's work on the user's instruction of 19 November 2026 to start the freeze, which D39 item 9 put next; verified as in items 2–5. Not independently reviewed. Reference: `data/freeze/manifest.json`, `scripts/freeze.py`, `scripts/evaluate.py`, `03-evaluation-methodology.md` §8, D24, D25, D31, D33, D37, D39, `00-action-items.md` A12, A16, A20, A29 and A32, `00-project-phases.md`, `README.md`, `formal-problem-definition.md` §4, `00-repository-structure.md`.*

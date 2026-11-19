@@ -136,7 +136,7 @@ These come from the placements published in D31 and D33. No leave-one-path-out o
    - `src/graph_model/`, `src/optimizer/`, `src/evaluation/` and `src/plausibility/`;
    - `scripts/evaluate.py`, `sweep.py`, `run_comparison.py` and `structure_check.py`.
 
-   Every check is re-run, and the freeze entry states the effect against D25.
+   Every check is re-run, and the freeze entry states the effect against D25. *(D40, 19 November 2026: frozen at commit `bc93d85`, 19 files. Every check re-run reproduces D33 item 4, and D40 states the effect against D25.)*
 4. Phase D runs. `scripts/evaluate.py` refuses to run unless every frozen file still matches the manifest. How it runs (D39 item 5):
    - on a database rebuilt from the frozen seed with the committed review restored; an export from it must equal `data/review/plausibility_review.csv` byte for byte;
    - as `uv run python scripts/evaluate.py --json data/results/phase-d.json`, with the results file committed with the results;

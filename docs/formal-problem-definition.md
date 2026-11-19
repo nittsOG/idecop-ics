@@ -135,7 +135,7 @@ This is D12's route: an AI first pass, then human confirmation. People shown an 
 > - D25 found that the seeded set had bypassed Filter 1. That set is kept only as `data/legacy/d25_candidate_set.sql`, to reproduce numbers recorded before D26, behind an explicit `--legacy-d25` flag. The API never accepts it. *(D33: the flag is retired from the current tree; those numbers reproduce at commit `ebcaaa4`.)*
 > - Assets without a D22a score: Engineering WS, PLC-01, PLC-03 (RTU), Backup Control Switch and the OT Firewall. Any of them that passes Filter 1 is scored at A32 step 4. *D31: all five passed, and all five are now scored.*
 > - The attack-path set is P1–P5. D27 added P5 through the Backup Control Switch.
-> - *D31 (26 October 2026):* the review is committed in `data/review/`. Nine assets pass Filter 1, and PLC-02 fails it under the path rule, so L has nine members once the review is restored. The first run on that set is recorded in D31. It is pre-freeze, because A35–A38 and A40 are still open.
+> - *D31 (26 October 2026):* the review is committed in `data/review/`. Nine assets pass Filter 1, and PLC-02 fails it under the path rule, so L has nine members once the review is restored. The first run on that set is recorded in D31. It is pre-freeze, because A35–A38 and A40 are still open. *[D33 settled them, and D40 froze the inputs on 19 November 2026.]*
 
 **Process note (added after D12, revised by D26):** Filter 1's criteria are scored with AI assistance. A model suggests a first pass, and a human confirms or overrides each answer before it counts. D26 fixed the scale, the rules and the safeguards above. Detail in `02-ai-role.md` §7–10.
 
