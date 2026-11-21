@@ -10,7 +10,7 @@ A: Foundation ──▶ B: Detailed Design ──▶ C: Build ──▶ D: Evalu
                                                           can start early ─┘
 ```
 
-Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs were frozen and are being corrected before any campaign: the objective's normalisation by D25, and the candidate set under A32. D is gated on A32 and then A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list. *[16 November 2026: A32's review and Filter 2 scores are done (D31), and the inputs left open then were settled in D33. D is now gated on the freeze; see "Where we are right now".]* *[D40, 19 November 2026: the inputs are frozen; Phase D is next.]*
+Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs were frozen and are being corrected before any campaign: the objective's normalisation by D25, and the candidate set under A32. D is gated on A32 and then A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list. *[16 November 2026: A32's review and Filter 2 scores are done (D31), and the inputs left open then were settled in D33. D is now gated on the freeze; see "Where we are right now".]* *[D40, 19 November 2026: the inputs are frozen; Phase D is next.]* *[D41, 19 November 2026: Phase D has run. H1–H3 are all mixed (`03-phase-d-results.md`); the explanation layer's evaluation remains.]*
 
 ## Phase A — Foundation ✅ Complete (its one open item was closed on 6 October 2026)
 
@@ -60,7 +60,7 @@ Run every method against P1–P5 (P5 added by D27) on the comparison grid held i
 
 *[16 November 2026: A32 is done (D31). Nine assets pass Filter 1, and on that set the gain part of F is not modular, so greedy's optimality is no longer by construction (D31, D33); the paragraph above describes the seeded set. A35–A38, A40 and A43 were settled in D33, and the inputs are not frozen yet. The freeze follows the A12, A15 and A16 entries (A32's row), and A12 still has to choose the criterion outside F.]*
 
-*[D37, 16 November 2026: A12 is settled. Leave-one-path-out and an attack simulation are the criteria outside F, with a coverage-only comparator (`03-evaluation-methodology.md`). The freeze follows the re-run's screening and A15.]* *[D38 and D39: both done; the freeze is next.]* *[D40, 19 November 2026: frozen, and every check re-run reproduces D33; Phase D is next.]*
+*[D37, 16 November 2026: A12 is settled. Leave-one-path-out and an attack simulation are the criteria outside F, with a coverage-only comparator (`03-evaluation-methodology.md`). The freeze follows the re-run's screening and A15.]* *[D38 and D39: both done; the freeze is next.]* *[D40, 19 November 2026: frozen, and every check re-run reproduces D33; Phase D is next.]* *[D41, 19 November 2026: run once, as pre-registered. H1, H2 and H3 are all mixed. Every comparison holds at B = 2. None holds at B = 4, where greedy places three decoys against the comparators' four, and greedy catches no held-out path at B = 1 (`03-phase-d-results.md`). The secondary question, the explanation layer's four counted explanations, remains.]*
 
 **Original roadmap item covered:** 11
 **Exit criteria:** results speak to the primary research question in `formal-problem-definition.md` §8 — including honestly, if they don't support it as strongly as hoped. A negative or mixed result, reported honestly, is a valid thesis outcome; a result quietly reframed to look better than it is isn't.
@@ -80,6 +80,19 @@ Guide review cycles, viva preparation, formatting to NFSU's submission requireme
 **Exit criteria:** submitted and defended.
 
 ## Where we are right now
+
+**Update, D41 (19 November 2026).**
+- *Phase D has run, once, as your pre-registration fixed it (D41).* All three hypotheses are **mixed**:
+  - at a budget of two decoys, the composite objective's placement holds every comparison. It catches more hidden paths than centrality, random and the coverage-only optimiser, and at least as many simulated attackers, at least as early;
+  - at four, it places three decoys where the comparators place four, and loses every comparison but one;
+  - at one, it catches none of the hidden paths;
+  - at three, it catches the most hidden paths and the simulated attackers earliest, but slightly fewer simulated attackers than random and the coverage-only optimiser.
+- Greedy found the unique best F in all 120 cells and folds, and the MILP agreed. No defect was found. The results, written for a reader new to the project, are in `03-phase-d-results.md`.
+- *Your novelty claim's validation clause now reads "evaluated against random and centrality baselines"* (your choice, D41), because the verdicts are mixed.
+- *Next:*
+  1. the explanation layer (A6), the secondary question;
+  2. the TA-2 presentation.
+- The D40 update below is overtaken where it lists Phase D as next.
 
 **Update, D40 (19 November 2026).**
 - *The inputs are frozen (D40):* `data/freeze/manifest.json` fingerprints the 19 files that feed Phase D, and `scripts/evaluate.py` refuses to run if any of them changes. Every check, re-run on a fresh clone, reproduces D33's numbers exactly.

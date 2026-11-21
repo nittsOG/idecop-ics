@@ -1541,3 +1541,85 @@ This entry is committed before any leave-one-path-out or attack-simulation resul
 3. The TA-2 presentation.
 
 *Status: Claude's work on the user's instruction of 19 November 2026 to start the freeze, which D39 item 9 put next; verified as in items 2–5. Not independently reviewed. Reference: `data/freeze/manifest.json`, `scripts/freeze.py`, `scripts/evaluate.py`, `03-evaluation-methodology.md` §8, D24, D25, D31, D33, D37, D39, `00-action-items.md` A12, A16, A20, A29 and A32, `00-project-phases.md`, `README.md`, `formal-problem-definition.md` §4, `00-repository-structure.md`.*
+
+**D41 — Phase D, run once as pre-registered: H1, H2 and H3 are all mixed. The composite objective's placement holds every comparison at a budget of two decoys. It fails at four, where it places three decoys against the comparators' four, and on held-out paths at one. Greedy is the unique F-optimum in all 120 cells and folds. No input, code or rule changes. 19 November 2026.**
+
+**1. The run.** On a fresh clone of `b43de49` (D40), as D39 item 5 states:
+- `uv run scripts/setup.py` built the pinned environment (Python 3.13.18) and a database from the frozen schema and seed. The committed review was restored (10 cards, 9 pass Filter 1), and an export equals `data/review/plausibility_review.csv` byte for byte.
+- `uv run python scripts/evaluate.py --json data/results/phase-d.json` ran once, at 17:17 UTC, in 2.3 seconds. Every frozen file matched the manifest (`bc93d85`). The results file (SHA-256 `3081026ed338…`) is committed with this entry.
+- Every win, tie and loss was re-counted from the results file by the 10⁻⁹ rule, separately from the script's own tallies. The two agree exactly.
+
+**2. The verdicts** (default weights, B = 1 to 4; the rules of D39 item 3).
+
+| Hypothesis | Holds at | Verdict | Wins / ties / losses |
+|---|---|---|---|
+| H1: held-out interceptions, against centrality and random | B = 2, 3 | mixed | 4 / 0 / 4 |
+| H2: simulated detection and earliness, against centrality and random | B = 1, 2 | mixed | 9 / 2 / 5 |
+| H3: the same two, and held-out interceptions, against the coverage-only optimiser (ties averaged) | B = 1, 2 | mixed | 6 / 3 / 3 |
+
+*By budget:*
+- *B = 1:* H1 fails. Greedy catches 0 of the 5 held-out paths; centrality catches 2, and random 1.43 on average. In the simulation greedy ties centrality, which places the same decoy, and beats random and the coverage-only optimiser.
+- *B = 2:* all three hold. Greedy catches 4 held-out paths, against 3, 2.53 and 0.75. Its detection (0.555) and earliness (0.439) equal or exceed every comparator's.
+- *B = 3:* H1 holds, with 4 against 3, 3.47 and 1.67. H2 and H3 fail on detection only: 0.692, against random's 0.716 and the coverage-only optimiser's 0.710. Greedy's earliness, 0.583, is the highest.
+- *B = 4:* none holds. The one comparison greedy wins there is held-out paths against the coverage-only optimiser (4 against 3.03). Centrality catches all 5 held-out paths and detects 0.779; random catches 4.10 and detects 0.826.
+
+*The answer to the research question* comes from H1–H3 together (D39 item 3), so it is mixed. At equal budget, F's placement caught unseen attacks at least as often and as early as every comparator at a budget of two. It did not at four, and not on held-out paths at one.
+
+**3. What drives the verdicts.** The facts here are verified from the placements in the results file.
+- *B = 4:* greedy's placement is its B = 3 placement, in every weighting and every fold. At the default weights its three decoys already catch all five paths at their first step. A fourth decoy raises no gain term and adds Risk and Cost, so greedy stops. The comparators always place B (D39 item 4), and their fourth decoy catches more: centrality's includes Engineering WS-2, which catches held-out P3.
+- *B = 1:* when P1 or P4 is held out, the single decoy goes on the DMZ Jump Host, the entry of P2 and P5. When P2 or P5 is held out, it goes on the Engineering WS, the entry of P1 and P4. When P3 is held out, it goes on the DMZ Jump Host. No held-out path is caught. That paths share entry assets was named in advance as a limit of the test (`03-evaluation-methodology.md` §2).
+- *Earliness and detection:* greedy's decoys sit on P's entry assets, so routes that start there are caught at their first step. Routes from the HMI, the Historian, Engineering WS-2 or the Backup Control Switch are caught only if they pass one of those assets. F credits only the modelled paths, so once P is covered it sees no value in reaching more routes. *(That this is the main mechanism is Claude's reading, likely.)*
+
+**4. The expectations of D39 item 7, against the outcomes.**
+- *Documented entry points:* confirmed. Greedy detects every route there at its first step at B = 3 and 4 (1.00 detection and earliness).
+- *Primary population:* H2 was at risk, and it is mixed. Centrality detected more routes than greedy only at B = 4. Random detected more at B = 3 and 4, which was not stated in advance.
+- *Leave-one-path-out:* confirmed at B = 2 to 4. P1, P2, P4 and P5 are caught at their first step, and P3 never. At B = 1 the budget cannot hold both entry assets, so none is caught. Item 7's condition, "whenever the budget lets greedy keep those assets", covers this, but the zero itself was not stated in advance.
+- *The route OT Firewall → Engineering WS-2 → PLC-02:* confirmed. Greedy catches it at its foothold from B = 3, and centrality from B = 2.
+
+**5. The post-run checks of F (D39 item 4).** With the frozen `metrics.score`, in all 20 cells and 100 folds:
+- greedy's placement has the best possible F;
+- no other placement of at most B candidates reaches that F, so greedy is the unique optimum everywhere and no exception needs reporting;
+- the MILP placed the same decoys as greedy in all 120 and is never below it, so no run is void (D24).
+
+Distorted greedy differed from greedy in one fold: B = 3 under δ = 3, with P5 held out.
+
+**6. Also reported, as counts** (D39 item 6; in full in `03-phase-d-results.md` §5 and §7).
+- *All 20 cells, greedy's wins / ties / losses* on held-out interceptions, then simulated detection:
+  - against centrality, 7/3/10 and 9/4/7;
+  - against random, 9/0/11 and 10/0/10;
+  - against the coverage-only optimiser, 14/5/1 and 5/5/10.
+
+  On earliness: centrality 7/3/10 and 9/4/7, random 14/0/6 and 14/0/6, and the coverage-only optimiser 15/5/0 and 9/5/6.
+- *Slack 0 and slack 2:* greedy's losses again fall at B = 3 and 4. *Documented population:* greedy never loses.
+- *The coverage-only greedy form:* greedy never loses to it. It places the same decoys as greedy on all five paths, and greedy wins on held-out paths at B = 2 to 4.
+- *Criticality-weighted protection of held-out paths:* greedy loses to centrality at B = 1 and 4, and to random at B = 1. *Detection before the objective:* it loses to centrality and to random at B = 4.
+- *The F-based grid, the weight sweep and the structure check,* re-run on the Phase D database: their output equals D40's byte for byte.
+- *The D20 wording:* clause 1 holds by optimality. Greedy's F is above the random mean in all 20 cells; against centrality it is higher in 16 and equal in 4, where centrality places the same decoys. Clause 2 holds against centrality in 18 of 20.
+
+**7. No defect was found** (D39 item 1). The re-count matches the script's verdicts and tallies exactly, and every post-run check passes.
+
+**8. What the thesis may claim** is set out in `03-phase-d-results.md` §10, for this one modelled network.
+- *It may report:* the pattern by budget above, and that greedy found the unique best F everywhere, confirmed by the MILP.
+- *It may not claim:*
+  - that F's placements catch unseen attacks better than the baselines in general;
+  - anything statistical;
+  - that a larger budget improves F's placements, since greedy places at most three decoys under the default weights.
+
+**9. Made with this entry** (record-keeping; no input, code or rule changes).
+- `data/results/phase-d.json`: the results file (D39 item 5).
+- `03-phase-d-results.md`, new: the results in full, written for a reader new to the project. Category Evaluation, 💾 Offline, registered in `00-project-index.md`.
+- `03-evaluation-methodology.md` §8: steps 4 and 5 are marked done.
+- `00-project-phases.md`: a D41 update, and notes on the overview and Phase D. Phase D's primary question is answered; its secondary question, the explanation layer's four counted explanations, remains.
+- `00-action-items.md`, A28, and `research-synthesis-implementation.md`'s statement of the claim: item 10's change.
+- `README.md`: a Phase D section, and the data row names `data/results/`.
+- `00-repository-structure.md`: `data/results/` in the layout.
+
+**10. The novelty claim's validation clause (A28): the user's choice, 19 November 2026.** The draft claim ended "validated against random and centrality baselines". With the verdicts mixed, "validated" could read as "shown to be better than". The user chose "evaluated against random and centrality baselines". The clause still names the baselines that the prior-art search checked (D35, D36, D38), and the rest of the draft is unchanged.
+- *Disclosure:* the wording was chosen after seeing these results. It weakens the claim, and it changes no input, rule or result.
+- `03-commercial-prior-art-analysis.md` and the archival `03-honest-review.md` quote older wordings of the clause ("validated against baseline placement strategies", "validated against baselines"). Their analysis does not depend on the verb, so they are left as they are.
+
+**11. Next.**
+1. The explanation layer (A6). Its prompt, model tag and checks are committed before the four counted explanations are generated (D39 item 8).
+2. The TA-2 presentation.
+
+*Status: Claude's run of Phase D on the user's instruction of 19 November 2026, after the D40 push. The verdicts are the output of the pre-registered rules; item 3's reading of the mechanism is Claude's; item 10 is the user's choice. Not independently reviewed. Reference: `data/results/phase-d.json`, `03-phase-d-results.md`, `scripts/evaluate.py`, `03-evaluation-methodology.md` §2–§8, D24, D37, D39, D40, `00-action-items.md` A28.*

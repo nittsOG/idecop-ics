@@ -24,7 +24,7 @@ Everything below is real, executed code. The database is initialised and queried
 | `src/plausibility/` | Filter 1's rules (sequence, combination, reason) and the AI first-pass prompt, shared by the API, the scripts and the notebook (D26) |
 | `src/evaluation/` | Phase D's criteria outside F (D37): leave-one-path-out, the attack simulation and the coverage-only comparator; the design is `docs/03-evaluation-methodology.md` |
 | `notebooks/` | `plausibility_scoring.ipynb` — the Colab AI first pass for Filter 1 (A20) |
-| `data/` | Schema and seed data; `legacy/` holds the pre-D26 candidate set as history: the numbers recorded before D26 reproduce with it only at commit `ebcaaa4` (D33); `review/` holds the committed Filter 1 review and the AI first pass's output (D31); `freeze/manifest.json` fingerprints the files that feed Phase D, and `scripts/evaluate.py` refuses to run if any of them has changed (D40) |
+| `data/` | Schema and seed data; `legacy/` holds the pre-D26 candidate set as history: the numbers recorded before D26 reproduce with it only at commit `ebcaaa4` (D33); `review/` holds the committed Filter 1 review and the AI first pass's output (D31); `freeze/manifest.json` fingerprints the files that feed Phase D, and `scripts/evaluate.py` refuses to run if any of them has changed (D40); `results/phase-d.json` holds Phase D's results (D41) |
 | `scripts/` | `setup.py` — the one-time setup of the pinned environment, the database and the frontend's packages, with checks (D29); `run_comparison.py` — runs all five methods at one budget; `sweep.py` — the declared 20-cell grid behind every comparative number (D24); `structure_check.py` — exhaustive monotonicity/submodularity/modularity tests, including whether the gain part is modular (D25's claim rule); `import_plausibility_scores.py` and `review_io.py` — the notebook import and the review's committed record (D26); `evaluate.py` — Phase D's leave-one-path-out and attack simulation for every method, which refuses to run before the freeze (D37); `freeze.py` — writes the freeze manifest; `evaluation_selftest.py` — checks the evaluation code on a toy network |
 
 ---
@@ -47,6 +47,23 @@ Explanation layer (`/runs/{id}/explain` — needs a live Ollama instance), Scree
 **The candidate set is empty until the A32 review (D26).** The seed no longer pre-judges which assets are decoy sites, so every script and `POST /optimize` refuse to run until Screen 3's review confirms at least one asset that passes Filter 1 and has a Filter 2 score. *D31 (26 October 2026): the review is committed in `data/review/`. Restore it on a fresh database (see* Running it*), and L has nine candidates. The first run on them is recorded in D31. It is pre-freeze, because five inputs are still open (A35–A38, A40).* *[D33 settled them, and D40 froze the inputs on 19 November 2026.]*
 
 ---
+
+## Phase D results (D41)
+
+Phase D ran once, on 19 November 2026, with the inputs frozen (D40) and the rules for judging it fixed in advance by the pre-registration (D39). It judges the placements by tests the optimiser never sees: attack paths hidden from it (leave-one-path-out), and simulated attackers starting from any of seven machines. The full results, written for a reader new to the project, are in `docs/03-phase-d-results.md`, and the raw output is `data/results/phase-d.json`.
+
+| Hypothesis | Holds at budget | Verdict |
+|---|---|---|
+| H1: hidden attack paths caught, against centrality and random | 2, 3 | mixed |
+| H2: simulated attackers detected, and how early, against centrality and random | 1, 2 | mixed |
+| H3: both, against an optimiser that only counts the paths it covers | 1, 2 | mixed |
+
+- **At a budget of two decoys** the composite objective's placement holds every comparison.
+- **At four** greedy places three decoys, because a fourth adds risk and cost and catches no further modelled path. The comparators place four and catch more.
+- **At one** its single decoy catches none of the hidden paths.
+- Greedy found the unique best F in every cell and fold, and the exact MILP agreed.
+
+The section below records earlier comparisons on F, which greedy cannot lose here because it is optimal.
 
 ## Current comparison — read the caveats, not just the numbers
 
