@@ -289,7 +289,7 @@ INSERT INTO edges (source_asset_id, target_asset_id, protocol, weight) VALUES
 | `/optimize` | POST | Body: `{method, alpha..epsilon, budget}`. Runs the optimizer, writes a `placement_runs` row + `placements` rows, and returns the `run_id`; the result is read with `GET /runs/{id}` (`02-prototype-architecture.md` §2) |
 | `/runs` | GET | List all runs — this is the query Phase D's baseline comparison reads from directly |
 | `/runs/{id}` | GET | Full detail: metrics + which assets got decoys |
-| `/runs/{id}/explain` | POST | Triggers the Ollama call per `formal-problem-definition.md` §8, writes an `explanations` row. *Not built (A6)* |
+| `/runs/{id}/explain` | POST | Triggers the Ollama call per `formal-problem-definition.md` §8, writes an `explanations` row. *Not built (A6)* *D42: built.* |
 
 `/optimize` is the only endpoint that writes to `placement_runs`/`placements` — every other endpoint is read-only, except the confirm route, which writes the review's fields in `candidate_locations`, and damage-score, a narrow single-field write. *(D28: this said "everything else is read-only", which the confirm route contradicts.)* Keeping writes concentrated in one place matches the "optimizer decides deterministically" principle from the AI philosophy (original brief §9, `00-decisions-log.md` D6): the API surface itself enforces that placement decisions only ever come from one code path, not from several places that could disagree.
 

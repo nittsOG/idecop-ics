@@ -19,13 +19,14 @@ Everything below is real, executed code. The database is initialised and queried
 | `docs/` | Specification, research, decisions log, project tracking. Naming convention in `docs/00-workflow-and-rules.md` |
 | `src/graph_model/` | Builds `G = (V,E)` from SQLite; unweighted betweenness centrality (D33); `Crit(v)` |
 | `src/optimizer/` | `metrics.py` (F(x) and its five components), `baselines.py` (greedy, distorted greedy, random, centrality), `milp.py` (exact validator) |
-| `src/api/` | FastAPI backend — ten endpoints |
+| `src/api/` | FastAPI backend — eleven endpoints (D42 added the explanation route) |
 | `src/frontend/` | React + Vite interface |
 | `src/plausibility/` | Filter 1's rules (sequence, combination, reason) and the AI first-pass prompt, shared by the API, the scripts and the notebook (D26) |
 | `src/evaluation/` | Phase D's criteria outside F (D37): leave-one-path-out, the attack simulation and the coverage-only comparator; the design is `docs/03-evaluation-methodology.md` |
+| `src/explain/` | The explanation layer (A6, D42): the facts, the prompt, the two checks and the template, and a small Ollama client. Outside the frozen packages, which it only reads |
 | `notebooks/` | `plausibility_scoring.ipynb` — the Colab AI first pass for Filter 1 (A20) |
 | `data/` | Schema and seed data; `legacy/` holds the pre-D26 candidate set as history: the numbers recorded before D26 reproduce with it only at commit `ebcaaa4` (D33); `review/` holds the committed Filter 1 review and the AI first pass's output (D31); `freeze/manifest.json` fingerprints the files that feed Phase D, and `scripts/evaluate.py` refuses to run if any of them has changed (D40); `results/phase-d.json` holds Phase D's results (D41) |
-| `scripts/` | `setup.py` — the one-time setup of the pinned environment, the database and the frontend's packages, with checks (D29); `run_comparison.py` — runs all five methods at one budget; `sweep.py` — the declared 20-cell grid behind every comparative number (D24); `structure_check.py` — exhaustive monotonicity/submodularity/modularity tests, including whether the gain part is modular (D25's claim rule); `import_plausibility_scores.py` and `review_io.py` — the notebook import and the review's committed record (D26); `evaluate.py` — Phase D's leave-one-path-out and attack simulation for every method, which refuses to run before the freeze (D37); `freeze.py` — writes the freeze manifest; `evaluation_selftest.py` — checks the evaluation code on a toy network |
+| `scripts/` | `setup.py` — the one-time setup of the pinned environment, the database and the frontend's packages, with checks (D29); `run_comparison.py` — runs all five methods at one budget; `sweep.py` — the declared 20-cell grid behind every comparative number (D24); `structure_check.py` — exhaustive monotonicity/submodularity/modularity tests, including whether the gain part is modular (D25's claim rule); `import_plausibility_scores.py` and `review_io.py` — the notebook import and the review's committed record (D26); `evaluate.py` — Phase D's leave-one-path-out and attack simulation for every method, which refuses to run before the freeze (D37); `freeze.py` — writes the freeze manifest; `evaluation_selftest.py` — checks the evaluation code on a toy network; `explain_counted.py` — the four counted explanations (D39 item 8); `explain_selftest.py` — checks the explanation layer against a stand-in model |
 
 ---
 
@@ -163,6 +164,17 @@ python scripts/run_comparison.py                # all five methods at one budget
 python scripts/sweep.py --sens                  # the 20-cell comparison grid, plus grid sensitivity
 python scripts/structure_check.py               # monotonicity, submodularity, modularity — exhaustive
 ```
+
+**The explanation layer (A6, D42)** needs Ollama with `qwen3:4b`, set up as in `docs/04-setup-guide.md` §7, and `IDECOP_OLLAMA_URL` pointing at it. The four counted explanations come first, once:
+
+```bash
+python scripts/explain_counted.py check        # is Ollama ready? generates no explanation
+python scripts/explain_counted.py run          # the counted run (D39 item 8), once
+python scripts/explain_counted.py rate         # your ratings of the four texts
+python scripts/explain_selftest.py             # the layer's own tests, against a stand-in model
+```
+
+Until `run` has made its record, the Dashboard's *Explain this placement* button shows the template and does not call the model.
 
 **To reproduce a number recorded before D26,** check out commit `ebcaaa4`, load the legacy set into a database freshly built there, then pass the flag. D33 retired the route from the current tree, because its changes to the objective would no longer reproduce those numbers.
 

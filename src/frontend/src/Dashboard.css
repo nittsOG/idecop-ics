@@ -14,9 +14,12 @@
 .metric-label { font-size: 11px; color: #666; margin: 0 0 4px; }
 .metric-value { font-size: 20px; font-weight: 600; margin: 0; }
 
-.explain-panel { background: #faf9fc; }
+.explain-panel { background: #faf9fc; text-align: left; }
 .explain-label { font-size: 11px; color: #666; margin: 0 0 6px; }
-.explain-placeholder { font-size: 12px; color: #999; font-style: italic; margin: 0; }
+.explain-placeholder { font-size: 12px; color: #777; font-style: italic; margin: 0 0 10px; }
+.explain-text { font-size: 13px; line-height: 1.55; color: #1a1a1a; margin: 0 0 8px; white-space: pre-wrap; }
+.explain-meta { font-size: 11px; line-height: 1.4; color: #666; margin: 0; }
+.explain-error { font-size: 12px; margin: 8px 0 0; }
 
 .hint, .error { color: #666; font-size: 14px; }
 .error { color: #b3261e; }

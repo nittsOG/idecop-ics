@@ -5,7 +5,7 @@ Master reference for every document produced in this thread. Updated each time a
 ## How to use this
 
 - New to the project? Read in this order: `research-synthesis-implementation.md` → `formal-problem-definition.md` → `threat-attack-model.md` → `testbed-architecture.md`. That's the whole current specification in ~30 minutes, without the research trail behind it.
-- Need a specific citation or fact? `sources.md` is the single running bibliography (1,049 entries as of 16 November 2026) — search it before searching the web again.
+- Need a specific citation or fact? `sources.md` is the single running bibliography (1,053 entries as of 21 November 2026) — search it before searching the web again.
 - Need to see *how* a conclusion was reached, not just the conclusion? The `iteration-N-findings.md` files are the reasoning trail.
 - Need to know *why* a specific choice was made (for the methodology chapter, or a guide question)? `00-decisions-log.md`.
 - Not sure what to do next, or what's still waiting on you specifically? `00-action-items.md` for manual tasks, `00-project-phases.md` for where the project stands overall.

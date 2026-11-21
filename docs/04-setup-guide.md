@@ -45,7 +45,7 @@ The backend and the frontend are two separate programs that keep running, so the
 
 **Not part of this setup:**
 - The scoring notebook runs in Google Colab, on Google's GPU, in your browser. It uses Colab's own environment, with the pins D26 gave it, and you install nothing for it. Its steps are in A20 (`00-action-items.md`) and come at A32 step 3.
-- Ollama is needed only by the explanation layer, which is not built yet (A6).
+- Ollama is needed only by the explanation layer, which is not built yet (A6). *(D42: built; §7 sets Ollama up.)*
 - The VM testbed (A21) is a separate build.
 
 ---
@@ -162,6 +162,60 @@ You are ready to score the three blind cards. That is A32 step 2, and step 1 of 
 
 ---
 
+## 7. The explanation layer: Ollama on Windows, used from the Kali VM (A6, D42)
+
+The Dashboard's *Explain this placement* button asks a small language model, `qwen3:4b`, to explain the proposed placement in plain words. The model runs in Ollama. On your laptop it runs best on Windows, where it can use the RTX 2050; the backend in the Kali VM reaches it over VMware's virtual network.
+
+**Not tested by Claude.** Claude's environment has no Windows, VMware or GPU. Step 7.5's `check` tells you whether the route works before anything counts.
+
+**The order matters (D39 item 8).** The four counted explanations come first, made once with `scripts/explain_counted.py run`. Until they exist, the button shows the template and does not call the model.
+
+**7.1 Install Ollama on Windows.** Download the Windows installer from ollama.com and run it. Then, in PowerShell:
+```
+ollama --version
+ollama pull qwen3:4b
+```
+The pull is about 2.5 GB (`sources.md` #989).
+
+**7.2 Find the address the VM can reach.** In PowerShell, run `ipconfig`. Under *Ethernet adapter VMware Network Adapter VMnet8*, note the IPv4 address, for example `192.168.80.1`. VMnet8 is VMware's NAT network, which a VM uses by default. If your Kali VM is set to bridged networking instead, use the laptop's own Wi-Fi or Ethernet address.
+
+**7.3 Let Ollama listen on that address.** Ollama listens only on `127.0.0.1` unless told otherwise.
+1. Open *Settings → System → About → Advanced system settings → Environment Variables*.
+2. Under *User variables*, choose *New*. Name: `OLLAMA_HOST`. Value: your address from 7.2 with the port, for example `192.168.80.1:11434`.
+3. Quit Ollama from the system tray, and start it again.
+
+Binding to the VMnet8 address keeps Ollama off your Wi-Fi. The value `0.0.0.0` would also work, but it opens Ollama to every network the laptop joins, and Ollama has no password.
+
+**7.4 Allow it through Windows Firewall.** In PowerShell opened as Administrator:
+```
+New-NetFirewallRule -DisplayName "Ollama for the Kali VM" -Direction Inbound -Protocol TCP -LocalPort 11434 -Action Allow -InterfaceAlias "VMware Network Adapter VMnet8"
+```
+
+**7.5 Point the backend at it, from Kali.** In each Kali terminal that runs the backend or the scripts:
+```bash
+export IDECOP_OLLAMA_URL=http://192.168.80.1:11434     # your address from 7.2
+curl $IDECOP_OLLAMA_URL/api/version                    # prints {"version":"..."}
+uv run python scripts/explain_counted.py check
+```
+`check` prints Ollama's version, the model's quantization (it must be Q4_K_M), whether thinking can be switched off, and a one-word warm-up reply, then READY. It generates no explanation. To keep the address in every new terminal, add the `export` line to `~/.zshrc`, the start-up file of Kali's default shell.
+
+**7.6 The counted run, once.** Push the batch that contains `src/explain/` first, so the prompt and the checks are committed. Then:
+```bash
+uv run python scripts/explain_counted.py run     # prints how long each explanation took
+uv run python scripts/explain_counted.py rate    # clear, partly clear or unclear, for each text
+```
+Then commit `data/results/explanations.json`, push, and tell Claude; D43 records the counts. `run` refuses a second run, and refuses while the explanation code has uncommitted changes. Rate the model's own text, as a reader new to the project would read it, whether or not it passed the checks.
+
+**7.7 After the counted run.** Start the backend with `IDECOP_OLLAMA_URL` set (terminal 1), run the proposed method on the Dashboard, and click *Explain this placement*. A text the model wrote is marked as checked. Otherwise the panel says why it shows the template.
+
+**Settings.** `IDECOP_EXPLAIN_TIMEOUT` sets the seconds allowed per request (default 300). `IDECOP_EXPLAIN_MODEL` changes the model the backend asks (default `qwen3:4b`); the counted run always uses `qwen3:4b`.
+
+**Without the Windows route.** Ollama can also be installed inside the Kali VM (`curl -fsSL https://ollama.com/install.sh | sh`), with no `IDECOP_OLLAMA_URL` needed. The VM has no access to the graphics card, so it runs on the processor and is slower. The counted run records whatever time it takes.
+
+**Checked.** `uv run python scripts/explain_selftest.py` runs the layer's own tests against a stand-in model. It needs no Ollama, and it does not use up the counted run.
+
+---
+
 ## Every session after this
 
 The commands are the same on every operating system.
@@ -263,6 +317,10 @@ source .venv/bin/activate
 | `npm ci`: `1 high severity vulnerability` | On 13 October 2026, npm's audit flagged `source-map-js`, which the build tools use (vite → postcss). A crafted source map can stall the dev build. It does not touch the API or your data | Ignore it for local use. `npm audit fix` rewrites `package-lock.json`, a tracked file, so make that change only as its own deliberate commit |
 | Without uv: `No matching distribution found` | The virtual environment was made with a Python the lock does not cover, such as 3.11 or 3.15 | Delete `.venv` and make it again with `py -3.13` or `python3.13` |
 | Odd `database is locked` or file errors | *A precaution, not reproduced here:* sync tools such as OneDrive can lock files inside a synced folder | Keep the clone outside OneDrive, Dropbox or similar folders |
+| `explain_counted.py check`: `Cannot reach Ollama at …` | Ollama is not running, was not restarted after `OLLAMA_HOST` was set, is blocked by the firewall, or the address is wrong | Restart Ollama from the tray. Check the address with `ipconfig` and the rule of §7.4, then `curl $IDECOP_OLLAMA_URL/api/version` from Kali |
+| `PROBLEM: qwen3:4b is …, not the declared Q4_K_M` | A different build of the model was pulled | `ollama pull qwen3:4b` again, then run `check` |
+| `PROBLEM: Thinking output appeared …` | The Ollama version does not switch thinking off | Update Ollama, then run `check` |
+| Each explanation takes minutes | The model runs on the processor: the graphics card is busy or too small | Close other programs that use the graphics card. The counted run records the time as it is |
 
 ---
 

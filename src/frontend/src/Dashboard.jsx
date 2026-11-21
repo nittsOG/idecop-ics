@@ -3,8 +3,9 @@ import "./Dashboard.css";
 
 // Screen 1 — the single-run dashboard, per 02-prototype-architecture.md §3.
 // Real graph + real optimizer results, via the tested /graph, /optimize,
-// /runs/{id} endpoints. The AI-explanation section is a placeholder — the
-// Ollama integration from 02-ai-role.md is deferred, not built yet.
+// /runs/{id} endpoints. The AI explanation comes from POST /runs/{id}/explain
+// (D42): a local model's text, shown only if every number and asset in it
+// checks out against the run, otherwise a template built from the same facts.
 const API = "http://127.0.0.1:8000";
 const METHODS = [
   { key: "random", label: "Random" },
@@ -37,6 +38,9 @@ export default function Dashboard() {
   const [run, setRun] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [explanation, setExplanation] = useState(null);
+  const [explaining, setExplaining] = useState(false);
+  const [explainError, setExplainError] = useState(null);
 
   useEffect(() => {
     // D30: an error reply carries the backend's own message (for example, a database
@@ -58,6 +62,8 @@ export default function Dashboard() {
   async function runOptimize() {
     setLoading(true);
     setError(null);
+    setExplanation(null);
+    setExplainError(null);
     try {
       const optRes = await fetch(`${API}/optimize`, {
         method: "POST",
@@ -77,6 +83,21 @@ export default function Dashboard() {
       setError(e.message);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function explain() {
+    setExplaining(true);
+    setExplainError(null);
+    try {
+      const res = await fetch(`${API}/runs/${run.run_id}/explain`, { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail ?? `explain returned ${res.status}`);
+      setExplanation(data);
+    } catch (e) {
+      setExplainError(e.message);
+    } finally {
+      setExplaining(false);
     }
   }
 
@@ -139,9 +160,28 @@ export default function Dashboard() {
               </div>
               <div className="panel explain-panel">
                 <p className="explain-label">AI explanation</p>
-                <p className="explain-placeholder">
-                  Not wired yet — needs the Ollama integration from 02-ai-role.md.
-                </p>
+                {!run.method.startsWith("proposed") ? (
+                  <p className="explain-placeholder">Explanations are given for the proposed method's placement.</p>
+                ) : explanation ? (
+                  <>
+                    <p className="explain-text">{explanation.text}</p>
+                    <p className="explain-meta">
+                      {explanation.source === "model"
+                        ? `Written by ${explanation.model}. Every number and asset in it was checked against this run.`
+                        : explanation.reason}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="explain-placeholder">
+                      A local model explains why this placement was chosen. It cannot change the placement.
+                    </p>
+                    <button className="btn btn-explain" onClick={explain} disabled={explaining}>
+                      {explaining ? "Explaining…" : "Explain this placement"}
+                    </button>
+                  </>
+                )}
+                {explainError && <p className="error explain-error">{explainError}</p>}
               </div>
             </>
           ) : (

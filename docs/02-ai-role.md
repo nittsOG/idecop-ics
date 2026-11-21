@@ -20,6 +20,8 @@ Turns the architecture principle from `01-original-brief.md` §9 and D6 into act
 
 **Phi-4-mini (3.8B-Instruct), served locally via Ollama** — revised from an earlier 8B recommendation once actual hardware (16GB RAM, RTX 2050 laptop, 4GB VRAM) was known. Reasoning: this is a templated explanation task, not open-ended reasoning — the model isn't deciding anything, only converting already-computed numbers into readable sentences, which a smaller instruction-tuned model handles well. The concrete reason to prefer the smaller model specifically on this hardware: Phi-4-mini fits entirely within 4GB VRAM for full-speed GPU inference, where an 8B-class model would need partial CPU offload and noticeably slower generation for what's meant to be a responsive, live demo interaction. If output quality turns out too shallow in practice, Llama 3.3 8B or Qwen3 8B are the fallback — still viable on this hardware via CPU offload, just slower to generate.
 
+*(D37: superseded. The model is `qwen3:4b` (Q4_K_M), at temperature 0 with thinking off (D37 item 6, D39 item 8). The reasoning above about fitting 4 GB applies to it as well: it is a 2.5 GB download (`sources.md` #989).)*
+
 **Different model and environment for plausibility-scoring assist (§7–10)** — that task needs more reasoning depth, runs once as a batch rather than live, and uses Google Colab rather than local Ollama. Deliberately not the same setup; see §7 for why.
 
 ## 3. Input — assembled entirely from existing tables
@@ -38,6 +40,8 @@ From attack_paths:                                  path names, for referring to
 ```
 
 *Corrected by D28:* this listing read from a `run_metrics` table, which does not exist; a run's metrics are columns of `placement_runs` (`data/schema.sql`). It also named only P1–P3.
+
+*D42: the facts are built live from the run's placement, budget and weights (`src/explain/`): the six scores, each caught path with its step and target, centrality's placement and scores, and the mean of the 30 random placements. A stored random run holds one trial (D17), so it is not used.*
 
 ## 4. The prompt
 
@@ -83,6 +87,8 @@ intercepts and how early, (3) how it compares to the two baselines. Under
 150 words. Do not suggest changes to the placement.
 ```
 
+*D42: the committed prompt is in `src/explain/__init__.py`. It keeps the guardrail above, covers P1–P5, and adds rules on numbers and asset names that the checks enforce (D42 item 3).*
+
 ## 5. Worked example
 
 Using representative numbers consistent with the testbed and threat model — Engineering WS-2 and PLC-02 as the proposed placement, per `testbed-architecture.md`'s worked candidate-location example:
@@ -108,6 +114,8 @@ This is deliberately not a case where the proposed method wins on every single n
 Output is stored as free text in `explanations.explanation_text`, not parsed into structured fields. Deliberate: small local models are unreliable at strict JSON formatting, and enforcing it would add a failure mode (malformed output, retries, parsing errors) for a component that doesn't need machine-readable output anywhere downstream — nothing reads `explanations` except the UI, which just displays the text.
 
 This is also the component's real safety property, worth stating explicitly rather than leaving implicit: if the model hallucinates, rambles, or ignores an instruction, the *placement itself* — the thing that actually matters for security — is completely unaffected. It was already written to `placements` before the AI layer ever runs. Worst case here is a bad explanation, not a bad decision.
+
+*D42: before it is shown, every explanation now passes the number and asset checks of `03-evaluation-methodology.md` §6, or the template built from the same facts replaces it.*
 
 ## Part B — Plausibility-scoring assist
 
@@ -259,6 +267,8 @@ It wrote down expected outputs before any scoring: "no" on criterion 1 for the O
 1. **Factual accuracy** — do the numbers it states match the run's metric columns in `placement_runs` exactly, or does it round oddly, invent a figure, or misattribute a metric to the wrong method?
 2. **Guardrail adherence** — does it ever suggest a change, recommend an additional decoy, or hedge on the algorithm's choice, despite being told not to?
 3. **Readability** — would this actually help an analyst who hadn't seen the raw numbers?
+
+*(D37: superseded for the explanation layer by `03-evaluation-methodology.md` §6: the two automatic checks, the four counted explanations and the user's ratings. D42 built it.)*
 
 **Plausibility-scoring assist** gets a different check, because its failure mode is different. The question is not "does the text read well" but "does the AI's answer match independent human judgement". Under route A (D26) there are three measures, all reported as counts in a table:
 1. **Blind-card agreement.** On the three blind cards, the AI's answers against the reviewer's first answers (the write-once `blind_*` columns), which were given before the AI's were shown. Report exact agreement and agreement within one level, per criterion, as #40 does for its expert study. This is the only measure not affected by anchoring on the scoring model's answers. *(D30: before the review restarted, the reviewer had chosen levels for these three cards once and read AI-drafted reasons for them. D30 states this as a limitation.)*

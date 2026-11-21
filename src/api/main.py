@@ -4,8 +4,9 @@ FastAPI backend. Screen 3 slice (plausibility review) plus /optimize,
 modules to something callable over HTTP, per the build order in
 02-prototype-architecture.md §3.
 
-/runs/{id}/explain (the AI explanation layer) is still not built — that
-needs the Ollama integration from 02-ai-role.md, a separate slice.
+/runs/{id}/explain is the AI explanation layer (A6; D42), served by
+src/explain/ through a local Ollama server. It is not an evaluation input,
+and it changes no placement.
 """
 import time
 from datetime import datetime, timezone
@@ -23,6 +24,8 @@ from src.plausibility import KEYS, check_answers, passes, reason_required, Rubri
 from src.plausibility.prompt import asset_context, plant_facts
 from src.optimizer.baselines import greedy, random_baseline, centrality_baseline, distorted_greedy
 from src.optimizer.milp import solve_milp
+from src.explain import PROPOSED_METHODS, counted_run_done, explain_placement, load_context as explain_context
+from src.explain import ollama as explain_ollama
 
 DB_PATH = Path(__file__).resolve().parents[2] / "data" / "deception_placement.db"
 
@@ -334,6 +337,63 @@ def get_run(run_id: int):
     """, (run_id,)).fetchall()
     conn.close()
     return {**dict(run), "placements": [dict(p) for p in placed]}
+
+
+@app.post("/runs/{run_id}/explain")
+def explain_run(run_id: int):
+    """A plain-language explanation of a stored run of the proposed method
+    (02-ai-role.md §1), written by the local model and checked before it is shown:
+    every number must be one of the facts the model was given, and every asset it
+    names must belong to the run (03-evaluation-methodology.md §6). A text that
+    fails either check, or no reply at all, is replaced by a template built from
+    the same facts, and the reply says why.
+
+    Until the four counted explanations exist (scripts/explain_counted.py run),
+    the model is not called and the template is served, so the counted run is the
+    first generation after the commit that fixes the prompt and checks (D39 item 8)."""
+    conn = get_db()
+    run = conn.execute("SELECT * FROM placement_runs WHERE run_id=?", (run_id,)).fetchone()
+    if run is None:
+        conn.close()
+        raise HTTPException(404, f"No run with id {run_id}")
+    if run["method"] not in PROPOSED_METHODS:
+        conn.close()
+        raise HTTPException(422, "Explanations are given for the proposed method's runs only (02-ai-role.md §1).")
+    placed = [r[0] for r in conn.execute("SELECT asset_id FROM placements WHERE run_id=?", (run_id,))]
+    weights = (run["alpha"], run["beta"], run["gamma"], run["delta"], run["epsilon"])
+    try:
+        ctx = explain_context(DB_PATH)
+    except CandidateSetError as e:
+        conn.close()
+        raise HTTPException(409, str(e))
+    s = explain_ollama.settings()
+    call = counted_run_done()
+    result = explain_placement(ctx, placed, run["budget"], weights, run["method"], call_model=call,
+                               url=s["url"], model=s["model"], timeout=s["timeout"])
+    if not call:
+        reason = ("The model is not called until the four counted explanations exist "
+                  "(scripts/explain_counted.py run; D39 item 8). This is the template.")
+    elif result["error"]:
+        reason = f"No reply from the model ({result['error']}). This is the template."
+    elif result["source"] == "template":
+        if "empty" in result["failures"]:
+            reason = "The model returned an empty text. This is the template."
+        else:
+            failed = [n for k, n in (("numbers", "number"), ("assets", "asset")) if k in result["failures"]]
+            reason = (f"The model's text failed the {' and '.join(failed)} check{'s' if len(failed) > 1 else ''}. "
+                      "This is the template.")
+    else:
+        reason = None
+    cur = conn.execute("INSERT INTO explanations (run_id, explanation_text, model_used) VALUES (?,?,?)",
+                       (run_id, result["text"], result["model_used"]))
+    conn.commit()
+    explanation_id = cur.lastrowid
+    conn.close()
+    return {"run_id": run_id, "explanation_id": explanation_id, "text": result["text"],
+            "source": result["source"], "model": s["model"] if call else None, "reason": reason,
+            "checks": result["checks"], "failures": result["failures"], "deviations": result["deviations"],
+            "model_text": result["model_text"] if result["source"] == "template" else None,
+            "seconds": (result["model_meta"] or {}).get("elapsed_seconds")}
 
 
 @app.get("/health")

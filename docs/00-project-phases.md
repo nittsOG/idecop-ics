@@ -10,7 +10,7 @@ A: Foundation ──▶ B: Detailed Design ──▶ C: Build ──▶ D: Evalu
                                                           can start early ─┘
 ```
 
-Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs were frozen and are being corrected before any campaign: the objective's normalisation by D25, and the candidate set under A32. D is gated on A32 and then A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list. *[16 November 2026: A32's review and Filter 2 scores are done (D31), and the inputs left open then were settled in D33. D is now gated on the freeze; see "Where we are right now".]* *[D40, 19 November 2026: the inputs are frozen; Phase D is next.]* *[D41, 19 November 2026: Phase D has run. H1–H3 are all mixed (`03-phase-d-results.md`); the explanation layer's evaluation remains.]*
+Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs were frozen and are being corrected before any campaign: the objective's normalisation by D25, and the candidate set under A32. D is gated on A32 and then A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list. *[16 November 2026: A32's review and Filter 2 scores are done (D31), and the inputs left open then were settled in D33. D is now gated on the freeze; see "Where we are right now".]* *[D40, 19 November 2026: the inputs are frozen; Phase D is next.]* *[D41, 19 November 2026: Phase D has run. H1–H3 are all mixed (`03-phase-d-results.md`); the explanation layer's evaluation remains.]* *[D42, 21 November 2026: the explanation layer is built; its four counted explanations are next.]*
 
 ## Phase A — Foundation ✅ Complete (its one open item was closed on 6 October 2026)
 
@@ -46,7 +46,7 @@ The actual construction: standing up the 7 physical VMs, implementing the graph 
 
 **Status as of D24 (28 September 2026).** *Built and verified:* the SQLite database; `graph_model` (betweenness centrality; `Crit(v)` including `ConduitSL`, D20); the optimizer — five implementations sharing one `score()`: greedy, distorted greedy (D23), random, centrality and the exact MILP (corrected in D24); the FastAPI backend with nine endpoints; the React frontend's Screen 3 (plausibility review) and Screen 1 (single-run dashboard); and three scripts — `run_comparison.py`, `sweep.py` and `structure_check.py`. *Not yet built:* the explanation layer `/runs/{id}/explain` (A6, needs Ollama); Screen 2, the sensitivity-sweep comparison view; the Colab plausibility-scoring notebook (A20); and the physical VM testbed (A21, scope under A16).
 
-*Since D24 (added 16 November 2026):* the scoring notebook was written (D26) and run once (A20, 24 October 2026; D31). Screen 3 was rebuilt for the review (D26) and now shows the operating profile (D30). The backend has ten endpoints. Still not built: the explanation layer (A6), Screen 2 and the physical testbed (A21, scope under A16).
+*Since D24 (added 16 November 2026):* the scoring notebook was written (D26) and run once (A20, 24 October 2026; D31). Screen 3 was rebuilt for the review (D26) and now shows the operating profile (D30). The backend has ten endpoints. Still not built: the explanation layer (A6), Screen 2 and the physical testbed (A21, scope under A16). *[D42, 21 November 2026: the explanation layer is built, and the backend has eleven endpoints. Screen 2 and the physical testbed remain.]*
 
 **Exit criteria:** every method (random, centrality, and the proposed method with its MILP validation — five implementations since D23) runs end-to-end against the testbed and produces comparable output. *Met against the modelled graph, not yet against a physical testbed* — whether that matters depends on A16 and on the evaluation design chosen under A12.
 
@@ -60,7 +60,7 @@ Run every method against P1–P5 (P5 added by D27) on the comparison grid held i
 
 *[16 November 2026: A32 is done (D31). Nine assets pass Filter 1, and on that set the gain part of F is not modular, so greedy's optimality is no longer by construction (D31, D33); the paragraph above describes the seeded set. A35–A38, A40 and A43 were settled in D33, and the inputs are not frozen yet. The freeze follows the A12, A15 and A16 entries (A32's row), and A12 still has to choose the criterion outside F.]*
 
-*[D37, 16 November 2026: A12 is settled. Leave-one-path-out and an attack simulation are the criteria outside F, with a coverage-only comparator (`03-evaluation-methodology.md`). The freeze follows the re-run's screening and A15.]* *[D38 and D39: both done; the freeze is next.]* *[D40, 19 November 2026: frozen, and every check re-run reproduces D33; Phase D is next.]* *[D41, 19 November 2026: run once, as pre-registered. H1, H2 and H3 are all mixed. Every comparison holds at B = 2. None holds at B = 4, where greedy places three decoys against the comparators' four, and greedy catches no held-out path at B = 1 (`03-phase-d-results.md`). The secondary question, the explanation layer's four counted explanations, remains.]*
+*[D37, 16 November 2026: A12 is settled. Leave-one-path-out and an attack simulation are the criteria outside F, with a coverage-only comparator (`03-evaluation-methodology.md`). The freeze follows the re-run's screening and A15.]* *[D38 and D39: both done; the freeze is next.]* *[D40, 19 November 2026: frozen, and every check re-run reproduces D33; Phase D is next.]* *[D41, 19 November 2026: run once, as pre-registered. H1, H2 and H3 are all mixed. Every comparison holds at B = 2. None holds at B = 4, where greedy places three decoys against the comparators' four, and greedy catches no held-out path at B = 1 (`03-phase-d-results.md`). The secondary question, the explanation layer's four counted explanations, remains.]* *[D42, 21 November 2026: the layer is built, and its prompt, model and checks are fixed before the four counted explanations, which run on your laptop.]*
 
 **Original roadmap item covered:** 11
 **Exit criteria:** results speak to the primary research question in `formal-problem-definition.md` §8 — including honestly, if they don't support it as strongly as hoped. A negative or mixed result, reported honestly, is a valid thesis outcome; a result quietly reframed to look better than it is isn't.
@@ -80,6 +80,14 @@ Guide review cycles, viva preparation, formatting to NFSU's submission requireme
 **Exit criteria:** submitted and defended.
 
 ## Where we are right now
+
+**Update, D42 (21 November 2026).**
+- *The explanation layer is built (D42).* The Dashboard's new button asks the local model to explain the proposed placement. Every number and machine name in its text is checked against the run, and a template built from the same facts replaces any text that fails. It was tested against a stand-in model; the real model runs on your laptop.
+- *Its rules are fixed before the counted run:* the prompt, the model and the two checks are committed with D42, as your pre-registration requires.
+- *Next:*
+  1. yours: Ollama on Windows, then `scripts/explain_counted.py` check, run once, and rate (`04-setup-guide.md` §7). D43 records the counts;
+  2. the TA-2 presentation.
+- The D41 update below is overtaken where it lists the explanation layer as next.
 
 **Update, D41 (19 November 2026).**
 - *Phase D has run, once, as your pre-registration fixed it (D41).* All three hypotheses are **mixed**:

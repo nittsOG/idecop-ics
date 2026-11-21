@@ -13,7 +13,7 @@ The last Phase B document. Pulls `02-data-model.md`, `02-optimization-formulatio
   /plausibility     Filter 1's rules, the AI prompt, its parser and scoring loop (D26)
   /api              FastAPI app — the only thing the running system writes through
   /frontend         React (Vite): Screens 1 and 3. Screen 1 draws the network as plain SVG
-  /ai_explain       not built (A6): Ollama client (Phi-4-mini) for /runs/{id}/explain
+  /ai_explain       not built (A6): Ollama client (Phi-4-mini) for /runs/{id}/explain   [D42: built as src/explain/, qwen3:4b]
 /scripts
   run_comparison.py, sweep.py, structure_check.py    the evaluation scripts
   import_plausibility_scores.py   one-time import of the Colab notebook's CSV output
@@ -46,7 +46,7 @@ Extends the sketch in `02-data-model.md` to the full set actually needed once al
 
 *Corrected by D28.* There is no `run_metrics` table. A run's metrics are columns of `placement_runs`: `coverage_score`, `early_score`, `critprot_score`, `risk_score`, `cost_score`, `objective_value` and `runtime_seconds` (`data/schema.sql`). The damage column is `damage_score`, not `damage_fraction`.
 
-**Built so far:** `GET /graph`, `GET /assets`, `GET /candidates`, `GET /plant-facts` (D30), `POST /candidates/{asset_id}/confirm`, `GET /attack-paths`, `POST /optimize`, `GET /runs`, `GET /runs/{id}` and `GET /health` (`src/api/main.py`). **Not built:** `PUT /assets/{id}/damage-score` (Damage is still a placeholder, A37), `GET /runs/compare` (Screen 2) and `POST /runs/{id}/explain` (A6).
+**Built so far:** `GET /graph`, `GET /assets`, `GET /candidates`, `GET /plant-facts` (D30), `POST /candidates/{asset_id}/confirm`, `GET /attack-paths`, `POST /optimize`, `GET /runs`, `GET /runs/{id}` and `GET /health` (`src/api/main.py`). **Not built:** `PUT /assets/{id}/damage-score` (Damage is still a placeholder, A37), `GET /runs/compare` (Screen 2) and `POST /runs/{id}/explain` (A6). *(D42: `POST /runs/{id}/explain` is built.)*
 
 `POST /optimize` never returns a placement directly in its response body beyond the `run_id` — the frontend always fetches the actual result via `GET /runs/{id}` afterward. Small deliberate choice: it means every placement the UI ever displays came from a row that's already durably stored, not from an in-flight response that could get lost on a page refresh mid-run.
 
@@ -100,6 +100,8 @@ npm run dev  --prefix src/frontend       # the UI, separately; score the three b
 
 python scripts/import_plausibility_scores.py ai_suggestions.csv   # after the Colab notebook runs, once (D26 order)
 ```
+
+*(D42: the model is `qwen3:4b`, and Ollama runs on the Windows host for the Kali VM: `04-setup-guide.md` §7.)*
 
 Four things running, three of them only during active development or a demo (Ollama, the API, the frontend dev server) and one that runs once and is done (the import script). The Colab notebook isn't in this list at all — it runs in a browser tab, independent of everything here.
 

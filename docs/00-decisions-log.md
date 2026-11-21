@@ -1623,3 +1623,89 @@ Distorted greedy differed from greedy in one fold: B = 3 under δ = 3, with P5 h
 2. The TA-2 presentation.
 
 *Status: Claude's run of Phase D on the user's instruction of 19 November 2026, after the D40 push. The verdicts are the output of the pre-registered rules; item 3's reading of the mechanism is Claude's; item 10 is the user's choice. Not independently reviewed. Reference: `data/results/phase-d.json`, `03-phase-d-results.md`, `scripts/evaluate.py`, `03-evaluation-methodology.md` §2–§8, D24, D37, D39, D40, `00-action-items.md` A28.*
+
+**D42 — The explanation layer (A6) is built, and its rules are fixed before the four counted explanations. The prompt, the declared model (`qwen3:4b`, Q4_K_M, temperature 0, thinking off) and the two checks are in `src/explain/`, committed with this entry, as D39 item 8 requires. It was tested against a stand-in model only; the real model runs on the user's laptop. No input, frozen file or result changes. 21 November 2026.**
+
+**1. What is built.**
+- `src/explain/` (new) builds the facts and the prompt, asks the model once, checks the text, and falls back to a template. It sits outside the four frozen packages and only reads them.
+- `POST /runs/{id}/explain` (the API's eleventh endpoint) explains a stored run of the proposed method. Each explanation served goes into the `explanations` table, which the schema has had since Phase B, so the frozen schema does not change.
+- Screen 1 gains an *Explain this placement* button. The panel shows the model's text with a line saying it was checked, or the template with the reason.
+- `scripts/explain_counted.py` has three commands: `check`, `run` (the counted run, once) and `rate`.
+- `scripts/explain_selftest.py` runs 37 checks against a stand-in Ollama server.
+
+**2. The facts the model is given,** for a placement at budget B:
+- the network's counts (9 candidate positions, 5 attack paths) and the weights;
+- what F rewards and penalises, in words;
+- the budget, the placement and its six scores;
+- each path it catches, with the step, the path's length, the catching asset and the path's target;
+- the paths it misses, by label only;
+- the number of baselines (2), centrality's placement, scores and caught paths, and the mean scores of the 30 random placements (seed 42).
+
+The comparators are computed with the frozen baselines, and every score is given to two decimals. When greedy or the MILP places fewer than B decoys, one sentence says that no further decoy raises F.
+
+**3. The prompt.** The system prompt keeps `02-ai-role.md` §4's guardrail: explain the placement, never suggest another. It adds four rules that the checks enforce:
+- use only the facts;
+- write every number as digits, exactly as given;
+- do not calculate, convert to percentages or round differently;
+- name only assets that appear in the facts.
+
+The task asks for under 150 words on three points: the locations and the paths each catches, how early, and the comparison with the two baselines. The exact text is in `src/explain/__init__.py`.
+
+**4. The two checks, made exact.** These implement `03-evaluation-methodology.md` §6.
+- *The number check.*
+  - The numbers in a text are its numerals and the number words zero to twenty and thirty. Ordinals ("first step") are not counted.
+  - Digits inside asset names (PLC-01), path labels (P1–P5), ATT&CK technique IDs and "IEC 62443" are not numbers.
+  - A number passes if, rounded to two decimals (half up), it equals a number of the facts rounded the same way.
+- *The asset check.*
+  - An asset is named when its recorded name appears as a whole word, in any case, matched longest first, so that "Engineering WS-2" is not read as "Engineering WS". For "PLC-03 (RTU)", "PLC-03" and "RTU" count too.
+  - The Attacker node is not an asset.
+  - A named asset passes if it is in the placement or in centrality's placement, or lies on an attack path through either. The facts name no random placement, so random adds no allowed asset.
+- *What replaces a text.* A text that fails either check, is empty, or does not arrive (an error or a timeout) is replaced by the template. The template is built only from the facts' numbers and names, and the self-test confirms that it passes both checks in all 20 cells of the declared grid.
+- *Thinking.* A thinking trace in a reply is recorded as a deviation from the declared settings. The text is still judged by the two checks alone.
+
+**5. The settings.**
+- *Model and decoding:* `qwen3:4b` with `think: false`; temperature 0, seed 0, a 4,096-token context and at most 512 tokens out.
+- *One try:* one request per explanation, never retried.
+- *Sources:* the Ollama API fields come from its documentation (#1050, #1051, #1053). Its `/api/show` page could not be fetched (#1052), so `check` prints what the user's own Ollama reports.
+
+**6. How the counted run is kept a first try (D39 item 8).**
+- *`run` refuses* if `data/results/explanations.json` exists, if `src/explain/` or the script has uncommitted changes, if a frozen file differs from the freeze manifest, or if Ollama is not ready.
+- *`run` records* the commit, the Ollama version and the model's digest and quantization. It writes after each explanation, so no first try can be lost.
+- *`check` generates no explanation.* Its one warm-up request asks for a single word.
+- *The API holds back.* Until the counted record exists, it serves the template without calling the model, so the Explain button cannot use up a first try.
+- *What "first try" means:* the first generation for each of the four placements after the commit of this batch.
+
+**7. What the user does next** (`04-setup-guide.md` §7, new).
+1. Install Ollama on the Windows host and `ollama pull qwen3:4b`. Make it reachable from the Kali VM, and set `IDECOP_OLLAMA_URL` there.
+2. Run `uv run python scripts/explain_counted.py check` until it says READY.
+3. Run `run`, once. Then run `rate`, judging the model's own four texts as clear, partly clear or unclear.
+4. Commit `data/results/explanations.json`. D43 records the counts.
+
+**8. Verified, and not.**
+- *Verified on 21 November 2026, on Linux:*
+  - the 37 self-test checks;
+  - `check`, `run` and `rate` end to end against the stand-in, with every refusal;
+  - Screen 1 in Chromium, in three states (before the counted run, a passing text and a failing text), and for a baseline's run;
+  - the frontend build;
+  - `check_frozen`, which still passes.
+- *Not verified:* a real model's output, Ollama on Windows, and the route through VMware's network. The user's `check` and counted run test them.
+
+**9. Effect.** No input, rule, result or frozen file changes, and the freeze check passes. The explanation layer is not an evaluation input (D37 item 6).
+
+**10. Made with this entry** (record-keeping).
+- `03-evaluation-methodology.md` §6 points here for the exact rules.
+- `02-ai-role.md` Part A gets notes on the model, the input, the prompt, output handling and evaluation.
+- `02-prototype-architecture.md` gets notes on its module list, routes and run commands.
+- `04-setup-guide.md` gains §7 and troubleshooting rows, and its note on Ollama is updated.
+- `02-data-model.md`'s route table and `00-glossary.md`'s Phi-4-mini entry get notes.
+- `README.md`: the layout, the endpoint count and *Running it*.
+- `00-action-items.md` A6 and `00-project-phases.md`.
+- `sources.md` #1050–#1053, and `00-project-index.md`'s source count.
+
+*Now stale, for the next documentation pass:*
+- `02-system-flow.md` says "Not yet built: the explanation layer" and lists `POST /runs/{id}/explain` as not built.
+- `05-thesis-structure.md`'s row 4.7 reads "pending build".
+
+**11. A correction.** On 19 November Claude told the user that "D42 records the counts". The counts go to D43. D42 fixes the prompt, the model and the checks before them, as D39 item 8 requires.
+
+*Status: Claude's build, on the user's instruction of 21 November 2026 to continue after the D41 push. Not independently reviewed. Reference: `src/explain/`, `scripts/explain_counted.py`, `scripts/explain_selftest.py`, `src/api/main.py`, `src/frontend/src/Dashboard.jsx`, `03-evaluation-methodology.md` §6, `02-ai-role.md`, `04-setup-guide.md` §7, D37 item 6, D39 item 8, `00-action-items.md` A6, `sources.md` #1050–#1053.*
