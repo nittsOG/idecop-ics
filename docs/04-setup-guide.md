@@ -162,20 +162,20 @@ You are ready to score the three blind cards. That is A32 step 2, and step 1 of 
 
 ---
 
-## 7. The explanation layer: Ollama on Windows, used from the Kali VM (A6, D42)
+## 7. The explanation layer: Ollama on Windows, used from the Kali VM (A6, D42, D43)
 
-The Dashboard's *Explain this placement* button asks a small language model, `qwen3:4b`, to explain the proposed placement in plain words. The model runs in Ollama. On your laptop it runs best on Windows, where it can use the RTX 2050; the backend in the Kali VM reaches it over VMware's virtual network.
+The Dashboard's *Explain this placement* button asks a small language model, `qwen3:4b-q4_K_M` (the original Qwen3-4B, D43), to explain the proposed placement in plain words. The model runs in Ollama. On your laptop it runs best on Windows, where it can use the RTX 2050; the backend in the Kali VM reaches it over VMware's virtual network.
 
 **Not tested by Claude.** Claude's environment has no Windows, VMware or GPU. Step 7.5's `check` tells you whether the route works before anything counts.
 
 **The order matters (D39 item 8).** The four counted explanations come first, made once with `scripts/explain_counted.py run`. Until they exist, the button shows the template and does not call the model.
 
-**7.1 Install Ollama on Windows.** Download the Windows installer from ollama.com and run it. Then, in PowerShell:
+**7.1 Install Ollama on Windows.** Ollama needs Windows 10 22H2 or newer and, for the RTX 2050, NVIDIA driver 551.61 or newer (`sources.md` #1057); `nvidia-smi` prints your driver's version. Download the Windows installer from ollama.com and run it; it needs no administrator rights. To install on another drive, run it as `OllamaSetup.exe /DIR="D:\Ollama"`. To keep the models on that drive too, set the user variable `OLLAMA_MODELS`, for example to `D:\ollama-models` (a folder outside the install folder), and restart Ollama before the first pull. Then, in PowerShell:
 ```
 ollama --version
-ollama pull qwen3:4b
+ollama pull qwen3:4b-q4_K_M
 ```
-The pull is about 2.5 GB (`sources.md` #989).
+The pull is about 2.6 GB (#1059). If it stops with `unexpected EOF`, run it again. Pull exactly this tag: plain `qwen3:4b` is a thinking-only model, which cannot switch thinking off (D43).
 
 **7.2 Find the address the VM can reach.** In PowerShell, run `ipconfig`. Under *Ethernet adapter VMware Network Adapter VMnet8*, note the IPv4 address, for example `192.168.80.1`. VMnet8 is VMware's NAT network, which a VM uses by default. If your Kali VM is set to bridged networking instead, use the laptop's own Wi-Fi or Ethernet address.
 
@@ -184,12 +184,13 @@ The pull is about 2.5 GB (`sources.md` #989).
 2. Under *User variables*, choose *New*. Name: `OLLAMA_HOST`. Value: your address from 7.2 with the port, for example `192.168.80.1:11434`.
 3. Quit Ollama from the system tray, and start it again.
 
-Binding to the VMnet8 address keeps Ollama off your Wi-Fi. The value `0.0.0.0` would also work, but it opens Ollama to every network the laptop joins, and Ollama has no password.
+Binding to the VMnet8 address keeps Ollama off your Wi-Fi. The value `0.0.0.0` would also work, but it opens Ollama to every network the laptop joins, and Ollama has no password. Ollama's FAQ shows only `0.0.0.0` (#1054); binding to the VMnet8 address worked on the user's laptop (D43 item 6). Once it is set, Ollama no longer answers on `127.0.0.1`. `ollama` commands in a new PowerShell window reach it through the same variable.
 
 **7.4 Allow it through Windows Firewall.** In PowerShell opened as Administrator:
 ```
 New-NetFirewallRule -DisplayName "Ollama for the Kali VM" -Direction Inbound -Protocol TCP -LocalPort 11434 -Action Allow -InterfaceAlias "VMware Network Adapter VMnet8"
 ```
+If Windows asks whether to allow Ollama through the firewall, click **Allow access**. Do not click Cancel: cancelling creates block rules for Ollama, and block rules override the rule above (#1058). To list any rule that names Ollama, with its action: `Get-NetFirewallApplicationFilter | Where-Object Program -like '*ollama*' | Get-NetFirewallRule`.
 
 **7.5 Point the backend at it, from Kali.** In each Kali terminal that runs the backend or the scripts:
 ```bash
@@ -204,11 +205,11 @@ uv run python scripts/explain_counted.py check
 uv run python scripts/explain_counted.py run     # prints how long each explanation took
 uv run python scripts/explain_counted.py rate    # clear, partly clear or unclear, for each text
 ```
-Then commit `data/results/explanations.json`, push, and tell Claude; D43 records the counts. `run` refuses a second run, and refuses while the explanation code has uncommitted changes. Rate the model's own text, as a reader new to the project would read it, whether or not it passed the checks.
+Straight after `run`, run `ollama ps` on Windows: its PROCESSOR column shows how the model was split between the graphics card and the processor. Then commit `data/results/explanations.json`, push, and tell Claude, with the `ollama ps` line; D44 records the counts (D43 changed the model first). `run` refuses a second run, and refuses while the explanation code has uncommitted changes. Rate the model's own text, as a reader new to the project would read it, whether or not it passed the checks.
 
 **7.7 After the counted run.** Start the backend with `IDECOP_OLLAMA_URL` set (terminal 1), run the proposed method on the Dashboard, and click *Explain this placement*. A text the model wrote is marked as checked. Otherwise the panel says why it shows the template.
 
-**Settings.** `IDECOP_EXPLAIN_TIMEOUT` sets the seconds allowed per request (default 300). `IDECOP_EXPLAIN_MODEL` changes the model the backend asks (default `qwen3:4b`); the counted run always uses `qwen3:4b`.
+**Settings.** `IDECOP_EXPLAIN_TIMEOUT` sets the seconds allowed per request (default 300). `IDECOP_EXPLAIN_MODEL` changes the model the backend asks (default `qwen3:4b-q4_K_M`); the counted run always uses `qwen3:4b-q4_K_M`.
 
 **Without the Windows route.** Ollama can also be installed inside the Kali VM (`curl -fsSL https://ollama.com/install.sh | sh`), with no `IDECOP_OLLAMA_URL` needed. The VM has no access to the graphics card, so it runs on the processor and is slower. The counted run records whatever time it takes.
 
@@ -318,9 +319,11 @@ source .venv/bin/activate
 | Without uv: `No matching distribution found` | The virtual environment was made with a Python the lock does not cover, such as 3.11 or 3.15 | Delete `.venv` and make it again with `py -3.13` or `python3.13` |
 | Odd `database is locked` or file errors | *A precaution, not reproduced here:* sync tools such as OneDrive can lock files inside a synced folder | Keep the clone outside OneDrive, Dropbox or similar folders |
 | `explain_counted.py check`: `Cannot reach Ollama at …` | Ollama is not running, was not restarted after `OLLAMA_HOST` was set, is blocked by the firewall, or the address is wrong | Restart Ollama from the tray. Check the address with `ipconfig` and the rule of §7.4, then `curl $IDECOP_OLLAMA_URL/api/version` from Kali |
-| `PROBLEM: qwen3:4b is …, not the declared Q4_K_M` | A different build of the model was pulled | `ollama pull qwen3:4b` again, then run `check` |
-| `PROBLEM: Thinking output appeared …` | The Ollama version does not switch thinking off | Update Ollama, then run `check` |
-| Each explanation takes minutes | The model runs on the processor: the graphics card is busy or too small | Close other programs that use the graphics card. The counted run records the time as it is |
+| `PROBLEM: qwen3:4b-q4_K_M is …, not the declared Q4_K_M` | A different build of the model was pulled | `ollama pull qwen3:4b-q4_K_M` again, then run `check` |
+| `PROBLEM: … cannot switch thinking off (its thinking values are [True])` | The tag points to a thinking-only model, as plain `qwen3:4b` does (D43) | The counted run uses `qwen3:4b-q4_K_M`: `ollama pull qwen3:4b-q4_K_M`, then run `check` |
+| `PROBLEM: Thinking output appeared …` | The model cannot switch thinking off, or the Ollama version is too old | Check that the model is `qwen3:4b-q4_K_M`; otherwise update Ollama. Then run `check` |
+| Kali cannot reach Ollama although `OLLAMA_HOST` and §7.4's rule are set | A block rule for Ollama, created when a firewall prompt was cancelled, overrides the allow rule (#1058) | List the rules as in §7.4, then, in PowerShell opened as Administrator, `Disable-NetFirewallRule -Name <the rule's Name>` |
+| Each explanation takes minutes | The model runs on the processor: the graphics card is busy or too small | Close other programs that use the graphics card. The counted run records the time as it is. On a laptop whose graphics card also draws the screen, part of the model may run on the processor anyway (D43 item 7) |
 
 ---
 

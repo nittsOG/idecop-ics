@@ -5,8 +5,8 @@
     uv run python scripts/explain_counted.py rate    # your ratings of the four texts
 
 `run` explains greedy's placement at B = 1, 2, 3 and 4 under the default
-weights with the declared model (qwen3:4b, Q4_K_M, temperature 0, thinking
-off), asks the model once per budget, applies the two checks and writes
+weights with the declared model (qwen3:4b-q4_K_M, temperature 0, thinking off;
+D43), asks the model once per budget, applies the two checks and writes
 everything to data/results/explanations.json. It refuses:
   - if that file exists: only the first generation after the commit counts;
   - if src/explain/ or this script has uncommitted changes: the prompt, the

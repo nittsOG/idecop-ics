@@ -22,6 +22,8 @@ Turns the architecture principle from `01-original-brief.md` §9 and D6 into act
 
 *(D37: superseded. The model is `qwen3:4b` (Q4_K_M), at temperature 0 with thinking off (D37 item 6, D39 item 8). The reasoning above about fitting 4 GB applies to it as well: it is a 2.5 GB download (`sources.md` #989).)*
 
+*(D43: the tag `qwen3:4b` is a thinking-only model. The declared model is now `qwen3:4b-q4_K_M`, the original Qwen3-4B with both modes, a 2.6 GB download (`sources.md` #1059).)*
+
 **Different model and environment for plausibility-scoring assist (§7–10)** — that task needs more reasoning depth, runs once as a batch rather than live, and uses Google Colab rather than local Ollama. Deliberately not the same setup; see §7 for why.
 
 ## 3. Input — assembled entirely from existing tables

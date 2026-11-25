@@ -81,6 +81,14 @@ Guide review cycles, viva preparation, formatting to NFSU's submission requireme
 
 ## Where we are right now
 
+**Update, D43 (24 November 2026).**
+- *Ollama is set up on your laptop* (on the Windows host, reached from the Kali VM), and the explanation layer's readiness check runs end to end.
+- *That check refused the declared model.* The tag `qwen3:4b` is a thinking-only model, so the declared "thinking off" could not hold. On your choice, the declared model is now `qwen3:4b-q4_K_M`, the original Qwen3-4B with both modes. Nothing had been counted, and the change is committed before the counted run, as your pre-registration requires.
+- *Next:*
+  1. yours: apply D43, then `ollama pull qwen3:4b-q4_K_M`, `check`, `run` once, `ollama ps`, `rate`, and push the results. D44 records the counts;
+  2. the TA-2 presentation's explanation slide, from those counts.
+- The D42 update below is overtaken where it says D43 records the counts.
+
 **Update, D42 (21 November 2026).**
 - *The explanation layer is built (D42).* The Dashboard's new button asks the local model to explain the proposed placement. Every number and machine name in its text is checked against the run, and a template built from the same facts replaces any text that fails. It was tested against a stand-in model; the real model runs on your laptop.
 - *Its rules are fixed before the counted run:* the prompt, the model and the two checks are committed with D42, as your pre-registration requires.

@@ -216,7 +216,7 @@ A decoy that fits neither goes untouched.
 
 **Ollama** — a tool for running language models locally, without a paid API. Used for the explanation layer, consistent with the brief's no-paid-API constraint.
 
-**Phi-4-mini** — the small local model used for explanation. Chosen to fit available VRAM. *(D37: replaced by `qwen3:4b`, which also fits the 4 GB graphics card.)*
+**Phi-4-mini** — the small local model used for explanation. Chosen to fit available VRAM. *(D37: replaced by `qwen3:4b`, which also fits the 4 GB graphics card.)* *(D43: the tag is `qwen3:4b-q4_K_M`; plain `qwen3:4b` cannot switch thinking off.)*
 
 **Qwen3 14B** — the larger model used for the one-time, offline plausibility-scoring assist, run on Google Colab because it does not fit locally. Not part of the live system. At 14.8B parameters it does not fit a 16 GB T4 at 16-bit, so the notebook loads it in 4-bit. Qwen3 8B is the pre-declared fallback (D26).
 

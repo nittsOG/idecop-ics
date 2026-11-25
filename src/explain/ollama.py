@@ -3,7 +3,7 @@
 Settings come from the environment, so that the backend in the Kali VM can use
 an Ollama server running on the Windows host (docs/04-setup-guide.md §7):
   IDECOP_OLLAMA_URL       default http://127.0.0.1:11434
-  IDECOP_EXPLAIN_MODEL    default qwen3:4b (the counted run always uses qwen3:4b)
+  IDECOP_EXPLAIN_MODEL    default qwen3:4b-q4_K_M (the counted run always uses it; D43)
   IDECOP_EXPLAIN_TIMEOUT  seconds per request, default 300
 
 API fields as documented at docs.ollama.com (sources.md #1050, #1051, #1053): POST
@@ -18,7 +18,7 @@ import time
 import urllib.error
 import urllib.request
 
-from src.explain import DECLARED_MODEL, DECLARED_QUANTIZATION, GENERATION_OPTIONS, THINK
+from src.explain import DECLARED_MODEL, DECLARED_QUANTIZATION, GENERATION_OPTIONS, THINK, thinking_trace
 
 DEFAULT_URL = "http://127.0.0.1:11434"
 DEFAULT_TIMEOUT = 300.0
@@ -96,12 +96,13 @@ def preflight(url: str | None = None, model: str = DECLARED_MODEL, timeout: floa
     found["capabilities"] = show.get("capabilities")
     found["thinking"] = show.get("thinking")
     if found["quantization"] is None:
-        found["quantization_note"] = "not reported by this Ollama version; D37 recorded qwen3:4b as Q4_K_M"
+        found["quantization_note"] = f"not reported by this Ollama version; the declared quantization is {DECLARED_QUANTIZATION}"
     elif str(found["quantization"]).upper() != DECLARED_QUANTIZATION:
         problems.append(f"{model} is {found['quantization']}, not the declared {DECLARED_QUANTIZATION}.")
     thinking = found["thinking"]
     if isinstance(thinking, dict) and isinstance(thinking.get("values"), list) and False not in thinking["values"]:
-        problems.append(f"{model} cannot switch thinking off (its thinking values are {thinking['values']}).")
+        problems.append(f"{model} cannot switch thinking off (its thinking values are {thinking['values']}): "
+                        "the tag points to a thinking-only model (D43).")
     tags = _request(url, "/api/tags", None, timeout)
     found["digest"] = next((m.get("digest") for m in tags.get("models", [])
                             if model in (m.get("name"), m.get("model"))), None)
@@ -109,8 +110,10 @@ def preflight(url: str | None = None, model: str = DECLARED_MODEL, timeout: floa
     found["warm_up"] = {k: smoke[k] for k in ("content", "elapsed_seconds", "load_duration_seconds")}
     # An Ollama too old to know `think` ignores it, and qwen3 then thinks by default,
     # so this also catches a server that cannot switch thinking off (#1051, #1053).
-    if smoke["thinking"] or "<think>" in smoke["content"]:
-        problems.append("Thinking output appeared although thinking was switched off. Update Ollama.")
+    # D43: a thinking-only model leaks its reasoning into the text with only </think>.
+    if thinking_trace(smoke["content"], smoke["thinking"]):
+        problems.append("Thinking output appeared although thinking was switched off: the model cannot "
+                        "switch it off, or this Ollama is too old (docs/04-setup-guide.md §7).")
     if not smoke["content"].strip():
         problems.append("The model returned an empty reply to the warm-up request.")
     return {"found": found, "problems": problems}

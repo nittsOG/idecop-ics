@@ -165,7 +165,7 @@ python scripts/sweep.py --sens                  # the 20-cell comparison grid, p
 python scripts/structure_check.py               # monotonicity, submodularity, modularity — exhaustive
 ```
 
-**The explanation layer (A6, D42)** needs Ollama with `qwen3:4b`, set up as in `docs/04-setup-guide.md` §7, and `IDECOP_OLLAMA_URL` pointing at it. The four counted explanations come first, once:
+**The explanation layer (A6, D42, D43)** needs Ollama with `qwen3:4b-q4_K_M`, set up as in `docs/04-setup-guide.md` §7, and `IDECOP_OLLAMA_URL` pointing at it. The four counted explanations come first, once:
 
 ```bash
 python scripts/explain_counted.py check        # is Ollama ready? generates no explanation

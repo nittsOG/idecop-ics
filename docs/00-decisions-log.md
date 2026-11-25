@@ -1323,7 +1323,7 @@ The D20 wording is still reported against, with D24's caveat that its first clau
 *Disclosure:* Claude designed the populations and the comparator knowing D31's and D33's published placements. No leave-one-path-out or simulation output on the testbed existed when they were fixed. `scripts/evaluate.py` cannot produce one before the freeze, because it refuses to run without the freeze manifest.
 
 **6. The explanation layer (A6) is built before TA-2.** The user's choice ("this must be done before ta 2").
-- *Model:* `qwen3:4b`, Q4_K_M, 2.5 GB on the Ollama registry (#989, checked 16 November 2026). It fits the graphics memory of the user's laptop: an NVIDIA GeForce RTX 2050 with 4 GB, 16 GB RAM, from the user's screenshots of 16 November.
+- *Model:* `qwen3:4b`, Q4_K_M, 2.5 GB on the Ollama registry (#989, checked 16 November 2026). It fits the graphics memory of the user's laptop: an NVIDIA GeForce RTX 2050 with 4 GB, 16 GB RAM, from the user's screenshots of 16 November. *[D43: the tag `qwen3:4b` is Qwen3-4B-Thinking-2507, which cannot switch thinking off, and 2.5 GB is its size. The declared model is now `qwen3:4b-q4_K_M`. And the card also draws the laptop's screen, so the model may not fit entirely: D43 item 7.]*
 - *Settings:* temperature 0 and thinking off, as the scoring notebook used greedy, non-thinking decoding (D26).
 - *Checks:* every number and asset in an explanation is checked against the run, with a template fallback (`03-evaluation-methodology.md` §6). That section fixes now how the secondary research question is evaluated.
 - *Timing:* the layer is built in a later batch. It is not an evaluation input, so it is not frozen.
@@ -1439,7 +1439,7 @@ This entry is committed before any leave-one-path-out or attack-simulation resul
 - *Leave-one-path-out:* holding out P1 or P4 leaves the Engineering WS on the other path, and holding out P2 or P5 leaves the DMZ Jump Host on the other, so those four are expected to be caught at the held-out path's first step whenever the budget lets greedy keep those assets. P3 is the only path through the OT Firewall and Engineering WS-2, so with P3 held out greedy cannot catch it at any budget (item 4, the candidate set); the comparators can.
 - *The route OT Firewall → Engineering WS-2 → PLC-02:* caught only by a placement holding the OT Firewall (greedy holds it only from B = 3) or Engineering WS-2.
 
-**8. The explanation layer (secondary question).** Greedy's placement at B = 1–4 under the default weights, explained by `qwen3:4b` (Q4_K_M) at temperature 0 with thinking off. The prompt, the model tag and both checks are committed before the four counted explanations are generated, and "first try" means the first generation after that commit. I report how many passed both automatic checks on the first try, the failures by kind, and how long each took on my laptop. I rate the four as clear, partly clear or unclear for a reader new to the project, reported as counts. This is a small check, not a user study.
+**8. The explanation layer (secondary question).** Greedy's placement at B = 1–4 under the default weights, explained by `qwen3:4b` (Q4_K_M) at temperature 0 with thinking off. The prompt, the model tag and both checks are committed before the four counted explanations are generated, and "first try" means the first generation after that commit. I report how many passed both automatic checks on the first try, the failures by kind, and how long each took on my laptop. I rate the four as clear, partly clear or unclear for a reader new to the project, reported as counts. This is a small check, not a user study. *[D43, 24 November 2026: the model tag is now `qwen3:4b-q4_K_M`, on my choice, before any counted explanation; the tag `qwen3:4b` is a thinking-only model.]*
 
 **9. Next.** The freeze (`scripts/freeze.py`) follows this entry, then Phase D. Its results get their own entry, whichever way they go.
 
@@ -1661,10 +1661,10 @@ The task asks for under 150 words on three points: the locations and the paths e
   - The Attacker node is not an asset.
   - A named asset passes if it is in the placement or in centrality's placement, or lies on an attack path through either. The facts name no random placement, so random adds no allowed asset.
 - *What replaces a text.* A text that fails either check, is empty, or does not arrive (an error or a timeout) is replaced by the template. The template is built only from the facts' numbers and names, and the self-test confirms that it passes both checks in all 20 cells of the declared grid.
-- *Thinking.* A thinking trace in a reply is recorded as a deviation from the declared settings. The text is still judged by the two checks alone.
+- *Thinking.* A thinking trace in a reply is recorded as a deviation from the declared settings. The text is still judged by the two checks alone. *[D43: a trace in the text closed by `</think>` alone now counts too.]*
 
 **5. The settings.**
-- *Model and decoding:* `qwen3:4b` with `think: false`; temperature 0, seed 0, a 4,096-token context and at most 512 tokens out.
+- *Model and decoding:* `qwen3:4b` *[D43: `qwen3:4b-q4_K_M`]* with `think: false`; temperature 0, seed 0, a 4,096-token context and at most 512 tokens out.
 - *One try:* one request per explanation, never retried.
 - *Sources:* the Ollama API fields come from its documentation (#1050, #1051, #1053). Its `/api/show` page could not be fetched (#1052), so `check` prints what the user's own Ollama reports.
 
@@ -1676,10 +1676,10 @@ The task asks for under 150 words on three points: the locations and the paths e
 - *What "first try" means:* the first generation for each of the four placements after the commit of this batch.
 
 **7. What the user does next** (`04-setup-guide.md` §7, new).
-1. Install Ollama on the Windows host and `ollama pull qwen3:4b`. Make it reachable from the Kali VM, and set `IDECOP_OLLAMA_URL` there.
+1. Install Ollama on the Windows host and `ollama pull qwen3:4b` *[D43: `ollama pull qwen3:4b-q4_K_M`]*. Make it reachable from the Kali VM, and set `IDECOP_OLLAMA_URL` there.
 2. Run `uv run python scripts/explain_counted.py check` until it says READY.
 3. Run `run`, once. Then run `rate`, judging the model's own four texts as clear, partly clear or unclear.
-4. Commit `data/results/explanations.json`. D43 records the counts.
+4. Commit `data/results/explanations.json`. D43 records the counts. *[D43: D44 records them; D43 amends the model first.]*
 
 **8. Verified, and not.**
 - *Verified on 21 November 2026, on Linux:*
@@ -1706,6 +1706,67 @@ The task asks for under 150 words on three points: the locations and the paths e
 - `02-system-flow.md` says "Not yet built: the explanation layer" and lists `POST /runs/{id}/explain` as not built.
 - `05-thesis-structure.md`'s row 4.7 reads "pending build".
 
-**11. A correction.** On 19 November Claude told the user that "D42 records the counts". The counts go to D43. D42 fixes the prompt, the model and the checks before them, as D39 item 8 requires.
+**11. A correction.** On 19 November Claude told the user that "D42 records the counts". The counts go to D43. *[D43: now D44, because D43 amends the model first.]* D42 fixes the prompt, the model and the checks before them, as D39 item 8 requires.
 
 *Status: Claude's build, on the user's instruction of 21 November 2026 to continue after the D41 push. Not independently reviewed. Reference: `src/explain/`, `scripts/explain_counted.py`, `scripts/explain_selftest.py`, `src/api/main.py`, `src/frontend/src/Dashboard.jsx`, `03-evaluation-methodology.md` §6, `02-ai-role.md`, `04-setup-guide.md` §7, D37 item 6, D39 item 8, `00-action-items.md` A6, `sources.md` #1050–#1053.*
+
+**D43 — Before the four counted explanations, the declared model becomes `qwen3:4b-q4_K_M`. The tag `qwen3:4b` that D37 and D39 named is a thinking-only model, so "thinking off" could not hold. A pre-run amendment of D39 item 8, on the user's choice; no explanation had been generated. 24 November 2026.**
+
+**1. What was found.**
+- *The readiness check refused.* On 24 November 2026 the user ran `scripts/explain_counted.py check` in the Kali VM, against Ollama 0.40.17 on the Windows host. It reported: "qwen3:4b cannot switch thinking off (its thinking values are [True])". On the laptop, `ollama show qwen3:4b` gave thinking levels `true` only, default `true`, a context length of 262144, quantization Q4_K_M, and a digest beginning `359d7dd4bcda`.
+- *The tag.* Ollama's list of qwen3 tags (`sources.md` #1059, read 24 November) gives `qwen3:4b`, `qwen3:4b-thinking` and `qwen3:4b-thinking-2507-q4_K_M` one ID, `359d7dd4bcda`: Qwen3-4B-Thinking-2507, 2.5 GB, 256K context. `qwen3:4b-q4_K_M` has its own ID, `2bfd38a7daaf`: 2.6 GB, 40K context.
+- *The warm-up.* Asked for one word with thinking off, the model wrote its reasoning into the reply text, ending in `</think>` with no opening tag, then "OK". That one-word request is the only generation so far. No explanation exists.
+
+**2. How the error arose.** D37 item 6 chose `qwen3:4b` from its registry page (#989): parameters, quantization and download size. It assumed the tag could switch thinking off, as D26's Qwen3-14B could. The page's "thinking and non-thinking modes" describes the qwen3 family, not this tag, and the 2.5 GB that D37 recorded is the thinking-only model's size. Claude re-read the page on 21 November and did not catch it either. D42's readiness check, built to refuse such a model, caught it before any counted generation.
+
+**3. The amendment.** The user chose on 24 November 2026, from four options Claude set out.
+- *Chosen:* `qwen3:4b-q4_K_M`.
+  - It has thinking and non-thinking modes, so `think: false` holds.
+  - It is the model D37 described: the same generation, and the same non-thinking greedy decoding, as D26's Qwen3-14B.
+  - That it is the original Qwen3-4B of April 2025 is inferred from its 40K context and its own ID; the tag list does not say so.
+  - On the user's laptop on 25 November, `ollama show qwen3:4b-q4_K_M` reported thinking levels `false, true` (default `true`), a context length of 40960, 4.0B parameters and quantization Q4_K_M; it pulled as 2.6 GB. So `think: false` is available. Whether it holds in a reply is what `check`'s warm-up tests.
+- *Not chosen:*
+  - `qwen3:4b-instruct-2507-q4_K_M`, which never thinks but is a newer generation than D37 and D26 used;
+  - keeping `qwen3:4b` with thinking on, which changes the declared setting and needs a larger output limit and code to separate the reasoning from the answer;
+  - postponing the counted run until after TA-2.
+- *Unchanged:* everything else that D39 item 8 and D42 fixed: Q4_K_M, `think: false`, temperature 0, seed 0, a 4,096-token context, at most 512 tokens out, one try, the prompt and the two checks.
+- *"First try"* now means the first generation for each placement after the commit of this batch.
+
+**4. Effect.** No explanation had been generated, so no result changes, and none was seen before the choice. What changes is the model that the secondary question tests. The primary result (D41) and every frozen file are untouched, and the freeze check passes.
+
+**5. A fix to D42's code (Claude's error).** A thinking trace was looked for only in Ollama's separate thinking field and as an opening `<think>` in the text. The leak in item 1 had neither, so in an explanation it would not have been recorded as a deviation. Now `thinking_trace` (`src/explain/__init__.py`) also counts `</think>`, both in `check`'s warm-up and in each explanation. As before, a trace is recorded as a deviation, and the text is still judged by the two checks alone (D42 item 4). The self-test has 40 checks, up from 37: the leak in an explanation, the leak in the warm-up, and the trace test itself.
+
+**6. The Windows set-up as done** (D42 item 7; `04-setup-guide.md` §7).
+- *The laptop:* Windows 11, version 26H2; NVIDIA driver 566.07, where Ollama asks for 551.61 or newer (#1057).
+- *Ollama:* version 0.40.17, installed in `D:\Ollama`, with its models in `D:\ollama-models` (`OLLAMA_MODELS`).
+- *The address:* `OLLAMA_HOST=192.168.115.1:11434`, the VMnet8 address. Ollama then listened on that address alone. Its FAQ shows only `0.0.0.0` (#1054); this was observed on the laptop on 24 November.
+- *The firewall:* the rule of §7.4. No firewall rule names an Ollama program, so no firewall prompt was answered either way.
+- *The VM:* the Kali VM, at 192.168.115.128, reaches Ollama, and its self-test passed.
+- *The download:* the first pull stopped at 29% ("unexpected EOF"); a second pull completed.
+- *How:* with two helper scripts Claude gave in the chat, a Windows check-and-apply script and a Kali check. They are not in the repository.
+
+**7. Corrections.**
+- *D37 item 6* said the model "fits the graphics memory of the user's laptop".
+  - That is true of the file. But the laptop's Ryzen 7 7435HS has no integrated graphics (#1055), so the RTX 2050 also draws the screen: 1.26 GB of its 4 GB were in use at idle on 24 November.
+  - With a 4,096-token context, the model may not fit entirely, and Ollama then runs part of it on the processor.
+  - That changes no declared setting. The counted run records the time as it is, and D44 records the split that `ollama ps` shows.
+- *Chat advice, 21–22 November.* Claude told the user to click Cancel if Windows asked whether to allow Ollama. That was wrong: cancelling the prompt creates block rules, and block rules override allow rules (#1058). The user had not been asked. §7 now says Allow access.
+
+**8. Made with this entry.**
+- The model tag and the trace fix: `src/explain/__init__.py`, `src/explain/ollama.py`, `scripts/explain_counted.py` and `scripts/explain_selftest.py`.
+- Inline notes in D37 item 6, D39 item 8 and D42 items 4, 5, 7 and 11, and in `03-evaluation-methodology.md` §6, `02-ai-role.md`, `02-prototype-architecture.md` and `00-glossary.md`.
+- `04-setup-guide.md` §7: the tag, Ollama's minimum versions, the model folder, the listening address, the firewall prompt, `ollama ps` after the run, and two new troubleshooting rows.
+- `README.md`, `00-action-items.md` A6 and `00-project-phases.md`.
+- `sources.md` #1054–#1059, and notes on #989 and #1052; `00-project-index.md`'s source count.
+
+*Still stale, as D42 item 10 named them:* `02-system-flow.md` and `05-thesis-structure.md` row 4.7.
+
+**9. Next.**
+1. The user applies and pushes this batch.
+2. Then `check` until READY, `run` once, `ollama ps` on Windows, and `rate`.
+3. Then the user pushes `data/results/explanations.json`.
+4. D44 records the four counts, the ratings and the split between graphics card and processor.
+
+The counts were to go to D43 (D42 items 7 and 11); this amendment takes D43.
+
+*Status: the user's decision of 24 November 2026 (item 3), drafted by Claude; the code fix and the record-keeping are Claude's. Not independently reviewed. Reference: D37 item 6, D39 item 8, D42, `src/explain/`, `04-setup-guide.md` §7, `sources.md` #989, #1052, #1054–#1059.*

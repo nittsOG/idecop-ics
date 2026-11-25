@@ -116,6 +116,8 @@ An explanation that fails either check is replaced by a template built from the 
 
 *D39: the prompt, the model tag (`qwen3:4b`, Q4_K_M) and both checks are committed before the four counted explanations are generated, and "the first generation" means the first after that commit.*
 
+*[D43, 24 November 2026: the declared tag is now `qwen3:4b-q4_K_M`. The tag `qwen3:4b` points to a thinking-only model, so thinking off could not hold. The change was made before any counted explanation, and "the first generation" means the first after the commit of D43.]*
+
 *D42 (21 November 2026): built and committed. D42 item 4 states how the two checks read a text: which tokens count as numbers, how assets are recognised and what a path through a placement allows. The counted run is `scripts/explain_counted.py run`.*
 
 The user rates the four explanations as clear, partly clear or unclear for a reader new to the project, reported as counts. This is a small check of faithfulness and readability, not a user study.

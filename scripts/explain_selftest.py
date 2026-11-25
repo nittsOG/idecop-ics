@@ -1,4 +1,4 @@
-"""Self-test of the explanation layer (A6, D42) against a stand-in Ollama server.
+"""Self-test of the explanation layer (A6, D42, D43) against a stand-in Ollama server.
 
     uv run python scripts/explain_selftest.py
 
@@ -61,7 +61,7 @@ def handler(fake):
             if self.path == "/api/version":
                 self.send(200, {"version": fake.version})
             elif self.path == "/api/tags":
-                self.send(200, {"models": [{"name": "qwen3:4b", "model": "qwen3:4b", "digest": "d1g3st"}]})
+                self.send(200, {"models": [{"name": ex.DECLARED_MODEL, "model": ex.DECLARED_MODEL, "digest": "d1g3st"}]})
             else:
                 self.send(404, {"error": "not found"})
 
@@ -83,6 +83,8 @@ def handler(fake):
                 msg = {"role": "assistant", "content": fake.text}
                 if fake.mode == "thinking":
                     msg["thinking"] = "Let me count 7.77 things first."
+                if fake.mode == "leak":   # a thinking-only model asked not to think (D43)
+                    msg["content"] = "Hmm, the user wants a short answer.\n</think>\n\n" + fake.text
                 self.send(200, {"model": body.get("model"), "message": msg, "done": True, "done_reason": "stop",
                                 "total_duration": 2_500_000_000, "load_duration": 100_000_000,
                                 "eval_duration": 2_000_000_000, "eval_count": 140, "prompt_eval_count": 760})
@@ -176,7 +178,7 @@ def run_tests(tmp: Path, fake: Fake, url: str):
     req = fake.chats[-1]
     ok(r["source"] == "model" and r["failures"] == [] and r["text"] == fake.text.strip(),
        "a faithful text is served as the model's")
-    ok(req["model"] == "qwen3:4b" and req["think"] is False and req["stream"] is False
+    ok(req["model"] == ex.DECLARED_MODEL and req["think"] is False and req["stream"] is False
        and req["options"]["temperature"] == 0 and req["options"]["num_ctx"] == 4096,
        "the request carries the declared model, thinking off and temperature 0")
     ok([m["role"] for m in req["messages"]] == ["system", "user"] and req["messages"][1]["content"].startswith("FACTS"),
@@ -192,6 +194,13 @@ def run_tests(tmp: Path, fake: Fake, url: str):
     r = ex.explain_placement(ctx, place[1], 1, url=url, timeout=10)
     ok(r["deviations"] == ["thinking"] and r["source"] == "model",
        "a thinking trace is recorded as a deviation; the text is judged by the checks alone")
+    fake.mode, fake.text = "leak", ex.template_text(f1, ctx)
+    r = ex.explain_placement(ctx, place[1], 1, url=url, timeout=10)
+    ok(r["deviations"] == ["thinking"],
+       "reasoning leaked into the text, closed by </think> alone, is recorded as a deviation (D43)")
+    ok(ex.thinking_trace("a</think>b") and ex.thinking_trace("<think>a") and ex.thinking_trace("a", "t")
+       and not ex.thinking_trace("plain text"),
+       "a thinking trace is found in the thinking field or by either think tag (D43)")
     fake.mode, fake.text = "good", "   "
     r = ex.explain_placement(ctx, place[1], 1, url=url, timeout=10)
     ok(r["source"] == "template" and "empty" in r["failures"], "an empty text falls back")
@@ -222,6 +231,9 @@ def run_tests(tmp: Path, fake: Fake, url: str):
     fake.mode = "thinking"
     ok(any("Thinking" in p for p in ollama.preflight(url, timeout=5)["problems"]),
        "readiness: thinking output in the warm-up is a problem (it also catches an Ollama too old for `think`)")
+    fake.mode = "leak"
+    ok(any("Thinking" in p for p in ollama.preflight(url, timeout=5)["problems"]),
+       "readiness: reasoning leaked into the warm-up text is a problem (D43)")
     fake.mode = "good"
 
     # --- the API route, on the temporary database
@@ -238,7 +250,7 @@ def run_tests(tmp: Path, fake: Fake, url: str):
     f2 = ex.build_facts(ctx, place[2], 2)
     fake.text = ex.template_text(f2, ctx)
     out = api.explain_run(run_id)
-    ok(out["source"] == "model" and out["reason"] is None and out["model"] == "qwen3:4b",
+    ok(out["source"] == "model" and out["reason"] is None and out["model"] == ex.DECLARED_MODEL,
        "API: after the counted run, a faithful text is served as the model's")
     fake.text = ex.template_text(f2, ctx) + " Coverage is 100%."
     out = api.explain_run(run_id)
@@ -247,7 +259,7 @@ def run_tests(tmp: Path, fake: Fake, url: str):
     import sqlite3
     rows = sqlite3.connect(dbc).execute("SELECT model_used FROM explanations WHERE run_id=? ORDER BY explanation_id",
                                         (run_id,)).fetchall()
-    ok([r[0] for r in rows] == ["template", "qwen3:4b", "template"], "API: every explanation served is stored")
+    ok([r[0] for r in rows] == ["template", ex.DECLARED_MODEL, "template"], "API: every explanation served is stored")
     cid = api.optimize(api.OptimizePayload(method="centrality", budget=2))["run_id"]
     for rid, code, what in ((cid, 422, "a baseline's run is refused"), (10**6, 404, "an unknown run is refused")):
         try:

@@ -39,8 +39,8 @@ DB_PATH = ROOT / "data" / "deception_placement.db"
 # the first generation after the commit that fixes the prompt and checks.
 COUNTED_RESULTS = ROOT / "data" / "results" / "explanations.json"
 
-DECLARED_MODEL = "qwen3:4b"           # D37 item 6, D39 item 8
-DECLARED_QUANTIZATION = "Q4_K_M"      # D39 item 8; sources.md #989
+DECLARED_MODEL = "qwen3:4b-q4_K_M"    # D43; D37 item 6 and D39 item 8 named qwen3:4b, a thinking-only model
+DECLARED_QUANTIZATION = "Q4_K_M"      # D39 item 8; sources.md #1059
 THINK = False                         # thinking off (D37 item 6)
 GENERATION_OPTIONS = {"temperature": 0, "seed": 0, "num_ctx": 4096, "num_predict": 512}
 DEFAULT_WEIGHTS = (1.0, 1.0, 1.0, 1.0, 0.1)
@@ -317,6 +317,13 @@ def template_text(facts: dict, ctx: dict) -> str:
 
 # ---------------------------------------------------------------- one explanation
 
+def thinking_trace(content: str, thinking: str = "") -> bool:
+    """True if a reply shows thinking: Ollama's separate thinking field, or a think
+    tag in the reply text. A model that cannot switch thinking off writes its
+    reasoning into the text, ending with </think> and with no opening tag (D43)."""
+    return bool(thinking) or "<think>" in content or "</think>" in content
+
+
 def explain_placement(ctx: dict, placement, budget: int, weights=DEFAULT_WEIGHTS,
                       method: str = "proposed_greedy", *, call_model: bool = True,
                       url: str | None = None, model: str = DECLARED_MODEL,
@@ -344,8 +351,9 @@ def explain_placement(ctx: dict, placement, budget: int, weights=DEFAULT_WEIGHTS
     text = result["model_text"]
     if text is not None:
         # A thinking trace means the declared setting did not hold. It is recorded,
-        # and the text is still judged by the two checks alone (§6).
-        if result["model_meta"].get("thinking"):
+        # and the text is still judged by the two checks alone (§6). D43: a trace in
+        # the text itself counts too, not only Ollama's thinking field.
+        if thinking_trace(text, result["model_meta"].get("thinking") or ""):
             result["deviations"].append("thinking")
         if not text.strip():
             result["failures"].append("empty")
