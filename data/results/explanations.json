@@ -1,0 +1,279 @@
+{
+ "what": "The four counted explanations of D39 item 8: greedy's placement at B = 1-4, default weights.",
+ "started_at": "2026-11-25T19:11:44Z",
+ "finished_at": "2026-11-25T19:12:23Z",
+ "complete": true,
+ "commit": "dd84c7cb57ab403c5bd14381f384fda9fd137b1c",
+ "declared": {
+  "model": "qwen3:4b-q4_K_M",
+  "quantization": "Q4_K_M",
+  "think": false,
+  "options": {
+   "temperature": 0,
+   "seed": 0,
+   "num_ctx": 4096,
+   "num_predict": 512
+  }
+ },
+ "preflight": {
+  "url": "http://192.168.115.1:11434",
+  "model": "qwen3:4b-q4_K_M",
+  "ollama_version": "0.40.18",
+  "quantization": "Q4_K_M",
+  "parameter_size": "4.0B",
+  "family": "qwen3",
+  "capabilities": [
+   "completion",
+   "tools",
+   "thinking"
+  ],
+  "thinking": {
+   "values": [
+    false,
+    true
+   ],
+   "default": true
+  },
+  "digest": "2bfd38a7daaf4b1037efe517ccb73d1a3bbd4822cf89f1a82be1569050a114e0",
+  "warm_up": {
+   "content": "OK",
+   "elapsed_seconds": 0.448,
+   "load_duration_seconds": 0.039
+  }
+ },
+ "explanations": [
+  {
+   "budget": 1,
+   "placement": [
+    "DMZ Jump Host"
+   ],
+   "generated_at": "2026-11-25T19:11:55Z",
+   "facts": "Network: 9 candidate decoy positions; 5 modelled attack paths.\nObjective weights: the defaults.\nF is the optimiser's objective: it rewards catching attack paths, catching them early and protecting critical assets, and penalises detectability risk and the number of decoys.\nBudget: at most 1 decoy.\nChosen placement: DMZ Jump Host (1 decoy), selected by the optimiser to maximise F.\nScores of the chosen placement: F 1.05; coverage 0.40; early detection 0.40; critical-asset protection 0.45; detectability risk 0.17; cost 0.25. Attack paths caught: 2 of 5.\nAttack paths caught by the chosen placement:\n- P2, Industroyer2-class (protocol-specific direct grid impact): caught at step 1 of 4, at DMZ Jump Host; target PLC-03 (RTU).\n- P5, Backup-conduit (network-device compromise, alternate route to PLC-01): caught at step 1 of 4, at DMZ Jump Host; target PLC-01.\nAttack paths not caught by the chosen placement: P1 (Stuxnet-class), P3 (Reconnaissance-only), P4 (Dragonfly-class).\nBaselines compared: 2.\nCentrality baseline: the 1 candidate position with the highest betweenness centrality, that is, the ones the most shortest network routes pass through: DMZ Jump Host. Scores: F 1.05; coverage 0.40; early detection 0.40; critical-asset protection 0.45; detectability risk 0.17; cost 0.25. Attack paths caught: 2 of 5 (P2, P5).\nRandom baseline: the average of 30 random placements of 1 decoy. Scores: F 0.59; coverage 0.29; early detection 0.21; critical-asset protection 0.29; detectability risk 0.16; cost 0.25.",
+   "allowed_assets": [
+    "DMZ Jump Host",
+    "PLC-01",
+    "PLC-03 (RTU)",
+    "Backup Control Switch"
+   ],
+   "system_prompt": "You are explaining a cybersecurity decoy-placement decision to a security analyst who is new to this network. A deterministic optimisation algorithm has already selected which network locations receive decoys. That decision is final and outside your control. Your only task is to explain why this placement was chosen and how it compares with two baseline strategies, in plain language.\n\nDo not suggest a different placement. Do not recommend more or fewer decoys. Do not question the algorithm's choice.\n\nUse only the facts you are given. Write every number as digits, exactly as it appears in the facts. Do not calculate new numbers, convert numbers to percentages or round them differently. Name only the assets that appear in the facts.",
+   "user_prompt": "FACTS\nNetwork: 9 candidate decoy positions; 5 modelled attack paths.\nObjective weights: the defaults.\nF is the optimiser's objective: it rewards catching attack paths, catching them early and protecting critical assets, and penalises detectability risk and the number of decoys.\nBudget: at most 1 decoy.\nChosen placement: DMZ Jump Host (1 decoy), selected by the optimiser to maximise F.\nScores of the chosen placement: F 1.05; coverage 0.40; early detection 0.40; critical-asset protection 0.45; detectability risk 0.17; cost 0.25. Attack paths caught: 2 of 5.\nAttack paths caught by the chosen placement:\n- P2, Industroyer2-class (protocol-specific direct grid impact): caught at step 1 of 4, at DMZ Jump Host; target PLC-03 (RTU).\n- P5, Backup-conduit (network-device compromise, alternate route to PLC-01): caught at step 1 of 4, at DMZ Jump Host; target PLC-01.\nAttack paths not caught by the chosen placement: P1 (Stuxnet-class), P3 (Reconnaissance-only), P4 (Dragonfly-class).\nBaselines compared: 2.\nCentrality baseline: the 1 candidate position with the highest betweenness centrality, that is, the ones the most shortest network routes pass through: DMZ Jump Host. Scores: F 1.05; coverage 0.40; early detection 0.40; critical-asset protection 0.45; detectability risk 0.17; cost 0.25. Attack paths caught: 2 of 5 (P2, P5).\nRandom baseline: the average of 30 random placements of 1 decoy. Scores: F 0.59; coverage 0.29; early detection 0.21; critical-asset protection 0.29; detectability risk 0.16; cost 0.25.\n\nTASK\nWrite a short explanation, under 150 words, covering: (1) which locations were chosen and which attack paths each one catches; (2) how early the attack paths are caught; (3) how the placement compares with the centrality and random baselines.",
+   "model": "qwen3:4b-q4_K_M",
+   "model_called": true,
+   "model_text": "The chosen decoy is placed at the DMZ Jump Host, catching two attack paths: P2 (Industroyer2-class) and P5 (Backup-conduit). Both are caught at step 1 of 4, indicating early detection. The placement scores higher in F (1.05) compared to the centrality baseline (also 1.05) and the random baseline (0.59). Coverage, early detection, and critical-asset protection are all 0.40, 0.40, and 0.45 respectively, outperforming the random baseline. Detectability risk is 0.17, and cost is 0.25, matching the centrality baseline. The chosen placement effectively catches two out of five attack paths, demonstrating superior performance over the random baseline.",
+   "model_meta": {
+    "thinking": "",
+    "elapsed_seconds": 10.487,
+    "total_duration_seconds": 10.485,
+    "load_duration_seconds": 0.003,
+    "eval_duration_seconds": 9.904,
+    "prompt_eval_count": 671,
+    "eval_count": 172,
+    "done_reason": "stop",
+    "reply_model": "qwen3:4b-q4_K_M"
+   },
+   "error": null,
+   "checks": {
+    "numbers": {
+     "passed": true,
+     "offending": []
+    },
+    "assets": {
+     "passed": true,
+     "offending": []
+    },
+    "passed": true
+   },
+   "failures": [],
+   "deviations": [],
+   "source": "model",
+   "text": "The chosen decoy is placed at the DMZ Jump Host, catching two attack paths: P2 (Industroyer2-class) and P5 (Backup-conduit). Both are caught at step 1 of 4, indicating early detection. The placement scores higher in F (1.05) compared to the centrality baseline (also 1.05) and the random baseline (0.59). Coverage, early detection, and critical-asset protection are all 0.40, 0.40, and 0.45 respectively, outperforming the random baseline. Detectability risk is 0.17, and cost is 0.25, matching the centrality baseline. The chosen placement effectively catches two out of five attack paths, demonstrating superior performance over the random baseline.",
+   "model_used": "qwen3:4b-q4_K_M"
+  },
+  {
+   "budget": 2,
+   "placement": [
+    "DMZ Jump Host",
+    "Engineering WS"
+   ],
+   "generated_at": "2026-11-25T19:12:03Z",
+   "facts": "Network: 9 candidate decoy positions; 5 modelled attack paths.\nObjective weights: the defaults.\nF is the optimiser's objective: it rewards catching attack paths, catching them early and protecting critical assets, and penalises detectability risk and the number of decoys.\nBudget: at most 2 decoys.\nChosen placement: DMZ Jump Host, Engineering WS (2 decoys), selected by the optimiser to maximise F.\nScores of the chosen placement: F 2.06; coverage 0.80; early detection 0.80; critical-asset protection 0.82; detectability risk 0.31; cost 0.50. Attack paths caught: 4 of 5.\nAttack paths caught by the chosen placement:\n- P1, Stuxnet-class (engineering-workflow-mediated physical sabotage): caught at step 1 of 5, at Engineering WS; target PLC-01.\n- P2, Industroyer2-class (protocol-specific direct grid impact): caught at step 1 of 4, at DMZ Jump Host; target PLC-03 (RTU).\n- P4, Dragonfly-class (ICS data collection for later operations): caught at step 1 of 3, at Engineering WS; target Historian.\n- P5, Backup-conduit (network-device compromise, alternate route to PLC-01): caught at step 1 of 4, at DMZ Jump Host; target PLC-01.\nAttack paths not caught by the chosen placement: P3 (Reconnaissance-only).\nBaselines compared: 2.\nCentrality baseline: the 2 candidate positions with the highest betweenness centrality, that is, the ones the most shortest network routes pass through: DMZ Jump Host, OT Firewall. Scores: F 1.41; coverage 0.60; early detection 0.60; critical-asset protection 0.63; detectability risk 0.37; cost 0.50. Attack paths caught: 3 of 5 (P2, P3, P5).\nRandom baseline: the average of 30 random placements of 2 decoys. Scores: F 1.03; coverage 0.51; early detection 0.38; critical-asset protection 0.52; detectability risk 0.33; cost 0.50.",
+   "allowed_assets": [
+    "OT Firewall",
+    "DMZ Jump Host",
+    "Historian",
+    "Engineering WS",
+    "Engineering WS-2",
+    "HMI",
+    "PLC-01",
+    "PLC-03 (RTU)",
+    "Backup Control Switch"
+   ],
+   "system_prompt": "You are explaining a cybersecurity decoy-placement decision to a security analyst who is new to this network. A deterministic optimisation algorithm has already selected which network locations receive decoys. That decision is final and outside your control. Your only task is to explain why this placement was chosen and how it compares with two baseline strategies, in plain language.\n\nDo not suggest a different placement. Do not recommend more or fewer decoys. Do not question the algorithm's choice.\n\nUse only the facts you are given. Write every number as digits, exactly as it appears in the facts. Do not calculate new numbers, convert numbers to percentages or round them differently. Name only the assets that appear in the facts.",
+   "user_prompt": "FACTS\nNetwork: 9 candidate decoy positions; 5 modelled attack paths.\nObjective weights: the defaults.\nF is the optimiser's objective: it rewards catching attack paths, catching them early and protecting critical assets, and penalises detectability risk and the number of decoys.\nBudget: at most 2 decoys.\nChosen placement: DMZ Jump Host, Engineering WS (2 decoys), selected by the optimiser to maximise F.\nScores of the chosen placement: F 2.06; coverage 0.80; early detection 0.80; critical-asset protection 0.82; detectability risk 0.31; cost 0.50. Attack paths caught: 4 of 5.\nAttack paths caught by the chosen placement:\n- P1, Stuxnet-class (engineering-workflow-mediated physical sabotage): caught at step 1 of 5, at Engineering WS; target PLC-01.\n- P2, Industroyer2-class (protocol-specific direct grid impact): caught at step 1 of 4, at DMZ Jump Host; target PLC-03 (RTU).\n- P4, Dragonfly-class (ICS data collection for later operations): caught at step 1 of 3, at Engineering WS; target Historian.\n- P5, Backup-conduit (network-device compromise, alternate route to PLC-01): caught at step 1 of 4, at DMZ Jump Host; target PLC-01.\nAttack paths not caught by the chosen placement: P3 (Reconnaissance-only).\nBaselines compared: 2.\nCentrality baseline: the 2 candidate positions with the highest betweenness centrality, that is, the ones the most shortest network routes pass through: DMZ Jump Host, OT Firewall. Scores: F 1.41; coverage 0.60; early detection 0.60; critical-asset protection 0.63; detectability risk 0.37; cost 0.50. Attack paths caught: 3 of 5 (P2, P3, P5).\nRandom baseline: the average of 30 random placements of 2 decoys. Scores: F 1.03; coverage 0.51; early detection 0.38; critical-asset protection 0.52; detectability risk 0.33; cost 0.50.\n\nTASK\nWrite a short explanation, under 150 words, covering: (1) which locations were chosen and which attack paths each one catches; (2) how early the attack paths are caught; (3) how the placement compares with the centrality and random baselines.",
+   "model": "qwen3:4b-q4_K_M",
+   "model_called": true,
+   "model_text": "The chosen placement is DMZ Jump Host and Engineering WS. DMZ Jump Host catches P2 and P5, while Engineering WS catches P1 and P4. All caught paths are detected at step 1, showing early detection. The placement catches 4 of 5 attack paths, with high scores in coverage (0.80), early detection (0.80), and critical-asset protection (0.82). Compared to the centrality baseline (F 1.41) and random baseline (F 1.03), the chosen placement has a higher F score (2.06), indicating better overall performance in achieving the optimiser's objective.",
+   "model_meta": {
+    "thinking": "",
+    "elapsed_seconds": 8.815,
+    "total_duration_seconds": 8.812,
+    "load_duration_seconds": 0.003,
+    "eval_duration_seconds": 8.182,
+    "prompt_eval_count": 732,
+    "eval_count": 140,
+    "done_reason": "stop",
+    "reply_model": "qwen3:4b-q4_K_M"
+   },
+   "error": null,
+   "checks": {
+    "numbers": {
+     "passed": true,
+     "offending": []
+    },
+    "assets": {
+     "passed": true,
+     "offending": []
+    },
+    "passed": true
+   },
+   "failures": [],
+   "deviations": [],
+   "source": "model",
+   "text": "The chosen placement is DMZ Jump Host and Engineering WS. DMZ Jump Host catches P2 and P5, while Engineering WS catches P1 and P4. All caught paths are detected at step 1, showing early detection. The placement catches 4 of 5 attack paths, with high scores in coverage (0.80), early detection (0.80), and critical-asset protection (0.82). Compared to the centrality baseline (F 1.41) and random baseline (F 1.03), the chosen placement has a higher F score (2.06), indicating better overall performance in achieving the optimiser's objective.",
+   "model_used": "qwen3:4b-q4_K_M"
+  },
+  {
+   "budget": 3,
+   "placement": [
+    "DMZ Jump Host",
+    "Engineering WS",
+    "OT Firewall"
+   ],
+   "generated_at": "2026-11-25T19:12:13Z",
+   "facts": "Network: 9 candidate decoy positions; 5 modelled attack paths.\nObjective weights: the defaults.\nF is the optimiser's objective: it rewards catching attack paths, catching them early and protecting critical assets, and penalises detectability risk and the number of decoys.\nBudget: at most 3 decoys.\nChosen placement: DMZ Jump Host, Engineering WS, OT Firewall (3 decoys), selected by the optimiser to maximise F.\nScores of the chosen placement: F 2.42; coverage 1.00; early detection 1.00; critical-asset protection 1.00; detectability risk 0.51; cost 0.75. Attack paths caught: 5 of 5.\nAttack paths caught by the chosen placement:\n- P1, Stuxnet-class (engineering-workflow-mediated physical sabotage): caught at step 1 of 5, at Engineering WS; target PLC-01.\n- P2, Industroyer2-class (protocol-specific direct grid impact): caught at step 1 of 4, at DMZ Jump Host; target PLC-03 (RTU).\n- P3, Reconnaissance-only (early-detection stress test): caught at step 1 of 2, at OT Firewall; target Engineering WS-2.\n- P4, Dragonfly-class (ICS data collection for later operations): caught at step 1 of 3, at Engineering WS; target Historian.\n- P5, Backup-conduit (network-device compromise, alternate route to PLC-01): caught at step 1 of 4, at DMZ Jump Host; target PLC-01.\nAttack paths not caught by the chosen placement: none.\nBaselines compared: 2.\nCentrality baseline: the 3 candidate positions with the highest betweenness centrality, that is, the ones the most shortest network routes pass through: DMZ Jump Host, Engineering WS-2, OT Firewall. Scores: F 1.21; coverage 0.60; early detection 0.60; critical-asset protection 0.63; detectability risk 0.55; cost 0.75. Attack paths caught: 3 of 5 (P2, P3, P5).\nRandom baseline: the average of 30 random placements of 3 decoys. Scores: F 1.32; coverage 0.69; early detection 0.48; critical-asset protection 0.71; detectability risk 0.49; cost 0.75.",
+   "allowed_assets": [
+    "OT Firewall",
+    "DMZ Jump Host",
+    "Historian",
+    "Engineering WS",
+    "Engineering WS-2",
+    "HMI",
+    "PLC-01",
+    "PLC-03 (RTU)",
+    "Backup Control Switch"
+   ],
+   "system_prompt": "You are explaining a cybersecurity decoy-placement decision to a security analyst who is new to this network. A deterministic optimisation algorithm has already selected which network locations receive decoys. That decision is final and outside your control. Your only task is to explain why this placement was chosen and how it compares with two baseline strategies, in plain language.\n\nDo not suggest a different placement. Do not recommend more or fewer decoys. Do not question the algorithm's choice.\n\nUse only the facts you are given. Write every number as digits, exactly as it appears in the facts. Do not calculate new numbers, convert numbers to percentages or round them differently. Name only the assets that appear in the facts.",
+   "user_prompt": "FACTS\nNetwork: 9 candidate decoy positions; 5 modelled attack paths.\nObjective weights: the defaults.\nF is the optimiser's objective: it rewards catching attack paths, catching them early and protecting critical assets, and penalises detectability risk and the number of decoys.\nBudget: at most 3 decoys.\nChosen placement: DMZ Jump Host, Engineering WS, OT Firewall (3 decoys), selected by the optimiser to maximise F.\nScores of the chosen placement: F 2.42; coverage 1.00; early detection 1.00; critical-asset protection 1.00; detectability risk 0.51; cost 0.75. Attack paths caught: 5 of 5.\nAttack paths caught by the chosen placement:\n- P1, Stuxnet-class (engineering-workflow-mediated physical sabotage): caught at step 1 of 5, at Engineering WS; target PLC-01.\n- P2, Industroyer2-class (protocol-specific direct grid impact): caught at step 1 of 4, at DMZ Jump Host; target PLC-03 (RTU).\n- P3, Reconnaissance-only (early-detection stress test): caught at step 1 of 2, at OT Firewall; target Engineering WS-2.\n- P4, Dragonfly-class (ICS data collection for later operations): caught at step 1 of 3, at Engineering WS; target Historian.\n- P5, Backup-conduit (network-device compromise, alternate route to PLC-01): caught at step 1 of 4, at DMZ Jump Host; target PLC-01.\nAttack paths not caught by the chosen placement: none.\nBaselines compared: 2.\nCentrality baseline: the 3 candidate positions with the highest betweenness centrality, that is, the ones the most shortest network routes pass through: DMZ Jump Host, Engineering WS-2, OT Firewall. Scores: F 1.21; coverage 0.60; early detection 0.60; critical-asset protection 0.63; detectability risk 0.55; cost 0.75. Attack paths caught: 3 of 5 (P2, P3, P5).\nRandom baseline: the average of 30 random placements of 3 decoys. Scores: F 1.32; coverage 0.69; early detection 0.48; critical-asset protection 0.71; detectability risk 0.49; cost 0.75.\n\nTASK\nWrite a short explanation, under 150 words, covering: (1) which locations were chosen and which attack paths each one catches; (2) how early the attack paths are caught; (3) how the placement compares with the centrality and random baselines.",
+   "model": "qwen3:4b-q4_K_M",
+   "model_called": true,
+   "model_text": "The chosen decoy positions are DMZ Jump Host, Engineering WS, and OT Firewall. These catch all 5 attack paths: P1 at Engineering WS, P2 at DMZ Jump Host, P3 at OT Firewall, P4 at Engineering WS, and P5 at DMZ Jump Host. All attack paths are caught at step 1, indicating early detection. The placement achieves full coverage, early detection, and critical-asset protection, with a detectability risk of 0.51. Compared to the centrality baseline (F 1.21) and random baseline (F 1.32), the chosen placement has a significantly higher F score of 2.42, showing better performance in optimising the objective.",
+   "model_meta": {
+    "thinking": "",
+    "elapsed_seconds": 9.284,
+    "total_duration_seconds": 9.257,
+    "load_duration_seconds": 0.004,
+    "eval_duration_seconds": 8.708,
+    "prompt_eval_count": 767,
+    "eval_count": 153,
+    "done_reason": "stop",
+    "reply_model": "qwen3:4b-q4_K_M"
+   },
+   "error": null,
+   "checks": {
+    "numbers": {
+     "passed": true,
+     "offending": []
+    },
+    "assets": {
+     "passed": true,
+     "offending": []
+    },
+    "passed": true
+   },
+   "failures": [],
+   "deviations": [],
+   "source": "model",
+   "text": "The chosen decoy positions are DMZ Jump Host, Engineering WS, and OT Firewall. These catch all 5 attack paths: P1 at Engineering WS, P2 at DMZ Jump Host, P3 at OT Firewall, P4 at Engineering WS, and P5 at DMZ Jump Host. All attack paths are caught at step 1, indicating early detection. The placement achieves full coverage, early detection, and critical-asset protection, with a detectability risk of 0.51. Compared to the centrality baseline (F 1.21) and random baseline (F 1.32), the chosen placement has a significantly higher F score of 2.42, showing better performance in optimising the objective.",
+   "model_used": "qwen3:4b-q4_K_M"
+  },
+  {
+   "budget": 4,
+   "placement": [
+    "DMZ Jump Host",
+    "Engineering WS",
+    "OT Firewall"
+   ],
+   "generated_at": "2026-11-25T19:12:23Z",
+   "facts": "Network: 9 candidate decoy positions; 5 modelled attack paths.\nObjective weights: the defaults.\nF is the optimiser's objective: it rewards catching attack paths, catching them early and protecting critical assets, and penalises detectability risk and the number of decoys.\nBudget: at most 4 decoys.\nChosen placement: DMZ Jump Host, Engineering WS, OT Firewall (3 decoys), selected by the optimiser to maximise F.\nFewer decoys than the budget: the optimiser placed 3 because no further decoy raises F.\nScores of the chosen placement: F 2.42; coverage 1.00; early detection 1.00; critical-asset protection 1.00; detectability risk 0.51; cost 0.75. Attack paths caught: 5 of 5.\nAttack paths caught by the chosen placement:\n- P1, Stuxnet-class (engineering-workflow-mediated physical sabotage): caught at step 1 of 5, at Engineering WS; target PLC-01.\n- P2, Industroyer2-class (protocol-specific direct grid impact): caught at step 1 of 4, at DMZ Jump Host; target PLC-03 (RTU).\n- P3, Reconnaissance-only (early-detection stress test): caught at step 1 of 2, at OT Firewall; target Engineering WS-2.\n- P4, Dragonfly-class (ICS data collection for later operations): caught at step 1 of 3, at Engineering WS; target Historian.\n- P5, Backup-conduit (network-device compromise, alternate route to PLC-01): caught at step 1 of 4, at DMZ Jump Host; target PLC-01.\nAttack paths not caught by the chosen placement: none.\nBaselines compared: 2.\nCentrality baseline: the 4 candidate positions with the highest betweenness centrality, that is, the ones the most shortest network routes pass through: DMZ Jump Host, Engineering WS, Engineering WS-2, OT Firewall. Scores: F 2.21; coverage 1.00; early detection 1.00; critical-asset protection 1.00; detectability risk 0.69; cost 1.00. Attack paths caught: 5 of 5 (P1, P2, P3, P4, P5).\nRandom baseline: the average of 30 random placements of 4 decoys. Scores: F 1.51; coverage 0.82; early detection 0.61; critical-asset protection 0.82; detectability risk 0.65; cost 1.00.",
+   "allowed_assets": [
+    "OT Firewall",
+    "DMZ Jump Host",
+    "Historian",
+    "Engineering WS",
+    "Engineering WS-2",
+    "HMI",
+    "PLC-01",
+    "PLC-03 (RTU)",
+    "Backup Control Switch"
+   ],
+   "system_prompt": "You are explaining a cybersecurity decoy-placement decision to a security analyst who is new to this network. A deterministic optimisation algorithm has already selected which network locations receive decoys. That decision is final and outside your control. Your only task is to explain why this placement was chosen and how it compares with two baseline strategies, in plain language.\n\nDo not suggest a different placement. Do not recommend more or fewer decoys. Do not question the algorithm's choice.\n\nUse only the facts you are given. Write every number as digits, exactly as it appears in the facts. Do not calculate new numbers, convert numbers to percentages or round them differently. Name only the assets that appear in the facts.",
+   "user_prompt": "FACTS\nNetwork: 9 candidate decoy positions; 5 modelled attack paths.\nObjective weights: the defaults.\nF is the optimiser's objective: it rewards catching attack paths, catching them early and protecting critical assets, and penalises detectability risk and the number of decoys.\nBudget: at most 4 decoys.\nChosen placement: DMZ Jump Host, Engineering WS, OT Firewall (3 decoys), selected by the optimiser to maximise F.\nFewer decoys than the budget: the optimiser placed 3 because no further decoy raises F.\nScores of the chosen placement: F 2.42; coverage 1.00; early detection 1.00; critical-asset protection 1.00; detectability risk 0.51; cost 0.75. Attack paths caught: 5 of 5.\nAttack paths caught by the chosen placement:\n- P1, Stuxnet-class (engineering-workflow-mediated physical sabotage): caught at step 1 of 5, at Engineering WS; target PLC-01.\n- P2, Industroyer2-class (protocol-specific direct grid impact): caught at step 1 of 4, at DMZ Jump Host; target PLC-03 (RTU).\n- P3, Reconnaissance-only (early-detection stress test): caught at step 1 of 2, at OT Firewall; target Engineering WS-2.\n- P4, Dragonfly-class (ICS data collection for later operations): caught at step 1 of 3, at Engineering WS; target Historian.\n- P5, Backup-conduit (network-device compromise, alternate route to PLC-01): caught at step 1 of 4, at DMZ Jump Host; target PLC-01.\nAttack paths not caught by the chosen placement: none.\nBaselines compared: 2.\nCentrality baseline: the 4 candidate positions with the highest betweenness centrality, that is, the ones the most shortest network routes pass through: DMZ Jump Host, Engineering WS, Engineering WS-2, OT Firewall. Scores: F 2.21; coverage 1.00; early detection 1.00; critical-asset protection 1.00; detectability risk 0.69; cost 1.00. Attack paths caught: 5 of 5 (P1, P2, P3, P4, P5).\nRandom baseline: the average of 30 random placements of 4 decoys. Scores: F 1.51; coverage 0.82; early detection 0.61; critical-asset protection 0.82; detectability risk 0.65; cost 1.00.\n\nTASK\nWrite a short explanation, under 150 words, covering: (1) which locations were chosen and which attack paths each one catches; (2) how early the attack paths are caught; (3) how the placement compares with the centrality and random baselines.",
+   "model": "qwen3:4b-q4_K_M",
+   "model_called": true,
+   "model_text": "The chosen decoy locations are DMZ Jump Host, Engineering WS, and OT Firewall. These catch all 5 attack paths: P1 at Engineering WS, P2 at DMZ Jump Host, P3 at OT Firewall, P4 at Engineering WS, and P5 at DMZ Jump Host. All attack paths are caught at step 1, indicating early detection. The placement scores F 2.42, higher than the centrality baseline (F 2.21) and random baseline (F 1.51). It achieves full coverage, early detection, and critical-asset protection, with lower detectability risk (0.51) and cost (0.75) compared to the centrality baseline (detectability risk 0.69, cost 1.00).",
+   "model_meta": {
+    "thinking": "",
+    "elapsed_seconds": 9.951,
+    "total_duration_seconds": 9.943,
+    "load_duration_seconds": 0.003,
+    "eval_duration_seconds": 9.318,
+    "prompt_eval_count": 798,
+    "eval_count": 167,
+    "done_reason": "stop",
+    "reply_model": "qwen3:4b-q4_K_M"
+   },
+   "error": null,
+   "checks": {
+    "numbers": {
+     "passed": true,
+     "offending": []
+    },
+    "assets": {
+     "passed": true,
+     "offending": []
+    },
+    "passed": true
+   },
+   "failures": [],
+   "deviations": [],
+   "source": "model",
+   "text": "The chosen decoy locations are DMZ Jump Host, Engineering WS, and OT Firewall. These catch all 5 attack paths: P1 at Engineering WS, P2 at DMZ Jump Host, P3 at OT Firewall, P4 at Engineering WS, and P5 at DMZ Jump Host. All attack paths are caught at step 1, indicating early detection. The placement scores F 2.42, higher than the centrality baseline (F 2.21) and random baseline (F 1.51). It achieves full coverage, early detection, and critical-asset protection, with lower detectability risk (0.51) and cost (0.75) compared to the centrality baseline (detectability risk 0.69, cost 1.00).",
+   "model_used": "qwen3:4b-q4_K_M"
+  }
+ ],
+ "summary": {
+  "passed_both_checks_first_try": 4,
+  "of": 4,
+  "failures_by_kind": {},
+  "deviations": {},
+  "seconds_each": {
+   "1": 10.487,
+   "2": 8.815,
+   "3": 9.284,
+   "4": 9.951
+  }
+ },
+ "ratings": {
+  "rated_at": "2026-11-25T19:30:23Z",
+  "values": {
+   "1": "partly clear",
+   "2": "clear",
+   "3": "clear",
+   "4": "clear"
+  },
+  "counts": {
+   "partly clear": 1,
+   "clear": 3
+  }
+ }
+}
