@@ -11,7 +11,7 @@ The work that remains, in weekend-units, from 26 November 2026 to final submissi
 ## 1. Where things stand (26 November 2026)
 
 - Phases A and B are complete.
-- Phase C's software is built, except Screen 2. The physical testbed (A21) comes last (A16, D37).
+- Phase C's software is built, except Screen 2. *[D46: Screen 2 is built.]* The physical testbed (A21) comes last (A16, D37).
 - Phase D is complete: its primary question in D41, its secondary question in D44 (D45).
 - Phase E, the thesis, is written in its own chat. How far it has got is not recorded here.
 - Phase F has not started.
@@ -24,11 +24,13 @@ Where the September plan had an estimate, it is kept; that plan called its estim
 
 | # | Task | WU | Notes |
 |---|---|---|---|
-| N1 | The Dashboard's *Explain this placement* button with the real model (`04-setup-guide.md` §7.7) | about an hour | The last open part of A6. Needs the laptop |
-| N2 | Screen 2, the sensitivity-sweep view, with `GET /runs/compare` | 1 | The last unbuilt screen (`02-prototype-architecture.md` §3; the September plan's B4). It is also where the tuning study is watched, so it comes before T1 runs |
-| N3 | `PUT /assets/{id}/damage-score`: build it or drop it, by decision | 0–0.25 | In the API's spec, never built. Damage has been a declared input since D33, so editing it only makes sense inside a tuning study |
-| N4 | Small documentation items: A28 (the novelty claim's wording), A24 (the threat model's detectability assumption), A33 (CATCH: choose an option), A18 (remove the publisher PDF, on your yes), A19 (close it: one commit per batch is now the practice) | 0.5 | Not blocking. The thesis needs A28 and A24 |
+| N1 | The Dashboard's *Explain this placement* button with the real model (`04-setup-guide.md` §7.7) | about an hour | The last open part of A6. Needs the laptop *[D46: done; A6 is closed.]* |
+| N2 | Screen 2, the sensitivity-sweep view, with `GET /runs/compare` | 1 | The last unbuilt screen (`02-prototype-architecture.md` §3; the September plan's B4). It is also where the tuning study is watched, so it comes before T1 runs *[D46: done.]* |
+| N3 | `PUT /assets/{id}/damage-score`: build it or drop it, by decision | 0–0.25 | In the API's spec, never built. Damage has been a declared input since D33, so editing it only makes sense inside a tuning study *[D46: dropped.]* |
+| N4 | Small documentation items: A28 (the novelty claim's wording), A24 (the threat model's detectability assumption), A33 (CATCH: choose an option), A18 (remove the publisher PDF, on your yes), A19 (close it: one commit per batch is now the practice) | 0.5 | Not blocking. The thesis needs A28 and A24 *[D46: A18 and A33 closed.]* |
 | N5 | A thorough analysis of the project, in its own chat | not estimated | Your plan (D45 item 4). Its size depends on its scope. Anything it finds gets its own entry |
+
+*D46, 26 November 2026: N2 and N3 are done, and A18 and A33 are closed, and N1 is done (A6 closed). What remains of this group: A19, A24 and A28, about half a WU, and the analysis chat.*
 
 ### 2.2 Testing and tuning — about 2.5 to 6.5 WU
 

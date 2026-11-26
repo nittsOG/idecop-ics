@@ -10,7 +10,7 @@ A: Foundation ──▶ B: Detailed Design ──▶ C: Build ──▶ D: Evalu
                                                           can start early ─┘
 ```
 
-Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs were frozen and are being corrected before any campaign: the objective's normalisation by D25, and the candidate set under A32. D is gated on A32 and then A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list. *[16 November 2026: A32's review and Filter 2 scores are done (D31), and the inputs left open then were settled in D33. D is now gated on the freeze; see "Where we are right now".]* *[D40, 19 November 2026: the inputs are frozen; Phase D is next.]* *[D41, 19 November 2026: Phase D has run. H1–H3 are all mixed (`03-phase-d-results.md`); the explanation layer's evaluation remains.]* *[D42, 21 November 2026: the explanation layer is built; its four counted explanations are next.]* *[D44, 26 November 2026: the four counted explanations are made and rated; Phase D's secondary question is answered for those four.]* *[D45, 26 November 2026: Phase D is complete (D41, D44). TA-2 is off for now, with no new date.]*
+Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs were frozen and are being corrected before any campaign: the objective's normalisation by D25, and the candidate set under A32. D is gated on A32 and then A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list. *[16 November 2026: A32's review and Filter 2 scores are done (D31), and the inputs left open then were settled in D33. D is now gated on the freeze; see "Where we are right now".]* *[D40, 19 November 2026: the inputs are frozen; Phase D is next.]* *[D41, 19 November 2026: Phase D has run. H1–H3 are all mixed (`03-phase-d-results.md`); the explanation layer's evaluation remains.]* *[D42, 21 November 2026: the explanation layer is built; its four counted explanations are next.]* *[D44, 26 November 2026: the four counted explanations are made and rated; Phase D's secondary question is answered for those four.]* *[D45, 26 November 2026: Phase D is complete (D41, D44). TA-2 is off for now, with no new date.]* *[D46, 26 November 2026: Screen 2 is built; of Phase C, only the physical testbed remains.]*
 
 ## Phase A — Foundation ✅ Complete (its one open item was closed on 6 October 2026)
 
@@ -46,7 +46,7 @@ The actual construction: standing up the 7 physical VMs, implementing the graph 
 
 **Status as of D24 (28 September 2026).** *Built and verified:* the SQLite database; `graph_model` (betweenness centrality; `Crit(v)` including `ConduitSL`, D20); the optimizer — five implementations sharing one `score()`: greedy, distorted greedy (D23), random, centrality and the exact MILP (corrected in D24); the FastAPI backend with nine endpoints; the React frontend's Screen 3 (plausibility review) and Screen 1 (single-run dashboard); and three scripts — `run_comparison.py`, `sweep.py` and `structure_check.py`. *Not yet built:* the explanation layer `/runs/{id}/explain` (A6, needs Ollama); Screen 2, the sensitivity-sweep comparison view; the Colab plausibility-scoring notebook (A20); and the physical VM testbed (A21, scope under A16).
 
-*Since D24 (added 16 November 2026):* the scoring notebook was written (D26) and run once (A20, 24 October 2026; D31). Screen 3 was rebuilt for the review (D26) and now shows the operating profile (D30). The backend has ten endpoints. Still not built: the explanation layer (A6), Screen 2 and the physical testbed (A21, scope under A16). *[D42, 21 November 2026: the explanation layer is built, and the backend has eleven endpoints. Screen 2 and the physical testbed remain.]*
+*Since D24 (added 16 November 2026):* the scoring notebook was written (D26) and run once (A20, 24 October 2026; D31). Screen 3 was rebuilt for the review (D26) and now shows the operating profile (D30). The backend has ten endpoints. Still not built: the explanation layer (A6), Screen 2 and the physical testbed (A21, scope under A16). *[D42, 21 November 2026: the explanation layer is built, and the backend has eleven endpoints. Screen 2 and the physical testbed remain.]* *[D46, 26 November 2026: Screen 2 is built, and the backend has twelve endpoints. The physical testbed remains.]*
 
 **Exit criteria:** every method (random, centrality, and the proposed method with its MILP validation — five implementations since D23) runs end-to-end against the testbed and produces comparable output. *Met against the modelled graph, not yet against a physical testbed* — whether that matters depends on A16 and on the evaluation design chosen under A12.
 
@@ -80,6 +80,16 @@ Guide review cycles, viva preparation, formatting to NFSU's submission requireme
 **Exit criteria:** submitted and defended.
 
 ## Where we are right now
+
+**Update, D46 (26 November 2026).**
+- *Screen 2 is built (D46):* the sensitivity sweep, a third tab in the interface. For one budget it shows the five declared weightings side by side, in six charts and a table of every value. Its button makes the 20 runs it reads.
+- *Your choices:* the damage-score route is dropped, and A18 and A33 are closed.
+- *A6 is closed (D46):* through the route the Explain button calls, the real model's text passed both checks, twice.
+- *Next:*
+  1. apply and push D46, then open Screen 2 and run the sweep at one budget (`04-setup-guide.md` §8);
+  2. the analysis chat, then the testing-and-tuning chat;
+  3. still open before testing and tuning: A19, A24 and A28.
+- The D45 update below is overtaken where it lists Screen 2 as next.
 
 **Update, D45 (26 November 2026).**
 - *TA-2 is off for now:* your guide says there is no TA-2 for now, and there is no new date. Nothing it gated is affected.

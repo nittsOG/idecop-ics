@@ -69,7 +69,7 @@ scripts/run_comparison.py, sweep.py, structure_check.py   the evaluation scripts
 ```
 *Line counts as of D26.*
 
-**Not yet built:** the explanation layer (`/runs/{id}/explain` — needs the Ollama integration), Screen 2 (sensitivity-sweep comparison), and the physical VMs. The Colab plausibility notebook was written in D26 and has not yet been run, because it needs a GPU. *[D44: two corrections. The explanation layer was built in D42, and its counted run is D44. The notebook ran once, on 24 October 2026 (D31). Not yet built: Screen 2 and the physical VMs.]*
+**Not yet built:** the explanation layer (`/runs/{id}/explain` — needs the Ollama integration), Screen 2 (sensitivity-sweep comparison), and the physical VMs. The Colab plausibility notebook was written in D26 and has not yet been run, because it needs a GPU. *[D44: two corrections. The explanation layer was built in D42, and its counted run is D44. The notebook ran once, on 24 October 2026 (D31). Not yet built: Screen 2 and the physical VMs.]* *[D46: Screen 2 is built. Not yet built: the physical VMs.]*
 
 **Design property worth noting:** every method calls the same `score()` function. That is what makes a greedy result and a MILP result comparable at all — if each method computed its own objective, the comparison would be meaningless.
 
@@ -193,6 +193,8 @@ for each cell of the comparison grid (scripts/sweep.py, D24):
 Screen 2 reads accumulated runs → comparison tables and charts
 ```
 
+*(D46: Screen 2's sweep button makes these runs for one budget at a time and reads them through `GET /runs/compare`. Phase D itself ran `scripts/evaluate.py`, which writes `data/results/phase-d.json`, not runs (D41).)*
+
 ---
 
 ## 6. Current verified output
@@ -272,9 +274,9 @@ Each step unblocks the next.
 4. ~~Screen 3, plausibility review~~ — done
 5. ~~`/optimize`, `/runs`, `/runs/{id}`~~ — done, D17
 6. ~~Screen 1, dashboard~~ — built, present in `src/frontend/src/Dashboard.jsx`
-7. **Explanation layer** — needs Ollama running; not testable in a sandbox
-8. **Colab notebook** — written in D26 (`notebooks/plausibility_scoring.ipynb`); running it needs GPU-backed inference (A20)
-9. **Screen 2** — only meaningful once Phase D generates multiple runs
+7. ~~**Explanation layer**~~ — built, D42; its counted run, D44 *(corrected by D46)*
+8. ~~**Colab notebook**~~ — written in D26 (`notebooks/plausibility_scoring.ipynb`); run once, 24 October 2026 (D31) *(corrected by D46)*
+9. ~~**Screen 2**~~ — built, D46
 10. **Physical VMs** — needed for demonstration, not for the algorithm
 
 Before Phase D starts, §7.2 and §7.3 need decisions. Both are cheap to resolve now and expensive to discover halfway through an evaluation sweep. *(D24: §7.2 was resolved by D20. §7.3 continues as A12, which now gates Phase D — see `00-project-phases.md`.)* *[D44: A12 was settled by D37, and Phase D ran once (D41).]*

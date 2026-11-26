@@ -217,6 +217,17 @@ Straight after `run`, run `ollama ps` on Windows: its PROCESSOR column shows how
 
 ---
 
+## 8. Screen 2: the sensitivity sweep (D46)
+
+With the backend and the frontend running (§4, §5), click **Sensitivity Sweep**.
+1. Pick a budget. For each of the five declared weightings, the screen shows the latest stored run of each method at that budget.
+2. Click **Run the sweep at B = …** once per budget. It asks the backend for 20 runs, the four deterministic methods under the five weightings, as the Dashboard's Run button does, and stores them. Running it again stores new runs, and the screen shows the latest.
+3. Read the six charts and the table under them. Random is the mean of its 30 placements (seed 42), computed when the screen asks: a stored random run is a single trial (D17), so the screen never reads one.
+
+**Checked.** `uv run python scripts/screen2_selftest.py` tests the comparison route on a copy of your database, with that copy's runs removed first, so your own runs are untouched.
+
+---
+
 ## Every session after this
 
 The commands are the same on every operating system.

@@ -7,7 +7,11 @@ modules to something callable over HTTP, per the build order in
 /runs/{id}/explain is the AI explanation layer (A6; D42), served by
 src/explain/ through a local Ollama server. It is not an evaluation input,
 and it changes no placement.
+
+/runs/compare serves Screen 2, the sensitivity-sweep comparison (D46). It
+only reads stored runs and the frozen methods; it changes no input.
 """
+import importlib.util
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -317,11 +321,96 @@ def optimize(payload: OptimizePayload):
 
 @app.get("/runs")
 def list_runs():
-    """Every stored run — what Screen 2's sensitivity-sweep comparison reads from directly."""
+    """Every stored run. Screen 2 reads /runs/compare, which selects from these (D46)."""
     conn = get_db()
     rows = conn.execute("SELECT * FROM placement_runs ORDER BY run_id").fetchall()
     conn.close()
     return [dict(r) for r in rows]
+
+
+# ---------------------------------------------------------------- Screen 2 (D46)
+# The methods Screen 2 reads from stored runs. Random is not among them: a stored
+# random run is the best of its 30 trials, illustrative only (D17), so the mean of
+# the 30 is computed on request instead, as Phase D compared it.
+COMPARE_METHODS = ("proposed_greedy", "proposed_distorted_greedy", "proposed_milp", "centrality")
+SCORE_COLUMNS = ("objective_value", "coverage_score", "early_score", "critprot_score", "risk_score", "cost_score")
+_SCORE_ATTRS = dict(zip(SCORE_COLUMNS, ("f_score", "coverage", "early", "crit_prot", "risk", "cost")))
+WEIGHT_TOL = 1e-9
+_GRID = None
+
+
+def declared_grid() -> tuple[tuple[int, ...], dict]:
+    """The declared grid, BUDGETS and WEIGHTINGS, from its one home, scripts/sweep.py.
+    It is read through scripts/evaluate.py's declared_grid(), which parses sweep.py's
+    text without running it, so Screen 2 and Phase D cannot disagree about the grid."""
+    global _GRID
+    if _GRID is None:
+        path = Path(__file__).resolve().parents[2] / "scripts" / "evaluate.py"
+        spec = importlib.util.spec_from_file_location("idecop_evaluate", path)
+        ev = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(ev)
+        _GRID = ev.declared_grid()
+    return _GRID
+
+
+@app.get("/runs/compare")
+def compare_runs(budget: int):
+    """Screen 2 (02-prototype-architecture.md §3; D46). For one budget and every
+    weighting of the declared grid: the latest stored run of each deterministic
+    method (POST /optimize writes them), and the mean of the 30 random placements
+    (seed 42), computed on request. A (weighting, method) with no stored run is
+    listed under `missing`. Declared before /runs/{run_id}, which would otherwise
+    take "compare" for a run id."""
+    if budget < 1:
+        raise HTTPException(422, "budget must be at least 1")
+    budgets, weightings = declared_grid()
+    try:
+        candidates = load_candidate_locations(DB_PATH)
+    except CandidateSetError as e:
+        raise HTTPException(409, str(e))
+    if not candidates:
+        raise HTTPException(400, "No candidate locations yet: L is empty until the A32 review in Screen 3 confirms "
+                                 "at least one asset that passes Filter 1 (formal-problem-definition.md §4, D26).")
+    criticality = compute_criticality(load_graph(DB_PATH))
+    paths = load_attack_paths(DB_PATH)
+
+    conn = get_db()
+    detectability = {r[0]: r[1] or 0.0 for r in conn.execute("SELECT asset_id, detectability_risk FROM candidate_locations")}
+    stored = conn.execute(
+        f"SELECT * FROM placement_runs WHERE budget=? AND method IN ({','.join('?' * len(COMPARE_METHODS))}) "
+        "ORDER BY run_id", (budget, *COMPARE_METHODS)).fetchall()
+    rows, missing, latest = [], [], {}
+    for name, w in weightings.items():
+        for method in COMPARE_METHODS:
+            match = [r for r in stored if r["method"] == method
+                     and all(abs(r[k] - v) <= WEIGHT_TOL for k, v in zip(("alpha", "beta", "gamma", "delta", "epsilon"), w))]
+            if match:
+                latest[(name, method)] = match[-1]
+            else:
+                missing.append({"weighting": name, "method": method})
+    names = {}
+    for r in latest.values():
+        names[r["run_id"]] = sorted(a[0] for a in conn.execute(
+            "SELECT a.name FROM placements p JOIN assets a ON a.asset_id = p.asset_id WHERE p.run_id=?", (r["run_id"],)))
+    conn.close()
+
+    for name, w in weightings.items():
+        for method in COMPARE_METHODS:
+            r = latest.get((name, method))
+            if r is not None:
+                rows.append({"weighting": name, "method": method, "source": "stored run", "run_id": r["run_id"],
+                             "run_timestamp": r["run_timestamp"], "placement": names[r["run_id"]],
+                             **{c: r[c] for c in SCORE_COLUMNS}})
+        _, results, summary = random_baseline(candidates, paths, criticality, detectability, budget, w)
+        rows.append({"weighting": name, "method": "random", "source": "mean of 30 random placements (seed 42), "
+                     "computed on request; a stored random run is one trial (D17)", "run_id": None,
+                     "run_timestamp": None, "placement": None,
+                     **{c: sum(getattr(t, a) for t in results) / len(results) for c, a in _SCORE_ATTRS.items()},
+                     "objective_std": summary["std_f"], "trials": len(results)})
+    return {"budget": budget, "budgets": list(budgets),
+            "weightings": [{"name": n, **dict(zip(("alpha", "beta", "gamma", "delta", "epsilon"), w))}
+                           for n, w in weightings.items()],
+            "methods": [*COMPARE_METHODS, "random"], "rows": rows, "missing": missing}
 
 
 @app.get("/runs/{run_id}")

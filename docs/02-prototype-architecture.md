@@ -37,16 +37,16 @@ Extends the sketch in `02-data-model.md` to the full set actually needed once al
 | `GET /plant-facts` | `plant_facts` (D30) | — | Screen 3 |
 | `POST /candidates/{asset_id}/confirm` | — | `criterion_*`, `human_reason`, `passes_plausibility`, `is_candidate`, `human_confirmed`, `confirmed_at`; on a blind card's first confirmation, the write-once `blind_*` columns (D26) | Screen 3 |
 | `GET /attack-paths` | `attack_paths`, `attack_path_steps` | — | Screen 1 |
-| `PUT /assets/{id}/damage-score` | — | `assets.damage_score` | Screen 3 (setup) |
+| `PUT /assets/{id}/damage-score` | — | `assets.damage_score` | Screen 3 (setup) *(D46: dropped, never built; Damage is a declared input, D33)* |
 | `POST /optimize` | `assets`, `candidate_locations` (confirmed only), `attack_paths` | `placement_runs` (including its metric columns), `placements` | Screen 1 |
-| `GET /runs` | `placement_runs` | — | Screen 2 |
+| `GET /runs` | `placement_runs` | — | Screen 2 *(D46: Screen 2 reads `GET /runs/compare` instead)* |
 | `GET /runs/{id}` | `placement_runs`, `placements` | — | Screen 1 |
-| `GET /runs/compare?budget={b}` | `placement_runs`, filtered by budget | — | Screen 2 |
+| `GET /runs/compare?budget={b}` | `placement_runs`, filtered by budget *(D46: the latest run of each deterministic method under each weighting of the declared grid, and random's mean of 30, computed on request, D17)* | — | Screen 2 |
 | `POST /runs/{id}/explain` | `placement_runs` (this run + same-budget Random/Centrality runs) | `explanations` | Screen 1 |
 
 *Corrected by D28.* There is no `run_metrics` table. A run's metrics are columns of `placement_runs`: `coverage_score`, `early_score`, `critprot_score`, `risk_score`, `cost_score`, `objective_value` and `runtime_seconds` (`data/schema.sql`). The damage column is `damage_score`, not `damage_fraction`.
 
-**Built so far:** `GET /graph`, `GET /assets`, `GET /candidates`, `GET /plant-facts` (D30), `POST /candidates/{asset_id}/confirm`, `GET /attack-paths`, `POST /optimize`, `GET /runs`, `GET /runs/{id}` and `GET /health` (`src/api/main.py`). **Not built:** `PUT /assets/{id}/damage-score` (Damage is still a placeholder, A37), `GET /runs/compare` (Screen 2) and `POST /runs/{id}/explain` (A6). *(D42: `POST /runs/{id}/explain` is built.)*
+**Built so far:** `GET /graph`, `GET /assets`, `GET /candidates`, `GET /plant-facts` (D30), `POST /candidates/{asset_id}/confirm`, `GET /attack-paths`, `POST /optimize`, `GET /runs`, `GET /runs/{id}` and `GET /health` (`src/api/main.py`). **Not built:** `PUT /assets/{id}/damage-score` (Damage is still a placeholder, A37), `GET /runs/compare` (Screen 2) and `POST /runs/{id}/explain` (A6). *(D42: `POST /runs/{id}/explain` is built.)* *(D46: `GET /runs/compare` is built, and `PUT /assets/{id}/damage-score` is dropped.)*
 
 `POST /optimize` never returns a placement directly in its response body beyond the `run_id` — the frontend always fetches the actual result via `GET /runs/{id}` afterward. Small deliberate choice: it means every placement the UI ever displays came from a row that's already durably stored, not from an in-flight response that could get lost on a page refresh mid-run.
 
@@ -56,7 +56,7 @@ The interface walkthrough earlier flagged this and left it open. Resolving it he
 
 **Screen 1 — Single-run dashboard.** The one already mocked up: network graph with the chosen placement highlighted, metric cards, the AI explanation panel. Method tabs at top trigger `POST /optimize`, then `GET /runs/{id}`. This is the demo screen — what you'd show your guide running live.
 
-**Screen 2 — Sensitivity-sweep comparison.** Doesn't exist as a mockup yet, and it's a genuinely different shape: not a graph, a chart — objective value and each metric plotted across the weight combinations from `formal-problem-definition.md` §5's sensitivity sweep, reading from `GET /runs/compare`. This is the evaluation screen — what actually produces the figures for your Results chapter. No graph rendering needed here at all; it's tables and line charts.
+**Screen 2 — Sensitivity-sweep comparison.** Doesn't exist as a mockup yet, and it's a genuinely different shape: not a graph, a chart — objective value and each metric plotted across the weight combinations from `formal-problem-definition.md` §5's sensitivity sweep, reading from `GET /runs/compare`. This is the evaluation screen — what actually produces the figures for your Results chapter. No graph rendering needed here at all; it's tables and line charts. *(D46: built, as grouped columns rather than line charts, with three methods drawn and all five in a table; D46 item 1 gives the reasons.)*
 
 **Screen 3 — Plausibility review.** The one mocked up in the AI-role discussion: list of candidate assets, AI-suggested scores as badges, confirm or edit, calling `POST /candidates/{asset_id}/confirm`. This is a setup screen, used once per testbed configuration, not part of the demo flow.
 

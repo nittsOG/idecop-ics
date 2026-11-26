@@ -96,7 +96,7 @@ Six chapters. This is the standard shape for an M.Tech project report and maps c
 | 4.3 | Graph model implementation | `src/graph_model/` |
 | 4.4 | Optimiser implementation — all five methods, incl. distorted greedy (D23) | `src/optimizer/` |
 | 4.5 | API layer and contract | `src/api/main.py` |
-| 4.6 | User interface — three screens | `src/frontend/` |
+| 4.6 | User interface — three screens | `src/frontend/` *[D46: all three are built; Screen 2 is D46.]* |
 | 4.7 | Explanation layer | `02-ai-role.md` — pending build *[D44: built (D42); its counted run and ratings are D44, with the result in `03-evaluation-methodology.md` §6.]* |
 | 4.8 | Plausibility-scoring assist | `02-ai-role.md`; `notebooks/plausibility_scoring.ipynb` — written in D26, not yet run *[D44: run once, on 24 October 2026 (D31).]* |
 | 4.9 | Testbed deployment | Pending build |

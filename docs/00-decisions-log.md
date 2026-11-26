@@ -1875,7 +1875,7 @@ The counts were to go to D43 (D42 items 7 and 11); this amendment takes D43.
   - the Explain button with the real model (`04-setup-guide.md` §7.7);
   - Screen 2 with `GET /runs/compare`;
   - a decision on `PUT /assets/{id}/damage-score`, which the API's spec lists and which was never built;
-  - small documentation items: A18, A19, A24, A28 and A33.
+  - small documentation items: A18, A19, A24, A28 and A33. *[D46: A18 and A33 are closed, Screen 2 is built and the damage-score route is dropped.]*
 
   The analysis chat of item 4 comes on top, not estimated.
 - *Testing and tuning, about 2.5 to 6.5 WU:*
@@ -1908,3 +1908,59 @@ The counts were to go to D43 (D42 items 7 and 11); this amendment takes D43.
 3. Then the testing-and-tuning chat. The first group of item 3 can go before or after the analysis, but Screen 2 comes before the tuning study runs.
 
 *Status: the facts of item 1 are the user's (26 November 2026). Recording Phase D as complete and rebuilding the timeline were Claude's proposals, which the user accepted ("do it"). Not independently reviewed. Reference: D37, D39, D40, D41, D44, `00-project-timeline.md`, `00-project-phases.md`, `00-action-items.md` A14, `03-evaluation-methodology.md` §8.*
+
+**D46 — Screen 2, the sensitivity sweep, is built, with `GET /runs/compare`. The never-built `PUT /assets/{id}/damage-score` is dropped, and A18 and A33 are closed. A6 is closed: the Explain button's route works with the real model. The user's choices of 26 November 2026. No input, rule, frozen file or result changes. 26 November 2026.**
+
+**1. Screen 2** (`02-prototype-architecture.md` §3).
+- *What it shows:* for one budget (B = 1–4) and the five declared weightings of `scripts/sweep.py`, six charts: F, coverage, early detection, critical-asset protection, detectability risk and cost. Each draws the proposed method (greedy), centrality and random side by side. A table below gives every value of all five methods, with their placements.
+- *Where the numbers come from:*
+  - for greedy, distorted greedy, the MILP and centrality, the latest stored run per weighting, read by the new `GET /runs/compare`. A button makes the 20 runs through `POST /optimize`, as the Dashboard does, so what is shown for those methods comes from a stored row (`02-prototype-architecture.md` §2);
+  - for random, the mean of 30 placements (seed 42), computed on request. A stored random run is the best of its 30 trials, illustrative only (D17), and Phase D compared the same mean.
+  - The grid is read from `scripts/sweep.py` through `scripts/evaluate.py`'s `declared_grid()`, so Screen 2 and Phase D cannot disagree about it.
+- *Two departures from §3's sketch:*
+  - grouped columns, not line charts. The weightings are five separate settings, not points on a scale, and a line between two of them would suggest values in between;
+  - the charts draw three methods, not five. The MILP placed the same decoys as greedy in every cell and fold of Phase D, and distorted greedy differed once (D41 item 5), so their columns would hide one another; the table carries all five.
+- *Its look:* light only, like the rest of the interface. The three colours are a categorical set that passed the colour-vision checks of Claude's charting guidance as a set. Every value is also in a tooltip and in the table, and keyboard focus shows what hovering shows.
+- *Effect:* none on any input. It reads the frozen methods and the stored runs, and it is not an evaluation input.
+
+**2. Verified, on 26 November 2026, in Claude's environment** (a database built from the frozen seed with the committed review restored).
+- `scripts/screen2_selftest.py`, new, 41 checks. Among them:
+  - every stored row equals the frozen method called directly, for every weighting and method at B = 3;
+  - random equals the mean of its 30 trials, and a stored random run is never read;
+  - the published numbers at B = 3 come back: greedy 2.4175, centrality 1.2060 and random 1.3229 (D33, D40);
+  - the MILP's F equals greedy's in all 20 cells of the grid.
+- `explain_selftest.py` (40 checks) and `evaluation_selftest.py` still pass, and the 19 frozen files match the freeze manifest.
+- The frontend builds, and its linter reports nothing.
+- Screen 2 was drawn in Chromium against the backend: before and after the sweep at B = 2, with its tooltip on hover and on keyboard focus, and at 420 pixels wide without sideways scrolling. At B = 2 it shows the counted explanation's facts (D44): greedy F 2.0606, centrality 1.4110, random 1.0278.
+- *Not verified:* on the user's machine.
+
+**3. `PUT /assets/{id}/damage-score` is dropped** (the user's choice). `02-prototype-architecture.md` §2 and `02-data-model.md` listed it, and it was never built. Damage has been a declared design input since D33, read from the database. Editing it from the interface would change an input, which belongs inside a separately reported study (D37 item 7, D45 item 2). A study that needs it adds it.
+
+**4. A18 is closed** (the user's choice). The publisher PDF stays in the history of the first commit. Its licence, CC BY-NC-ND 4.0 (`sources.md` #357, #367), permits that, and rewriting the history would change every commit hash and break existing clones. The rule stands: no publisher PDF of a paper that is not open access is committed.
+
+**5. A33 is closed** (the user's choice). CATCH (#373) is known at title level only and was not assessed, and the thesis says so. Four searches found no free copy (#390, #403), and the user uses free papers only.
+
+**6. A6 is closed.** On 26 November 2026 the user ran a check Claude gave in the chat (`idecop-explain-api-check.sh`, outside the repository). It started the backend, made one greedy run at B = 3 and asked for its explanation through `POST /runs/{id}/explain`, the route the Dashboard's button calls.
+- *Run twice:* both times the model's own text was shown, it passed both checks, and there was no failure and no thinking trace. The model took 14.6 seconds the first time, which likely included loading it, and 9.4 seconds the second.
+- *The same text each time:* both texts equal, character for character, the counted run's text for B = 3 (D44). Three generations from the same facts, at temperature 0 and seed 0, gave one text. That was observed, not guaranteed: another Ollama version or machine could differ.
+- *What it closes:* the last part of A6 (`04-setup-guide.md` §7.7). The check used the button's route without the browser; the panel that shows the text was checked against the stand-in model in D42 item 8.
+
+**7. Made with this entry.**
+- *Code:* `src/api/main.py` (`GET /runs/compare`, declared before `/runs/{run_id}`); `src/frontend/src/SensitivitySweep.jsx` and `SensitivitySweep.css`, new; `App.jsx`, with the third screen in its menu; `scripts/screen2_selftest.py`, new.
+- *Documents:*
+  - `02-prototype-architecture.md`: the route table, *Built so far* and Screen 2;
+  - `02-data-model.md`: the API table;
+  - `02-system-flow.md`: what is built, the build order and the evaluation flow. *Claude's miss in D44:* D44 corrected two lines of this file and left its build order, where items 7 and 8 still called the explanation layer and the notebook unbuilt; they are corrected here;
+  - `04-setup-guide.md` §8, new: how to use Screen 2, and its self-test;
+  - `README.md`: the layout, *Current state* and *Running it*;
+  - `00-action-items.md` A18, A33, A6;
+  - `00-project-phases.md`, with a D46 update; `00-project-timeline.md` §2.1; `05-thesis-structure.md` row 4.6;
+  - an inline note in D45 item 3.
+- No new sources.
+
+**8. Next.**
+1. The user applies and pushes this batch, then opens Screen 2 and runs the sweep at one budget.
+2. The analysis chat, with Claude's starter message.
+3. Still open before testing and tuning: A19, A24 and A28 (`00-project-timeline.md` §2.1).
+
+*Status: the four choices are the user's (26 November 2026); the build, the checks and the record-keeping are Claude's. Not independently reviewed. Reference: `02-prototype-architecture.md` §2–3, D17, D33, D37 item 7, D45, `src/api/main.py`, `src/frontend/src/SensitivitySweep.jsx`, `scripts/screen2_selftest.py`, `00-action-items.md` A6, A18, A33.*
