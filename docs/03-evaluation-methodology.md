@@ -154,7 +154,7 @@ A defect found after the freeze gets its own entry stating its effect on every r
 
 ## 9. Limitations
 
-- **One modelled instance.** There are eleven assets, five paths and nine candidates. The physical testbed comes last, if time allows (A16, D37), and synthetic instances are A12's optional extension, after TA-2.
+- **One modelled instance.** There are eleven assets, five paths and nine candidates. The physical testbed comes last, if time allows (A16, D37), and synthetic instances are A12's optional extension, after TA-2. *[D45: TA-2 has no date now; read "after Phase D".]*
 - **The simulated attacker is a model.** Its foothold and objective sets, uniform weights and slack are declared choices; the slacks 0 and 2 and the documented footholds show how much they matter. It is not a measurement of real attacks.
 - **Detectability is not simulated** (§3), and every path and route is credited the moment it reaches a decoy's position, as F credits it (D26).
 - **Five folds** support counts only.

@@ -1,8 +1,89 @@
 # Project Timeline and Work Breakdown
 
-Schedule for the remainder of the project, from 14 September 2026 to final submission. Built around weekend-only availability, with effort stated in weekend-units rather than calendar weeks so that a missed weekend shows up as a real cost rather than disappearing into a vague estimate.
+The work that remains, in weekend-units, from 26 November 2026 to final submission. Rebuilt by D45 without dates, because none of A14's dates is known. The September 2026 plan follows it, as history.
 
 **Planning unit.** One *weekend-unit* (WU) = one productive Saturday plus Sunday, roughly 10–12 working hours. Weekday evenings are counted separately and only for tasks that genuinely fit into a 60–90 minute block — reference chasing, proofreading, small fixes. Substantial work does not fit in a weekday evening and is not scheduled there.
+
+**Dates.** None is known (A14). TA-2 was scheduled for late November and will not take place for now (D45). TA-1, TA-3, the final submission, the viva and the template are unknown. Current position: `00-project-phases.md`.
+
+---
+
+## 1. Where things stand (26 November 2026)
+
+- Phases A and B are complete.
+- Phase C's software is built, except Screen 2. The physical testbed (A21) comes last (A16, D37).
+- Phase D is complete: its primary question in D41, its secondary question in D44 (D45).
+- Phase E, the thesis, is written in its own chat. How far it has got is not recorded here.
+- Phase F has not started.
+
+## 2. The remaining work
+
+Where the September plan had an estimate, it is kept; that plan called its estimates honest rather than optimistic. The rest are Claude's. All are likely, not verified.
+
+### 2.1 Before testing and tuning — about 2 WU
+
+| # | Task | WU | Notes |
+|---|---|---|---|
+| N1 | The Dashboard's *Explain this placement* button with the real model (`04-setup-guide.md` §7.7) | about an hour | The last open part of A6. Needs the laptop |
+| N2 | Screen 2, the sensitivity-sweep view, with `GET /runs/compare` | 1 | The last unbuilt screen (`02-prototype-architecture.md` §3; the September plan's B4). It is also where the tuning study is watched, so it comes before T1 runs |
+| N3 | `PUT /assets/{id}/damage-score`: build it or drop it, by decision | 0–0.25 | In the API's spec, never built. Damage has been a declared input since D33, so editing it only makes sense inside a tuning study |
+| N4 | Small documentation items: A28 (the novelty claim's wording), A24 (the threat model's detectability assumption), A33 (CATCH: choose an option), A18 (remove the publisher PDF, on your yes), A19 (close it: one commit per batch is now the practice) | 0.5 | Not blocking. The thesis needs A28 and A24 |
+| N5 | A thorough analysis of the project, in its own chat | not estimated | Your plan (D45 item 4). Its size depends on its scope. Anything it finds gets its own entry |
+
+### 2.2 Testing and tuning — about 2.5 to 6.5 WU
+
+| # | Task | WU | Notes |
+|---|---|---|---|
+| T1 | The tuning study: define what is tuned, against which measure, and checked on what; then run it and report it | 1–2 | A separately reported study; D41 and D44 stay the pre-registered results (D37 item 7, D45). Checked on the same paths and simulation it is tuned on, it would only fit the test |
+| T2 | Optional: a third explanation check, for wrong comparisons | 0.5 | The text for B = 1 calls two equal scores "higher", and both checks pass it (D44 item 5) |
+| T3 | The physical testbed (A21) | 3–4, or 1.5–2 | All seven VMs, or one zone boundary with the rest modelled (the September plan's B5 and its §3). Testbeds usually overrun |
+
+### 2.3 After testing and tuning — up to about 15.5 WU
+
+| # | Task | WU | Notes |
+|---|---|---|---|
+| W | The thesis: chapters, front matter and assembly (the September plan's W1–W9) | up to 11.5 | Less whatever the thesis chat has drafted |
+| R | Guide review, plagiarism check and viva preparation (the September plan's R1–R4) | 3.5 | Review needs a full draft |
+| S | A17's update re-run, within a month of submission | 0.5 | Its timing follows the submission date (A14) |
+
+### 2.4 Totals
+
+| Group | WU |
+|---|---|
+| Before testing and tuning | about 2, plus the analysis chat |
+| Testing and tuning | 2.5–6.5 |
+| After testing and tuning | up to 15.5 |
+| Subtotal | 20–24 |
+| Contingency at 20%, as in September | 4–5 |
+| **Total** | **24–29** |
+
+At the September plan's realistic rate of three weekend-units a month, that is eight to ten months if the thesis is still mostly unwritten, and less by whatever the thesis chat has drafted. If the submission date (A14) turns out earlier, the testbed is the first thing to reduce, as the September plan's §3 already said.
+
+## 3. Order
+
+Dependencies, not dates.
+- *Next, by your plan:* the analysis chat (N5), then the testing-and-tuning chat (T1–T3).
+- N1–N4 can go before or after the analysis. N2 comes before T1 runs.
+- The testbed (T3) comes last (A16, D37).
+- The thesis runs alongside, in its own chat. Guide review (R) needs a full draft, and A17's re-run (S) falls within a month of submission.
+
+## 4. Risks now
+
+| Risk | Likelihood | Impact | Response |
+|---|---|---|---|
+| Weekend availability is worse than assumed | High | High | Reduce the testbed first, by decision, early |
+| The testbed overruns | High | Medium | One zone boundary instead of seven VMs (T3) |
+| The tuning study is checked on what it was tuned on | Medium | High | T1 fixes the check data before it runs, and reports the study separately |
+| The submission date arrives late, or early | Medium | High | A14. This breakdown converts to dates once it is known |
+| The analysis finds a defect in the frozen code | Low to medium | High | The defect rule: its own entry, fixed, frozen again, both runs reported (`03-evaluation-methodology.md` §8) |
+
+---
+
+## Historical — the September 2026 plan, superseded by §§1–4 above (D45)
+
+*Kept as written on 14 September 2026, with its banner of 28 September. Its title and planning unit are the ones above, and its headings are moved one level down; its section references (§1–§7) are to its own sections. Its sequencing and estimates fed §2 above; its dates and its list of open items do not hold.*
+
+Schedule for the remainder of the project, from 14 September 2026 to final submission. Built around weekend-only availability, with effort stated in weekend-units rather than calendar weeks so that a missed weekend shows up as a real cost rather than disappearing into a vague estimate.
 
 > ⚠️ **STALE as of 28 September 2026 — do not schedule from this file until it is rebuilt.** It is anchored on TA-1 as a fixed date, and **TA-1 did not take place** (moved to 22 September, then not held because the guide was unavailable; not yet rescheduled). §1 and §6 are therefore superseded, the milestone table's "TA-1 + N weeks" intervals have no anchor, and several items it lists as open have since closed — the B1 normalisation decision, for example, was resolved by D20. The **sequencing and weekend-unit estimates** in §§2–5 still describe the order of work; the **dates** do not. Rebuild once A14 supplies the rescheduled TA-1 date, TA-2/TA-3 and final submission. Current position: `00-project-phases.md`.
 
@@ -11,7 +92,7 @@ Schedule for the remainder of the project, from 14 September 2026 to final submi
 
 ---
 
-## 1. The immediate problem: one weekend to TA-1
+### 1. The immediate problem: one weekend to TA-1
 
 From today, the available time before submission is:
 
@@ -23,7 +104,7 @@ From today, the available time before submission is:
 
 The TA-1 document is drafted. What remains is completion and verification, not writing — which is why one weekend is sufficient, but only just.
 
-### Plan for the nine days
+#### Plan for the nine days
 
 | When | Task | Effort |
 |---|---|---|
@@ -39,11 +120,11 @@ The TA-1 document is drafted. What remains is completion and verification, not w
 
 ---
 
-## 2. Work breakdown — everything remaining
+### 2. Work breakdown — everything remaining
 
 Effort estimates are honest rather than optimistic. Each includes verification, not just first-pass completion.
 
-### Build work (Phase C completion)
+#### Build work (Phase C completion)
 
 | # | Task | WU | Depends on | Notes |
 |---|---|---|---|---|
@@ -56,7 +137,7 @@ Effort estimates are honest rather than optimistic. Each includes verification, 
 
 **Build subtotal: 8.5–9.5 WU**
 
-### Evaluation (Phase D)
+#### Evaluation (Phase D)
 
 | # | Task | WU | Depends on |
 |---|---|---|---|
@@ -66,7 +147,7 @@ Effort estimates are honest rather than optimistic. Each includes verification, 
 
 **Evaluation subtotal: 3 WU**
 
-### Writing (Phase E)
+#### Writing (Phase E)
 
 | # | Task | WU | Depends on |
 |---|---|---|---|
@@ -82,7 +163,7 @@ Effort estimates are honest rather than optimistic. Each includes verification, 
 
 **Writing subtotal: 11.5 WU**
 
-### Review and submission (Phase F)
+#### Review and submission (Phase F)
 
 | # | Task | WU |
 |---|---|---|
@@ -95,7 +176,7 @@ Effort estimates are honest rather than optimistic. Each includes verification, 
 
 ---
 
-## 3. Totals and what they mean
+### 3. Totals and what they mean
 
 | Category | WU |
 |---|---|
@@ -120,7 +201,7 @@ The explanation layer (B2) should not be cut. It is the secondary research quest
 
 ---
 
-## 4. Sequencing
+### 4. Sequencing
 
 Dependencies, not calendar dates. Start dates follow from whatever the actual submission deadline turns out to be.
 
@@ -159,7 +240,7 @@ NOW ──▶ TA-1 (21 Sep, fixed)
 
 ---
 
-## 5. Milestones to agree with the guide
+### 5. Milestones to agree with the guide
 
 | Milestone | Suggested content | Date |
 |---|---|---|
@@ -175,7 +256,7 @@ Dates here are intervals, not commitments, because the terminal date is unknown.
 
 ---
 
-## 6. First actions after TA-1
+### 6. First actions after TA-1
 
 In order:
 
@@ -186,7 +267,7 @@ In order:
 
 ---
 
-## 7. Risk register
+### 7. Risk register
 
 | Risk | Likelihood | Impact | Response |
 |---|---|---|---|

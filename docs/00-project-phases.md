@@ -10,7 +10,7 @@ A: Foundation ──▶ B: Detailed Design ──▶ C: Build ──▶ D: Evalu
                                                           can start early ─┘
 ```
 
-Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs were frozen and are being corrected before any campaign: the objective's normalisation by D25, and the candidate set under A32. D is gated on A32 and then A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list. *[16 November 2026: A32's review and Filter 2 scores are done (D31), and the inputs left open then were settled in D33. D is now gated on the freeze; see "Where we are right now".]* *[D40, 19 November 2026: the inputs are frozen; Phase D is next.]* *[D41, 19 November 2026: Phase D has run. H1–H3 are all mixed (`03-phase-d-results.md`); the explanation layer's evaluation remains.]* *[D42, 21 November 2026: the explanation layer is built; its four counted explanations are next.]* *[D44, 26 November 2026: the four counted explanations are made and rated; Phase D's secondary question is answered for those four.]*
+Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs were frozen and are being corrected before any campaign: the objective's normalisation by D25, and the candidate set under A32. D is gated on A32 and then A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list. *[16 November 2026: A32's review and Filter 2 scores are done (D31), and the inputs left open then were settled in D33. D is now gated on the freeze; see "Where we are right now".]* *[D40, 19 November 2026: the inputs are frozen; Phase D is next.]* *[D41, 19 November 2026: Phase D has run. H1–H3 are all mixed (`03-phase-d-results.md`); the explanation layer's evaluation remains.]* *[D42, 21 November 2026: the explanation layer is built; its four counted explanations are next.]* *[D44, 26 November 2026: the four counted explanations are made and rated; Phase D's secondary question is answered for those four.]* *[D45, 26 November 2026: Phase D is complete (D41, D44). TA-2 is off for now, with no new date.]*
 
 ## Phase A — Foundation ✅ Complete (its one open item was closed on 6 October 2026)
 
@@ -60,7 +60,7 @@ Run every method against P1–P5 (P5 added by D27) on the comparison grid held i
 
 *[16 November 2026: A32 is done (D31). Nine assets pass Filter 1, and on that set the gain part of F is not modular, so greedy's optimality is no longer by construction (D31, D33); the paragraph above describes the seeded set. A35–A38, A40 and A43 were settled in D33, and the inputs are not frozen yet. The freeze follows the A12, A15 and A16 entries (A32's row), and A12 still has to choose the criterion outside F.]*
 
-*[D37, 16 November 2026: A12 is settled. Leave-one-path-out and an attack simulation are the criteria outside F, with a coverage-only comparator (`03-evaluation-methodology.md`). The freeze follows the re-run's screening and A15.]* *[D38 and D39: both done; the freeze is next.]* *[D40, 19 November 2026: frozen, and every check re-run reproduces D33; Phase D is next.]* *[D41, 19 November 2026: run once, as pre-registered. H1, H2 and H3 are all mixed. Every comparison holds at B = 2. None holds at B = 4, where greedy places three decoys against the comparators' four, and greedy catches no held-out path at B = 1 (`03-phase-d-results.md`). The secondary question, the explanation layer's four counted explanations, remains.]* *[D42, 21 November 2026: the layer is built, and its prompt, model and checks are fixed before the four counted explanations, which run on your laptop.]* *[D44, 26 November 2026: the four counted explanations were made once on 25 November. All four passed both checks first time, and you rated three clear and one partly clear.]*
+*[D37, 16 November 2026: A12 is settled. Leave-one-path-out and an attack simulation are the criteria outside F, with a coverage-only comparator (`03-evaluation-methodology.md`). The freeze follows the re-run's screening and A15.]* *[D38 and D39: both done; the freeze is next.]* *[D40, 19 November 2026: frozen, and every check re-run reproduces D33; Phase D is next.]* *[D41, 19 November 2026: run once, as pre-registered. H1, H2 and H3 are all mixed. Every comparison holds at B = 2. None holds at B = 4, where greedy places three decoys against the comparators' four, and greedy catches no held-out path at B = 1 (`03-phase-d-results.md`). The secondary question, the explanation layer's four counted explanations, remains.]* *[D42, 21 November 2026: the layer is built, and its prompt, model and checks are fixed before the four counted explanations, which run on your laptop.]* *[D44, 26 November 2026: the four counted explanations were made once on 25 November. All four passed both checks first time, and you rated three clear and one partly clear.]* *[D45, 26 November 2026: Phase D is complete. Both questions are answered as pre-registered, and those results stay as recorded. A later change to its inputs, such as tuning, is a separately reported study (D37 item 7).]*
 
 **Original roadmap item covered:** 11
 **Exit criteria:** results speak to the primary research question in `formal-problem-definition.md` §8 — including honestly, if they don't support it as strongly as hoped. A negative or mixed result, reported honestly, is a valid thesis outcome; a result quietly reframed to look better than it is isn't.
@@ -80,6 +80,15 @@ Guide review cycles, viva preparation, formatting to NFSU's submission requireme
 **Exit criteria:** submitted and defended.
 
 ## Where we are right now
+
+**Update, D45 (26 November 2026).**
+- *TA-2 is off for now:* your guide says there is no TA-2 for now, and there is no new date. Nothing it gated is affected.
+- *Phase D is complete (D45):* its primary question in D41, its secondary question in D44. Those results stay as recorded. Tuning, which changes inputs, is a separately reported study (D37 item 7).
+- *What remains, in weekend-units* (`00-project-timeline.md`, rebuilt): about 2 before testing and tuning, 2.5 to 6.5 for testing and tuning, and up to 15.5 after it, mostly the thesis.
+- *Next:*
+  1. the analysis chat, then the testing-and-tuning chat; Claude gives a starter message for each;
+  2. before or after the analysis: the Explain button with the real model (`04-setup-guide.md` §7.7), Screen 2 and the small items in the timeline. Screen 2 comes before the tuning study runs.
+- The D44 update below is overtaken where it lists TA-2 as next.
 
 **Update, D44 (26 November 2026).**
 - *The four counted explanations are done (D44).* They were made once, on 25 November, 75 seconds after D43's commit. All four passed both checks on the first try, with no failures and no thinking trace, in 8.8 to 10.5 seconds each.
@@ -139,7 +148,7 @@ Guide review cycles, viva preparation, formatting to NFSU's submission requireme
 - The D37–D38 update below is overtaken where it lists the pre-registration as next.
 
 **Update, D37–D38 (16 November 2026).**
-- *TA-2 is on 27 November 2026*, A14's first known date. Your target: the project ready by then; tuning and the physical testbed after it.
+- *TA-2 is on 27 November 2026*, A14's first known date. Your target: the project ready by then; tuning and the physical testbed after it. *[D45: it did not take place, and the guide says there is no TA-2 for now.]*
 - *A12 is decided:* leave-one-path-out, an attack simulation from every non-controller foothold and a coverage-only comparator, beside the existing grid, with the research question reworded in your accepted wording. `03-evaluation-methodology.md` fixes it before any run on the testbed. The code is built and checked on a toy network only.
 - *A16 is decided:* the physical testbed comes last. *A6:* the explanation layer is built before TA-2.
 - *D36's rulings are made*, all as proposed: CN 122339846 A/B and CN 121012683 A narrow the claim (T2), and CN 117675308 A is related (T1).

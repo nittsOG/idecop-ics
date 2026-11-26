@@ -1282,7 +1282,7 @@ No evaluation input changes.
 
 **D37 — Phase D's evaluation is fixed before any run on the testbed: leave-one-path-out, an attack simulation from every non-controller foothold, a coverage-only comparator, and the research question reworded (A12). D36's rulings are made, the physical testbed comes last (A16), and the explanation layer is built before TA-2 (A6). The user's choices, 16 November 2026.**
 
-**1. Why now.** The user reported that TA-2 is on 27 November 2026, the first of A14's dates to become known, and asked that the project be ready by then: "at least project should be ready, tunning and test bad can be done after TA 2". TA-2's format, TA-3 and the final submission date are still unknown (A14).
+**1. Why now.** The user reported that TA-2 is on 27 November 2026, the first of A14's dates to become known, and asked that the project be ready by then: "at least project should be ready, tunning and test bad can be done after TA 2". TA-2's format, TA-3 and the final submission date are still unknown (A14). *[D45: it did not take place, and the guide says there is no TA-2 for now; there is no new date.]*
 
 **2. D36's rulings (its item 11).** All the user's, 16 November 2026, each on Claude's lean:
 - *Tiers:*
@@ -1844,7 +1844,67 @@ The counts were to go to D43 (D42 items 7 and 11); this amendment takes D43.
 
 **10. Next.**
 1. The user applies and pushes this batch.
-2. TA-2, on 27 November 2026.
+2. TA-2, on 27 November 2026. *[D45: it did not take place, and the guide says there is no TA-2 for now.]*
 3. After it: the Explain button with the real model (§7.7), then the open action items.
 
 *Status: the run, the ratings and the commit are the user's (25 November 2026). The verification, the accuracy review and the record-keeping are Claude's, and Claude's review was in front of the user as he rated. Not independently reviewed. Reference: D39 item 8, D42, D43, `data/results/explanations.json`, `03-evaluation-methodology.md` §6, `formal-problem-definition.md` §8, `04-setup-guide.md` §7.*
+
+**D45 — Phase D is complete: its primary question was answered in D41 and its secondary question in D44, each as pre-registered. TA-2 will not take place as scheduled: the guide says there is no TA-2 for now, and there is no new date. The timeline is rebuilt as the remaining work in weekend-units, without dates. No input, rule, code or result changes. 26 November 2026.**
+
+**1. TA-2 is off, for now.**
+- On 26 November 2026 the user reported that his guide had told him there is no TA-2 for now. No new date was given.
+- D37 item 1 recorded TA-2 for 27 November 2026, from the user on 16 November. On 26 November the user gave the date as 26 November. Either way, it has not taken place.
+- *What changes:* nothing that TA-2 gated. The project was to be ready for it (D37 item 1), and the explanation layer was built and counted before it (D37 item 6, D42–D44). The TA-2 deck, outside the repository, stays as it is for whenever a review is held.
+- All of A14's dates are unknown again: TA-1, TA-2, TA-3, the final submission, the viva and the template.
+
+**2. Phase D is complete.**
+- *Its two questions are answered,* each run once as the user's pre-registration fixed it (D39):
+  - the primary question, H1–H3, all mixed (D41, `03-phase-d-results.md`);
+  - the secondary question, the four counted explanations (D44).
+- `00-project-phases.md`'s exit criterion for Phase D is met: the results speak to the primary research question, honestly.
+- *What stays:*
+  - D41 and D44 are the pre-registered results, and no later work changes them.
+  - The freeze manifest (`data/freeze/manifest.json`, D40) stays as the record of the inputs they used.
+  - The defect rule stands (`03-evaluation-methodology.md` §8, D39 item 1). A defect found later in the frozen code gets its own entry stating its effect, is fixed and frozen again, and both runs are reported.
+- *What it opens:* as D37 item 7 set out, a change that alters an input, such as the tuning the user plans, is now a separately reported study.
+  - How each study is fixed before it runs is decided when it is designed.
+  - `scripts/evaluate.py` still refuses to run while a frozen file differs from the manifest. So a study that changes one needs its own freeze, or a change to that check, decided with the study.
+
+**3. The remaining work, in weekend-units** (`00-project-timeline.md` §2, rebuilt with this entry).
+- *Before testing and tuning, about 2 WU:*
+  - the Explain button with the real model (`04-setup-guide.md` §7.7);
+  - Screen 2 with `GET /runs/compare`;
+  - a decision on `PUT /assets/{id}/damage-score`, which the API's spec lists and which was never built;
+  - small documentation items: A18, A19, A24, A28 and A33.
+
+  The analysis chat of item 4 comes on top, not estimated.
+- *Testing and tuning, about 2.5 to 6.5 WU:*
+  - the tuning study, defined and run (1–2);
+  - optionally, a third explanation check for wrong comparisons (0.5, D44 item 5);
+  - the physical testbed (A21): 3–4 WU for seven VMs, or 1.5–2 for one zone boundary.
+- *After that, up to 15.5 WU:*
+  - the thesis (the September plan's 11.5 WU, less what the thesis chat has drafted);
+  - review and submission (3.5);
+  - A17's update re-run within a month of submission (0.5).
+- *In total,* 24–29 WU with the September plan's 20% contingency. At its realistic three weekend-units a month, that is eight to ten months if the thesis is still mostly unwritten, and less by whatever is drafted.
+- *Confidence:* the September plan's estimates are kept where it had one; the rest are Claude's. Likely, not verified.
+
+**4. The next sessions** (the user's plan, 26 November 2026).
+- A new chat for a thorough analysis of the project, then one for testing and tuning.
+- Claude recommended opening both inside this claude.ai Project, so that each starts from its instructions, its Project Knowledge and this repository. Those trust the repository over any chat, which is why this entry records items 1 and 2 first.
+- Claude gives a starter message for each when asked: the session's scope and limits, the latest commit and entry, and what to read first.
+
+**5. Made with this entry** (record-keeping; no code changes).
+- `00-project-timeline.md`, rebuilt: the current breakdown first, without dates; the September plan kept below it as history, marked superseded. `00-project-index.md`: its row.
+- `00-action-items.md` A14.
+- `00-project-phases.md`: a D45 update, and notes on the overview, Phase D and the D37–D38 update.
+- Inline notes in D37 item 1 and D44 item 10.
+- `03-evaluation-methodology.md` §9: "after TA-2" now reads "after Phase D".
+- No new sources.
+
+**6. Next.**
+1. The user applies and pushes this batch.
+2. The analysis chat, with Claude's starter message.
+3. Then the testing-and-tuning chat. The first group of item 3 can go before or after the analysis, but Screen 2 comes before the tuning study runs.
+
+*Status: the facts of item 1 are the user's (26 November 2026). Recording Phase D as complete and rebuilding the timeline were Claude's proposals, which the user accepted ("do it"). Not independently reviewed. Reference: D37, D39, D40, D41, D44, `00-project-timeline.md`, `00-project-phases.md`, `00-action-items.md` A14, `03-evaluation-methodology.md` §8.*
