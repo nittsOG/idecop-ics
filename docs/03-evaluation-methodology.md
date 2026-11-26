@@ -122,6 +122,8 @@ An explanation that fails either check is replaced by a template built from the 
 
 The user rates the four explanations as clear, partly clear or unclear for a reader new to the project, reported as counts. This is a small check of faithfulness and readability, not a user study.
 
+*[D44, 26 November 2026: made once, on 25 November. 4 of 4 passed both checks on the first generation, with no failures, in 8.8 to 10.5 seconds each. The user rated 3 clear, 1 partly clear and 0 unclear, with Claude's review of each text in front of him. Claude's review, outside this measure, found one wrong comparison that both checks pass: they catch invented numbers and assets, not a wrong comparison between correct numbers (D44 item 5).]*
+
 ## 7. Expectations stated before any run
 
 These come from the placements published in D31 and D33. No leave-one-path-out or simulation output on the testbed existed when they were written.

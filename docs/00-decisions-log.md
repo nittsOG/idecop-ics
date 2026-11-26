@@ -1439,7 +1439,7 @@ This entry is committed before any leave-one-path-out or attack-simulation resul
 - *Leave-one-path-out:* holding out P1 or P4 leaves the Engineering WS on the other path, and holding out P2 or P5 leaves the DMZ Jump Host on the other, so those four are expected to be caught at the held-out path's first step whenever the budget lets greedy keep those assets. P3 is the only path through the OT Firewall and Engineering WS-2, so with P3 held out greedy cannot catch it at any budget (item 4, the candidate set); the comparators can.
 - *The route OT Firewall → Engineering WS-2 → PLC-02:* caught only by a placement holding the OT Firewall (greedy holds it only from B = 3) or Engineering WS-2.
 
-**8. The explanation layer (secondary question).** Greedy's placement at B = 1–4 under the default weights, explained by `qwen3:4b` (Q4_K_M) at temperature 0 with thinking off. The prompt, the model tag and both checks are committed before the four counted explanations are generated, and "first try" means the first generation after that commit. I report how many passed both automatic checks on the first try, the failures by kind, and how long each took on my laptop. I rate the four as clear, partly clear or unclear for a reader new to the project, reported as counts. This is a small check, not a user study. *[D43, 24 November 2026: the model tag is now `qwen3:4b-q4_K_M`, on my choice, before any counted explanation; the tag `qwen3:4b` is a thinking-only model.]*
+**8. The explanation layer (secondary question).** Greedy's placement at B = 1–4 under the default weights, explained by `qwen3:4b` (Q4_K_M) at temperature 0 with thinking off. The prompt, the model tag and both checks are committed before the four counted explanations are generated, and "first try" means the first generation after that commit. I report how many passed both automatic checks on the first try, the failures by kind, and how long each took on my laptop. I rate the four as clear, partly clear or unclear for a reader new to the project, reported as counts. This is a small check, not a user study. *[D43, 24 November 2026: the model tag is now `qwen3:4b-q4_K_M`, on my choice, before any counted explanation; the tag `qwen3:4b` is a thinking-only model.]* *[D44, 26 November 2026: made once, on 25 November. 4 of 4 passed both checks on the first try, with no failures, in 8.8 to 10.5 seconds each. I rated 3 clear, 1 partly clear and 0 unclear, with Claude's review of each text in front of me.]*
 
 **9. Next.** The freeze (`scripts/freeze.py`) follows this entry, then Phase D. Its results get their own entry, whichever way they go.
 
@@ -1679,7 +1679,7 @@ The task asks for under 150 words on three points: the locations and the paths e
 1. Install Ollama on the Windows host and `ollama pull qwen3:4b` *[D43: `ollama pull qwen3:4b-q4_K_M`]*. Make it reachable from the Kali VM, and set `IDECOP_OLLAMA_URL` there.
 2. Run `uv run python scripts/explain_counted.py check` until it says READY.
 3. Run `run`, once. Then run `rate`, judging the model's own four texts as clear, partly clear or unclear.
-4. Commit `data/results/explanations.json`. D43 records the counts. *[D43: D44 records them; D43 amends the model first.]*
+4. Commit `data/results/explanations.json`. D43 records the counts. *[D43: D44 records them; D43 amends the model first.]* *[D44: committed as `12edc80`, and recorded.]*
 
 **8. Verified, and not.**
 - *Verified on 21 November 2026, on Linux:*
@@ -1688,7 +1688,7 @@ The task asks for under 150 words on three points: the locations and the paths e
   - Screen 1 in Chromium, in three states (before the counted run, a passing text and a failing text), and for a baseline's run;
   - the frontend build;
   - `check_frozen`, which still passes.
-- *Not verified:* a real model's output, Ollama on Windows, and the route through VMware's network. The user's `check` and counted run test them.
+- *Not verified:* a real model's output, Ollama on Windows, and the route through VMware's network. The user's `check` and counted run test them. *[D44: all three worked in the counted run.]*
 
 **9. Effect.** No input, rule, result or frozen file changes, and the freeze check passes. The explanation layer is not an evaluation input (D37 item 6).
 
@@ -1706,7 +1706,7 @@ The task asks for under 150 words on three points: the locations and the paths e
 - `02-system-flow.md` says "Not yet built: the explanation layer" and lists `POST /runs/{id}/explain` as not built.
 - `05-thesis-structure.md`'s row 4.7 reads "pending build".
 
-**11. A correction.** On 19 November Claude told the user that "D42 records the counts". The counts go to D43. *[D43: now D44, because D43 amends the model first.]* D42 fixes the prompt, the model and the checks before them, as D39 item 8 requires.
+**11. A correction.** On 19 November Claude told the user that "D42 records the counts". The counts go to D43. *[D43: now D44, because D43 amends the model first.]* D42 fixes the prompt, the model and the checks before them, as D39 item 8 requires. *[D44: they are recorded there.]*
 
 *Status: Claude's build, on the user's instruction of 21 November 2026 to continue after the D41 push. Not independently reviewed. Reference: `src/explain/`, `scripts/explain_counted.py`, `scripts/explain_selftest.py`, `src/api/main.py`, `src/frontend/src/Dashboard.jsx`, `03-evaluation-methodology.md` §6, `02-ai-role.md`, `04-setup-guide.md` §7, D37 item 6, D39 item 8, `00-action-items.md` A6, `sources.md` #1050–#1053.*
 
@@ -1749,7 +1749,7 @@ The task asks for under 150 words on three points: the locations and the paths e
 - *D37 item 6* said the model "fits the graphics memory of the user's laptop".
   - That is true of the file. But the laptop's Ryzen 7 7435HS has no integrated graphics (#1055), so the RTX 2050 also draws the screen: 1.26 GB of its 4 GB were in use at idle on 24 November.
   - With a 4,096-token context, the model may not fit entirely, and Ollama then runs part of it on the processor.
-  - That changes no declared setting. The counted run records the time as it is, and D44 records the split that `ollama ps` shows.
+  - That changes no declared setting. The counted run records the time as it is, and D44 records the split that `ollama ps` shows. *[D44 item 6: on a reload after the run, 36% of the model was on the processor and 64% on the graphics card. The run itself was not observed.]*
 - *Chat advice, 21–22 November.* Claude told the user to click Cancel if Windows asked whether to allow Ollama. That was wrong: cancelling the prompt creates block rules, and block rules override allow rules (#1058). The user had not been asked. §7 now says Allow access.
 
 **8. Made with this entry.**
@@ -1765,8 +1765,86 @@ The task asks for under 150 words on three points: the locations and the paths e
 1. The user applies and pushes this batch.
 2. Then `check` until READY, `run` once, `ollama ps` on Windows, and `rate`.
 3. Then the user pushes `data/results/explanations.json`.
-4. D44 records the four counts, the ratings and the split between graphics card and processor.
+4. D44 records the four counts, the ratings and the split between graphics card and processor. *[D44: done.]*
 
 The counts were to go to D43 (D42 items 7 and 11); this amendment takes D43.
 
 *Status: the user's decision of 24 November 2026 (item 3), drafted by Claude; the code fix and the record-keeping are Claude's. Not independently reviewed. Reference: D37 item 6, D39 item 8, D42, `src/explain/`, `04-setup-guide.md` §7, `sources.md` #989, #1052, #1054–#1059.*
+
+**D44 — The four counted explanations of D39 item 8, made once on 25 November 2026. All four passed both checks on the first try, with no failures and no thinking trace, in 8.8 to 10.5 seconds each. The user rated three clear and one partly clear, with Claude's review of each text in front of him. One text makes a wrong comparison that the checks cannot catch. No input, rule, frozen file or primary result changes. 26 November 2026.**
+
+**1. The run.**
+- *When:* on 25 November 2026, from 19:11:44 to 19:12:23 UTC, the user ran `scripts/explain_counted.py run` once in the Kali VM, against Ollama on the Windows host. The record, `data/results/explanations.json`, names the commit it ran at: `dd84c7c` (D43), committed 75 seconds earlier. So these are the first generations after that commit, as D39 item 8 and D43 item 3 require.
+- *The model, as the record has it:* `qwen3:4b-q4_K_M`, quantization Q4_K_M, 4.0B parameters, thinking values `false, true`. Its digest begins `2bfd38a7daaf`, the ID that Ollama's tag list gives this tag (`sources.md` #1059). The warm-up reply was "OK".
+- *Ollama was 0.40.18.* D43 item 6 records 0.40.17 on 24 November, so it was updated in between; how was not observed. No declared setting names an Ollama version.
+- *Then:* `rate` at 19:30 UTC, and the user committed the record as `12edc80`.
+
+**2. The four counts (D39 item 8).**
+- *Passed both checks on the first try:* 4 of 4.
+- *Failures, by kind:* none. No reply was empty, late or in error, and none failed either check.
+- *Seconds each, on the user's laptop:* 10.487 (B = 1), 8.815 (B = 2), 9.284 (B = 3) and 9.951 (B = 4).
+- *Deviations:* none. No reply carried a thinking trace, in Ollama's thinking field or in its text (D42 item 4, D43 item 5).
+- *Also in the record:*
+  - every reply ended on its own (`done_reason: stop`), after 140 to 172 tokens, well under the 512-token limit;
+  - the prompts were 671 to 798 tokens, inside the 4,096-token context;
+  - generation ran at 17.1 to 17.9 tokens a second (Claude's arithmetic from the record's token counts and durations).
+
+**3. Verified by Claude, on a fresh clone of `12edc80`.**
+- The commit adds the record and nothing else.
+- For each budget, the placement, the facts and both prompts in the record equal what the committed code builds. Re-run, both checks pass all four texts again.
+- The four texts in the record are, character for character, the ones `rate` showed the user (from the terminal output he pasted).
+- The 19 frozen files match the freeze manifest (`bc93d85`).
+
+**4. The ratings (D39 item 8), and how they were made.**
+- *Counts:* 3 clear (B = 2, 3 and 4), 1 partly clear (B = 1), 0 unclear.
+- *A departure, stated openly.* D39 item 8 has the user rate each text as a reader new to the project would read it. Short of time before TA-2, he asked Claude to assist. Before each rating, Claude checked every statement of the text against its facts and gave its view:
+  - for B = 1, the wrong comparison of item 5 and the unexplained terms;
+  - for B = 2, 3 and 4, every statement correct, and the opinion "clear". For B = 4 Claude called it a closer call, because the text does not say why only three decoys were placed.
+- *Whose they are:* he entered each rating himself, and they are recorded once. They are his, but not independent of Claude's reading: on B = 2, 3 and 4 they match the opinion Claude gave.
+
+**5. Claude's accuracy review: reported, not counted.** No pre-registered measure covers it.
+- *Every number and every machine* in the four texts is in the facts, which is why both checks pass them.
+- *One statement is wrong.* The text for B = 1 says the placement "scores higher in F (1.05) compared to the centrality baseline (also 1.05)". At B = 1 both methods place the DMZ Jump Host, so their F is equal. The number check passes it because both numbers are in the facts. The checks catch invented numbers and machines, not a wrong comparison between correct numbers. That is a limit of the secondary question's measure, and it goes with its answer (item 7).
+- *Loose, not wrong:* B = 3's "significantly higher", with no statistical test behind it; B = 1's "are all 0.40, 0.40, and 0.45 respectively".
+- *Left out:* no text explains P1–P5, or F beyond "the optimiser's objective". B = 4 does not say why only three of the four allowed decoys were placed, though its facts say so.
+- *The guardrail held:* no text suggests another placement or an extra decoy (`02-ai-role.md` §4).
+- *How:* once, by Claude, against the facts rebuilt from the committed code. Not independently reviewed.
+
+**6. The split between graphics card and processor (D43 item 7).**
+- *Not observed during the run.* Each request asks Ollama to keep the model loaded for 10 minutes (`keep_alive`, `src/explain/ollama.py`), and `ollama ps` was not run within that time.
+- *Observed on a reload:* on 26 November 2026 the user ran `check` again. It reported Ollama 0.40.18 and the run's digest, and its one-word warm-up loaded the model with the run's settings (a 4,096-token context, thinking off). About two minutes later, `ollama ps` on Windows showed:
+  `qwen3:4b-q4_K_M    2bfd38a7daaf    3.7 GB    36%/64% CPU/GPU    4096    llamacpp    8 minutes from now`
+- *What it shows:* with that context the model does not fit on the graphics card. Of its 3.7 GB in memory, 36% was on the processor and 64% on the graphics card, as D43 item 7 expected. The run itself was not observed, so its split is likely the same, not verified: how much graphics memory the screen and other programs used at the time could change it.
+- `04-setup-guide.md` §7.6 now says to run `ollama ps` within 10 minutes of `run`.
+
+**7. What this answers.** The secondary question (`formal-problem-definition.md` §8) asks whether a local model, given the placement, its scores and the comparison with the baselines, can explain why each position was chosen, without altering the placement.
+- *Without altering it:* by construction. The placement exists before the model is asked, and the layer only reads the frozen packages (D42 item 1). None of the four texts suggests a change (item 5).
+- *Whether it can explain:* for these four placements, the declared model wrote texts that passed both checks on the first try, in 8.8 to 10.5 seconds each, and three of the four were rated clear. One makes a wrong comparison that the checks cannot catch.
+- *Limits:* four texts, one network and one rater, who had Claude's review in front of him. It is a small check, not a user study (D39 item 8).
+- *The thesis may report* the counts, the ratings with how they were made, and the wrong comparison. *It may not claim* that the layer's explanations are accurate in general, or that passing the checks makes a text correct.
+
+**8. Effect.** No input, rule, frozen file or primary result (D41) changes, and the freeze check passes. With the record in place, the API calls the model when the Dashboard's *Explain this placement* is clicked (D42 item 6). That has not yet been tried with the real model (`04-setup-guide.md` §7.7).
+
+**9. Made with this entry** (record-keeping; no code changes).
+- Inline notes in D39 item 8, D42 items 7, 8 and 11, and D43 items 7 and 9.
+- `03-evaluation-methodology.md` §6: the result.
+- `00-action-items.md` A6, and `00-project-phases.md`, with a D44 update.
+- `README.md`:
+  - the result, under Phase D's results, and the record in the layout table;
+  - `src/explain/` and its route under *Current state*. Its *Not built yet* line still listed the explanation layer, which D42 built; D42's update of the README missed it.
+- `00-repository-structure.md`: the record's place in `/data/results`.
+- `04-setup-guide.md` §7.6: `ollama ps` within 10 minutes of `run`.
+- `02-ai-role.md`: a note in its section on evaluating the explanation.
+- *Stale since D42 (D42 item 10), corrected:* `02-system-flow.md` and `05-thesis-structure.md` row 4.7. Both also said the plausibility notebook had not been run; it ran once, on 24 October 2026 (D31).
+- *Two of the three lines D40 item 7 named stale, corrected:* `02-system-flow.md`'s line on A12 and `05-thesis-structure.md`'s priority item 3.
+- No new sources.
+- *Outside the repository:* the TA-2 deck's explanation slide shows the counts, the ratings and the wrong comparison.
+
+*Still stale, as D40 item 7 named it:* `03-honest-review.md`, an archived review, says a re-run of the OT keywords is recommended before the freeze; D38 made it.
+
+**10. Next.**
+1. The user applies and pushes this batch.
+2. TA-2, on 27 November 2026.
+3. After it: the Explain button with the real model (§7.7), then the open action items.
+
+*Status: the run, the ratings and the commit are the user's (25 November 2026). The verification, the accuracy review and the record-keeping are Claude's, and Claude's review was in front of the user as he rated. Not independently reviewed. Reference: D39 item 8, D42, D43, `data/results/explanations.json`, `03-evaluation-methodology.md` §6, `formal-problem-definition.md` §8, `04-setup-guide.md` §7.*

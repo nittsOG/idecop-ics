@@ -97,8 +97,8 @@ Six chapters. This is the standard shape for an M.Tech project report and maps c
 | 4.4 | Optimiser implementation — all five methods, incl. distorted greedy (D23) | `src/optimizer/` |
 | 4.5 | API layer and contract | `src/api/main.py` |
 | 4.6 | User interface — three screens | `src/frontend/` |
-| 4.7 | Explanation layer | `02-ai-role.md` — pending build |
-| 4.8 | Plausibility-scoring assist | `02-ai-role.md`; `notebooks/plausibility_scoring.ipynb` — written in D26, not yet run |
+| 4.7 | Explanation layer | `02-ai-role.md` — pending build *[D44: built (D42); its counted run and ratings are D44, with the result in `03-evaluation-methodology.md` §6.]* |
+| 4.8 | Plausibility-scoring assist | `02-ai-role.md`; `notebooks/plausibility_scoring.ipynb` — written in D26, not yet run *[D44: run once, on 24 October 2026 (D31).]* |
 | 4.9 | Testbed deployment | Pending build |
 | 4.10 | Verification and issues encountered | `00-decisions-log.md` D14–D19 |
 
@@ -197,7 +197,7 @@ Ordered by *readiness*, not by chapter number.
 | 1 | Ch 2 — Literature Review | Now — substantially done via TA-1 | Nothing |
 | 2 | Ch 3 — Methodology | Now | Nothing; Phase B is closed |
 | 3 | Ch 4 — Implementation, §4.1–4.6 | Now | Nothing; those components are built |
-| 4 | Ch 4 — §4.7–4.9 | After the remaining build | Explanation layer, notebook, VMs |
+| 4 | Ch 4 — §4.7–4.9 | After the remaining build | Explanation layer, notebook, VMs *[D44: only the VMs remain. The explanation layer (D42, D44) and the notebook (D31) are done.]* |
 | 5 | Ch 5 — Results | After Phase D | Full evaluation campaign |
 | 6 | Ch 1 — Introduction | Late | Easier once the contributions are settled |
 | 7 | Ch 6 — Conclusion | Last | Results |
@@ -209,7 +209,7 @@ Ordered by *readiness*, not by chapter number.
 
 1. ~~TA-1 submission — 21 September, fixed~~ TA-1 did not take place as scheduled and has not been rescheduled (A14) *(corrected by D28)*
 2. Chapter 3 draft — the largest chapter that is fully unblocked
-3. ~~Resolve the risk/criticality normalisation question — this blocks Phase D, which blocks Chapter 5~~ Resolved by D20 and D25. Phase D, and so Chapter 5, is now gated on A32, the inputs to settle before the freeze (A35–A38, A40), A12 and A15; see `00-project-phases.md` *(corrected by D28)*
+3. ~~Resolve the risk/criticality normalisation question — this blocks Phase D, which blocks Chapter 5~~ Resolved by D20 and D25. Phase D, and so Chapter 5, is now gated on A32, the inputs to settle before the freeze (A35–A38, A40), A12 and A15; see `00-project-phases.md` *(corrected by D28)* *[D44: all of these are done, and Phase D ran once (D41), so Chapter 5 is no longer gated.]*
 4. Chapter 4 §4.1–4.6 — while the implementation details are fresh
 5. Everything else in readiness order
 

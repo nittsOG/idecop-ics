@@ -69,7 +69,7 @@ scripts/run_comparison.py, sweep.py, structure_check.py   the evaluation scripts
 ```
 *Line counts as of D26.*
 
-**Not yet built:** the explanation layer (`/runs/{id}/explain` — needs the Ollama integration), Screen 2 (sensitivity-sweep comparison), and the physical VMs. The Colab plausibility notebook was written in D26 and has not yet been run, because it needs a GPU.
+**Not yet built:** the explanation layer (`/runs/{id}/explain` — needs the Ollama integration), Screen 2 (sensitivity-sweep comparison), and the physical VMs. The Colab plausibility notebook was written in D26 and has not yet been run, because it needs a GPU. *[D44: two corrections. The explanation layer was built in D42, and its counted run is D44. The notebook ran once, on 24 October 2026 (D31). Not yet built: Screen 2 and the physical VMs.]*
 
 **Design property worth noting:** every method calls the same `score()` function. That is what makes a greedy result and a MILP result comparable at all — if each method computed its own objective, the comparison would be meaningless.
 
@@ -178,7 +178,7 @@ INSERT placement_runs  +  INSERT placements
         ▼
 GET /runs/{id} → Dashboard renders it
         ▼
-POST /runs/{id}/explain  [not built]
+POST /runs/{id}/explain  [built: D42]
 ```
 
 Per D17: `method=random` runs all 30 trials internally but stores only one placement, since a stored run needs one concrete answer. **Phase D's statistical comparison must call `random_baseline()` directly** to get the mean and standard deviation — a single stored random run is illustrative only.
@@ -277,7 +277,7 @@ Each step unblocks the next.
 9. **Screen 2** — only meaningful once Phase D generates multiple runs
 10. **Physical VMs** — needed for demonstration, not for the algorithm
 
-Before Phase D starts, §7.2 and §7.3 need decisions. Both are cheap to resolve now and expensive to discover halfway through an evaluation sweep. *(D24: §7.2 was resolved by D20. §7.3 continues as A12, which now gates Phase D — see `00-project-phases.md`.)*
+Before Phase D starts, §7.2 and §7.3 need decisions. Both are cheap to resolve now and expensive to discover halfway through an evaluation sweep. *(D24: §7.2 was resolved by D20. §7.3 continues as A12, which now gates Phase D — see `00-project-phases.md`.)* *[D44: A12 was settled by D37, and Phase D ran once (D41).]*
 
 ---
 

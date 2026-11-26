@@ -38,6 +38,7 @@ No `04-*` in `/docs` — the implementation roadmap lives entirely in `00-projec
 | The exported Filter 1 review and the scoring notebook's two output files | `/data/review` (committed: the database itself is not tracked) |
 | The freeze manifest, written by `scripts/freeze.py` | `/data/freeze` (committed with D40) |
 | Phase D's results file, written by `scripts/evaluate.py` | `/data/results` (committed with D41) |
+| The four counted explanations and their ratings, written by `scripts/explain_counted.py` | `/data/results/explanations.json` (committed by the user on 25 November 2026; D44) |
 | A Colab notebook | `/notebooks` |
 | Evaluation logs, CSVs, generated charts | `/results` *(D40: D39 item 5 fixed Phase D's results file at `data/results/phase-d.json`, so it lives under `/data/results`. D39 governs; its batch missed this row and the layout above.)* |
 | The final formatted thesis | `/submission` |

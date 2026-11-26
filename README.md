@@ -25,7 +25,7 @@ Everything below is real, executed code. The database is initialised and queried
 | `src/evaluation/` | Phase D's criteria outside F (D37): leave-one-path-out, the attack simulation and the coverage-only comparator; the design is `docs/03-evaluation-methodology.md` |
 | `src/explain/` | The explanation layer (A6, D42): the facts, the prompt, the two checks and the template, and a small Ollama client. Outside the frozen packages, which it only reads |
 | `notebooks/` | `plausibility_scoring.ipynb` — the Colab AI first pass for Filter 1 (A20) |
-| `data/` | Schema and seed data; `legacy/` holds the pre-D26 candidate set as history: the numbers recorded before D26 reproduce with it only at commit `ebcaaa4` (D33); `review/` holds the committed Filter 1 review and the AI first pass's output (D31); `freeze/manifest.json` fingerprints the files that feed Phase D, and `scripts/evaluate.py` refuses to run if any of them has changed (D40); `results/phase-d.json` holds Phase D's results (D41) |
+| `data/` | Schema and seed data; `legacy/` holds the pre-D26 candidate set as history: the numbers recorded before D26 reproduce with it only at commit `ebcaaa4` (D33); `review/` holds the committed Filter 1 review and the AI first pass's output (D31); `freeze/manifest.json` fingerprints the files that feed Phase D, and `scripts/evaluate.py` refuses to run if any of them has changed (D40); `results/phase-d.json` holds Phase D's results (D41), and `results/explanations.json` the four counted explanations and their ratings (D44) |
 | `scripts/` | `setup.py` — the one-time setup of the pinned environment, the database and the frontend's packages, with checks (D29); `run_comparison.py` — runs all five methods at one budget; `sweep.py` — the declared 20-cell grid behind every comparative number (D24); `structure_check.py` — exhaustive monotonicity/submodularity/modularity tests, including whether the gain part is modular (D25's claim rule); `import_plausibility_scores.py` and `review_io.py` — the notebook import and the review's committed record (D26); `evaluate.py` — Phase D's leave-one-path-out and attack simulation for every method, which refuses to run before the freeze (D37); `freeze.py` — writes the freeze manifest; `evaluation_selftest.py` — checks the evaluation code on a toy network; `explain_counted.py` — the four counted explanations (D39 item 8); `explain_selftest.py` — checks the explanation layer against a stand-in model |
 
 ---
@@ -37,13 +37,14 @@ Everything below is real, executed code. The database is initialised and queried
 - `data/schema.sql`, `data/seed.sql` — twelve tables (D30 added `plant_facts` and `asset_profiles`), transcribed from `docs/02-data-model.md`. A real fix was fed back into that document while building: the original seed never populated `edges`/`conduits`, leaving the graph with zero connectivity.
 - `src/graph_model/` — loads the real graph, computes betweenness centrality (genuinely computed, not placeholder) and `Crit(v)`. Centrality is unweighted, and SL and Damage are declared design inputs read from the database (D33); the module docstring explains both.
 - `src/optimizer/` — all five methods, scored by a single shared `score()` so results stay comparable.
-- `src/api/main.py` — `GET /health`, `/graph`, `/assets`, `/candidates`, `/plant-facts`, `/attack-paths`, `/runs`, `/runs/{id}`; `POST /optimize`, `/candidates/{asset_id}/confirm`.
+- `src/explain/` — the explanation layer (A6, D42, D43). It asks a local model to explain a stored run of the proposed method, checks every number and machine it names, and falls back to a template. Its four counted explanations were made once, on 25 November 2026 (D44).
+- `src/api/main.py` — `GET /health`, `/graph`, `/assets`, `/candidates`, `/plant-facts`, `/attack-paths`, `/runs`, `/runs/{id}`; `POST /optimize`, `/candidates/{asset_id}/confirm`, `/runs/{id}/explain` (D42).
 - `src/frontend/` — Screen 3 (plausibility review, rebuilt in D26: blind cards, path steps, four levels, reasons; since D30 each card shows the testbed's operating profile and the asset's full paths, the same context the AI's prompt gets) and Screen 1 (single-run dashboard).
 - `src/plausibility/`, `scripts/import_plausibility_scores.py`, `scripts/review_io.py` — Filter 1's rules in one place, the notebook import, and the review's committed record (D26).
 
 **Not built yet**
 
-Explanation layer (`/runs/{id}/explain` — needs a live Ollama instance), Screen 2 (sensitivity-sweep comparison), and the physical VM testbed. The Colab plausibility-scoring notebook (D26) ran once, on 24 October 2026; its output is in `data/review/` (A20, D31).
+Explanation layer (`/runs/{id}/explain` — needs a live Ollama instance), Screen 2 (sensitivity-sweep comparison), and the physical VM testbed. *[D44: the explanation layer was built in D42, and this line was not updated then. Still not built: Screen 2 and the physical VM testbed.]* The Colab plausibility-scoring notebook (D26) ran once, on 24 October 2026; its output is in `data/review/` (A20, D31).
 
 **The candidate set is empty until the A32 review (D26).** The seed no longer pre-judges which assets are decoy sites, so every script and `POST /optimize` refuse to run until Screen 3's review confirms at least one asset that passes Filter 1 and has a Filter 2 score. *D31 (26 October 2026): the review is committed in `data/review/`. Restore it on a fresh database (see* Running it*), and L has nine candidates. The first run on them is recorded in D31. It is pre-freeze, because five inputs are still open (A35–A38, A40).* *[D33 settled them, and D40 froze the inputs on 19 November 2026.]*
 
@@ -63,6 +64,8 @@ Phase D ran once, on 19 November 2026, with the inputs frozen (D40) and the rule
 - **At four** greedy places three decoys, because a fourth adds risk and cost and catches no further modelled path. The comparators place four and catch more.
 - **At one** its single decoy catches none of the hidden paths.
 - Greedy found the unique best F in every cell and fold, and the exact MILP agreed.
+
+**The explanation layer, Phase D's secondary question (D44).** A local model (`qwen3:4b-q4_K_M`, through Ollama) explained greedy's placement at budgets 1 to 4, once each, after the prompt, the model and the two checks were committed. All four texts passed both checks on the first try, in 8.8 to 10.5 seconds each. The user rated three clear and one partly clear, with Claude's review of each text in front of him. One text calls two equal scores "higher": the checks catch invented numbers and machine names, not wrong comparisons. The record is `data/results/explanations.json`.
 
 The section below records earlier comparisons on F, which greedy cannot lose here because it is optimal.
 
@@ -165,7 +168,7 @@ python scripts/sweep.py --sens                  # the 20-cell comparison grid, p
 python scripts/structure_check.py               # monotonicity, submodularity, modularity — exhaustive
 ```
 
-**The explanation layer (A6, D42, D43)** needs Ollama with `qwen3:4b-q4_K_M`, set up as in `docs/04-setup-guide.md` §7, and `IDECOP_OLLAMA_URL` pointing at it. The four counted explanations come first, once:
+**The explanation layer (A6, D42–D44)** needs Ollama with `qwen3:4b-q4_K_M`, set up as in `docs/04-setup-guide.md` §7, and `IDECOP_OLLAMA_URL` pointing at it. The four counted explanations come first, once:
 
 ```bash
 python scripts/explain_counted.py check        # is Ollama ready? generates no explanation
@@ -174,7 +177,7 @@ python scripts/explain_counted.py rate         # your ratings of the four texts
 python scripts/explain_selftest.py             # the layer's own tests, against a stand-in model
 ```
 
-Until `run` has made its record, the Dashboard's *Explain this placement* button shows the template and does not call the model.
+Until `run` has made its record, the Dashboard's *Explain this placement* button shows the template and does not call the model. *[D44: the record was made on 25 November 2026, so the button now calls the model.]*
 
 **To reproduce a number recorded before D26,** check out commit `ebcaaa4`, load the legacy set into a database freshly built there, then pass the flag. D33 retired the route from the current tree, because its changes to the objective would no longer reproduce those numbers.
 

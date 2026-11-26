@@ -205,7 +205,7 @@ uv run python scripts/explain_counted.py check
 uv run python scripts/explain_counted.py run     # prints how long each explanation took
 uv run python scripts/explain_counted.py rate    # clear, partly clear or unclear, for each text
 ```
-Straight after `run`, run `ollama ps` on Windows: its PROCESSOR column shows how the model was split between the graphics card and the processor. Then commit `data/results/explanations.json`, push, and tell Claude, with the `ollama ps` line; D44 records the counts (D43 changed the model first). `run` refuses a second run, and refuses while the explanation code has uncommitted changes. Rate the model's own text, as a reader new to the project would read it, whether or not it passed the checks.
+Straight after `run`, run `ollama ps` on Windows: its PROCESSOR column shows how the model was split between the graphics card and the processor. Then commit `data/results/explanations.json`, push, and tell Claude, with the `ollama ps` line; D44 records the counts (D43 changed the model first). `run` refuses a second run, and refuses while the explanation code has uncommitted changes. Rate the model's own text, as a reader new to the project would read it, whether or not it passed the checks. *[D44: the counted run was made once, on 25 November 2026. `ollama ps` came too late: each request keeps the model loaded for only 10 minutes, so run `ollama ps` within 10 minutes of `run`. D44 item 6 records the split, seen on a reload by `check`.]*
 
 **7.7 After the counted run.** Start the backend with `IDECOP_OLLAMA_URL` set (terminal 1), run the proposed method on the Dashboard, and click *Explain this placement*. A text the model wrote is marked as checked. Otherwise the panel says why it shows the template.
 
