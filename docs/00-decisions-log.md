@@ -37,7 +37,7 @@ Matches the original project brief's own AI philosophy (section 9). Now has dire
 "No published work performs formal, quantitative deception-placement optimization across a multi-zone OT/ICS architecture using IEC 62443 zone/conduit structure and asset criticality as first-class inputs to a composite objective, validated against baselines." Devika Jay (2023) is the closest prior work but solves a structurally different problem — resource allocation under a guaranteed-full-observability requirement on one VLAN's message graph, using GOOSE-protocol-specific physics — not budget-constrained, multi-metric site selection across a multi-zone architecture. Confirmed against her full text, not just the abstract (source #312).
 *Status: confirmed, and strengthened by the full-text read. Reference: `research-synthesis-implementation.md`, sources.md #305 & #312.*
 *Note added 29 September 2026 — tested again after this entry.* Iteration 13 found a granted Acalvio patent disclosing a placement method (US 9,853,999, `sources.md` #347). A granted patent is published work, so "published" no longer does the distinguishing; `03-commercial-prior-art-analysis.md` §4 concludes the claim survives on a method-level distinction — the patent decides *how many* decoys go into the densest or most-attacked subnet, with no objective function, budget constraint, zone/conduit structure or baseline validation. No decisions-log entry had recorded that verdict until this note. Final wording is A28, pending.
-*[D28: the note above is incomplete. The granted claims were read on 6 October 2026 (A29, #347). Besides the count, dependent claim 6 deploys the decoys "on or near the central node", so the patent combines a count rule with one central-node rule. The method-level distinction holds, since nothing in it maximises a stated objective over positions under a budget. This project's centrality baseline is the nearest analogue of the patented rule.]*
+*[D28: the note above is incomplete. The granted claims were read on 6 October 2026 (A29, #347). Besides the count, dependent claim 6 deploys the decoys "on or near the central node", so the patent combines a count rule with one central-node rule. The method-level distinction holds, since nothing in it maximises a stated objective over positions under a budget. This project's centrality baseline is the nearest analogue of the patented rule.]* *[D47: the working wording is A28's, adopted on 29 November 2026; it is final after A17's update re-run.]*
 
 **D8 — Testbed scope: 7 physical VMs, 4 modeled-only graph nodes**
 Kept the physical build close to the original brief's own skeleton (Kali, pfSense, DMZ host, Engineering WS, HMI, 2×PLC) rather than expanding it — the research process found no reason the original scope was wrong. Added a historian, second engineering workstation, a third PLC modeled as an IEC-104 RTU, and a redundant conduit as graph-only nodes, specifically so the optimizer has real tradeoffs to make rather than a single linear chain.
@@ -1961,6 +1961,70 @@ The counts were to go to D43 (D42 items 7 and 11); this amendment takes D43.
 **8. Next.**
 1. The user applies and pushes this batch, then opens Screen 2 and runs the sweep at one budget.
 2. The analysis chat, with Claude's starter message.
-3. Still open before testing and tuning: A19, A24 and A28 (`00-project-timeline.md` §2.1).
+3. Still open before testing and tuning: A19, A24 and A28 (`00-project-timeline.md` §2.1). *[D47: A19 and A24 are closed; A28's wording is adopted, open until the update search.]*
 
 *Status: the four choices are the user's (26 November 2026); the build, the checks and the record-keeping are Claude's. Not independently reviewed. Reference: `02-prototype-architecture.md` §2–3, D17, D33, D37 item 7, D45, `src/api/main.py`, `src/frontend/src/SensitivitySweep.jsx`, `scripts/screen2_selftest.py`, `00-action-items.md` A6, A18, A33.*
+
+**D47 — A19 and A24 are closed, and A28's wording is adopted as the working novelty claim, final after A17's update re-run. A24's assumption enters the threat model; its derived Sweep-and-Seek principle is dropped, and two citation errors are corrected. The user's choices of 29 November 2026. No input, rule, code or result changes. 29 November 2026.**
+
+**1. How it was decided.** On 26 November 2026 Claude reviewed the three items against the repository and the primary texts, with a verdict for each. On 29 November it reviewed them again, re-reading #352 §4.9, and the user accepted all three ("accept all").
+
+**2. A19 is closed.**
+- *The evidence:* 41 commits by 26 November 2026. From D20 (18 September) on, each batch is one commit named after its decision, checked on a fresh clone before the next.
+- *Its limit:* everything up to D19, among it the graph model, the optimiser, the API and Screens 1 and 3, arrived in one 58-file first commit on 10 September (`66d4f14`). So the history shows incremental work only from D20 on, and for D1–D19 the thesis cites the decisions log, not the history.
+
+**3. A24: the assumption enters the threat model, and the derived principle is dropped.**
+- *The citation was wrong.* A24 cited "#20 §6.3". In `sources.md`, #20 is OMICRON StationGuard: the number was the citation shortlist's, where ICSLure is now entry 21. The paper is ICSLure, `sources.md` #3.
+- *The result is second-hand.* ICSLure §6.3, read on 26 November 2026, reports identification results from HoneyJudge (its reference [45], `sources.md` #334), not tests of its own:
+  - Nmap and PLCScan identify Conpot;
+  - TIA Portal, Siemens' engineering software, identifies Conpot, HoneyPLC, ICSpot and ICSpot+LSTM;
+  - an idling real PLC passes as real.
+
+  No free copy of HoneyJudge was found on 26 November, so it is cited as reported in ICSLure, under the user's rule of free papers only (D35 item 3).
+- *The review's summary, re-read.* #352 §4.9, read again on 29 November: "Low-interaction deployments (e.g., ICS/OT) are primarily identified through surface-level artifacts … static banners (A1) and default configurations (A7) … using basic active probing (P1)." It says nothing of high-interaction or real-hardware decoys, so the assumption covers emulated ones only.
+- *Added:* `threat-attack-model.md` gains a section, *Assumptions*, worded as the user accepted it:
+  - an adversary who examines an emulated ICS decoy can recognise it;
+  - so the project does not assume that a decoy goes unrecognised, and it treats an attacker's interaction with a decoy as the detection event, even when the attacker then recognises it;
+  - this is consistent with the objective, which rewards early interception and penalises detectability through Risk rather than excluding detectable positions (D22a).
+- *Dropped: "Sweep candidates are more robust to detectability than Seek candidates"* (`iteration-12-findings.md` §2, point 4).
+  - Claude stated it as a synthesis that neither source makes.
+  - Its premise, that decoys survive broad, low-scrutiny movement, is contradicted by #352 §4.9 and by Nmap identifying Conpot. D22a took sweep and seek out of the Risk factor for the same reason.
+  - Sweep and Seek remain Filter 1's terms for the Interaction criterion (#40), which this does not touch.
+- *A second error, Claude's:* ICSLure's first author is Pironti, not Furfaro (arXiv:2509.04080, v1 of 4 September 2025). `sources.md` #3 and the shortlist's entry 21 are corrected.
+
+**4. A28: the working claim.**
+- *The wording the user accepted:*
+
+  > To the best of a documented search of open scholarly indexes, granted patents and published patent applications, no published work selects deception positions across a multi-zone OT/ICS architecture by maximising a stated composite objective under a decoy budget, with IEC 62443 zones and conduits and asset criticality as numeric inputs and the interception stage along ATT&CK-grounded attack paths as a scored term, evaluated against random and centrality baselines.
+- *How it was assembled:*
+  - the opening is the one D34 scheduled for after the searches and D37 worded (`01-search-protocol.md` §13);
+  - the body is A28's draft as D37 and D41 left it;
+  - "published" is restored before "work", the user's one new choice, so that the claim stays about published work.
+- *Every clause holds against the build.* IEC 62443 zones and conduits enter the objective numerically through Crit(v), as the zone's SL and ConduitSL (D20, D33), which weights CritProt, and structurally through the paths. The interception stage is Early(x) along P1–P5. "Evaluated against" claims no win (D41). The nearest works found so far each lack some of these clauses (D35, D36, D38).
+- *Still open:* A28 closes after A17's update re-run, within a month of submission, which could narrow the claim.
+- *For the thesis:* the four commercial distinctions (`iteration-13-findings.md`) belong in §2.4 and §2.10, and the thesis should say how zones and conduits enter the objective.
+
+**5. Citing what was not read in full** (the user's question of 29 November). The rule is already recorded, and nothing changes.
+- The rule of free papers only decides what is read and relied on, not what is mentioned.
+- Works that bear on the claim are cited from their abstracts and named in the limitation (D35 item 3, D36, D38).
+- CATCH is named as known at title level only (D46), and HoneyJudge is cited as reported in ICSLure.
+- Nothing is said of a work's content beyond what was read.
+
+**6. Effect.** None on any input, rule, frozen file or result. The threat model's new section states an assumption the objective already carried.
+
+**7. Made with this entry.**
+- `threat-attack-model.md`: *Assumptions*, new, and a note on a bullet that still counted three paths.
+- `00-action-items.md`: A19 and A24 closed; A28's working wording.
+- `research-synthesis-implementation.md`: a note pointing to A28's working wording.
+- `01-search-protocol.md` §13: a note that the opening is applied.
+- `iteration-12-findings.md`: point 4 marked superseded, and a note on §2's attribution.
+- `sources.md`: notes on #3 (the first author; what §6.3 reports), #334 (its full record; the search for a free copy) and #352 (§4.9 re-read). `01-thesis-citation-shortlist.md` entry 21: the first author.
+- `00-project-phases.md`, with a D47 update; `00-project-timeline.md` §2.1 and §2.3; `05-thesis-structure.md` rows 2.4, 2.6 and 2.10.
+- Inline notes in D7 and D46 item 8.
+- No new sources.
+
+**8. Next.**
+1. The user applies and pushes this batch.
+2. The analysis chat, with Claude's starter message. Before testing and tuning, nothing else remains (`00-project-timeline.md` §2.1).
+
+*Status: the three choices are the user's (29 November 2026); the reviews, the corrections and the record-keeping are Claude's. Not independently reviewed. Reference: A19, A24, A28, D7, D20, D22a, D33–D38, D41, D46, `threat-attack-model.md`, `01-search-protocol.md` §13, `sources.md` #3, #334, #352.*

@@ -27,10 +27,12 @@ Where the September plan had an estimate, it is kept; that plan called its estim
 | N1 | The Dashboard's *Explain this placement* button with the real model (`04-setup-guide.md` §7.7) | about an hour | The last open part of A6. Needs the laptop *[D46: done; A6 is closed.]* |
 | N2 | Screen 2, the sensitivity-sweep view, with `GET /runs/compare` | 1 | The last unbuilt screen (`02-prototype-architecture.md` §3; the September plan's B4). It is also where the tuning study is watched, so it comes before T1 runs *[D46: done.]* |
 | N3 | `PUT /assets/{id}/damage-score`: build it or drop it, by decision | 0–0.25 | In the API's spec, never built. Damage has been a declared input since D33, so editing it only makes sense inside a tuning study *[D46: dropped.]* |
-| N4 | Small documentation items: A28 (the novelty claim's wording), A24 (the threat model's detectability assumption), A33 (CATCH: choose an option), A18 (remove the publisher PDF, on your yes), A19 (close it: one commit per batch is now the practice) | 0.5 | Not blocking. The thesis needs A28 and A24 *[D46: A18 and A33 closed.]* |
+| N4 | Small documentation items: A28 (the novelty claim's wording), A24 (the threat model's detectability assumption), A33 (CATCH: choose an option), A18 (remove the publisher PDF, on your yes), A19 (close it: one commit per batch is now the practice) | 0.5 | Not blocking. The thesis needs A28 and A24 *[D46: A18 and A33 closed.]* *[D47: A19 and A24 closed; A28 adopted, open until S.]* |
 | N5 | A thorough analysis of the project, in its own chat | not estimated | Your plan (D45 item 4). Its size depends on its scope. Anything it finds gets its own entry |
 
 *D46, 26 November 2026: N2 and N3 are done, and A18 and A33 are closed, and N1 is done (A6 closed). What remains of this group: A19, A24 and A28, about half a WU, and the analysis chat.*
+
+*D47, 29 November 2026: A19 and A24 are closed, and A28's wording is adopted; A28 closes with S. Of this group, only the analysis chat remains.*
 
 ### 2.2 Testing and tuning — about 2.5 to 6.5 WU
 
@@ -46,7 +48,7 @@ Where the September plan had an estimate, it is kept; that plan called its estim
 |---|---|---|---|
 | W | The thesis: chapters, front matter and assembly (the September plan's W1–W9) | up to 11.5 | Less whatever the thesis chat has drafted |
 | R | Guide review, plagiarism check and viva preparation (the September plan's R1–R4) | 3.5 | Review needs a full draft |
-| S | A17's update re-run, within a month of submission | 0.5 | Its timing follows the submission date (A14) |
+| S | A17's update re-run, within a month of submission | 0.5 | Its timing follows the submission date (A14) *[D47: A28's working claim is checked against it, then closed]* |
 
 ### 2.4 Totals
 

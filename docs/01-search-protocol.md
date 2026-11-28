@@ -245,7 +245,7 @@ The volumes are unmeasured until the pilot runs.
 
 *Amendment 8 (D38) changed the limitation again, as above: "300 of the 1,496" for "262 of the 1,394", "1,184" for "1,128", and the sentence on the group of operational-technology words, which read: "The group of operational-technology words in strings S1, S2 and S5 has no word for a power network ("power grid", "power system", "electric power"), so a work that describes one in those words only was not returned by them." [n] is now 11: the 10 above and Zhan et al. (record 618, `sources.md` #1000), whose full text is not free; the thesis cites it from its abstract.*
 
-**A28's opening clause, once the search and A29's patent sweep have run:** "To the best of a documented search of open scholarly indexes, granted patents and published patent applications, …". *(D37, the user's choice of 16 November 2026; before it: "open scholarly indexes and granted patents".)*
+**A28's opening clause, once the search and A29's patent sweep have run:** "To the best of a documented search of open scholarly indexes, granted patents and published patent applications, …". *(D37, the user's choice of 16 November 2026; before it: "open scholarly indexes and granted patents".)* *(D47: applied in A28's working claim, 29 November 2026.)*
 
 *D36 notes that the patent arm covered published applications as well as grants (the proposed T2, CN 122339846, is both), and proposes "granted patents and published patent applications" for that clause. The wording is the user's (A28); the clause above was unchanged until he decided. D37: he adopted it.*
 

@@ -10,7 +10,7 @@ A: Foundation ──▶ B: Detailed Design ──▶ C: Build ──▶ D: Evalu
                                                           can start early ─┘
 ```
 
-Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs were frozen and are being corrected before any campaign: the objective's normalisation by D25, and the candidate set under A32. D is gated on A32 and then A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list. *[16 November 2026: A32's review and Filter 2 scores are done (D31), and the inputs left open then were settled in D33. D is now gated on the freeze; see "Where we are right now".]* *[D40, 19 November 2026: the inputs are frozen; Phase D is next.]* *[D41, 19 November 2026: Phase D has run. H1–H3 are all mixed (`03-phase-d-results.md`); the explanation layer's evaluation remains.]* *[D42, 21 November 2026: the explanation layer is built; its four counted explanations are next.]* *[D44, 26 November 2026: the four counted explanations are made and rated; Phase D's secondary question is answered for those four.]* *[D45, 26 November 2026: Phase D is complete (D41, D44). TA-2 is off for now, with no new date.]* *[D46, 26 November 2026: Screen 2 is built; of Phase C, only the physical testbed remains.]*
+Six phases. A and B are done. C's core computational build is done, with the items listed under Phase C still outstanding. D's inputs were frozen and are being corrected before any campaign: the objective's normalisation by D25, and the candidate set under A32. D is gated on A32 and then A12. E overlaps earlier than it looks — worth reading that section even though it's fifth on the list. *[16 November 2026: A32's review and Filter 2 scores are done (D31), and the inputs left open then were settled in D33. D is now gated on the freeze; see "Where we are right now".]* *[D40, 19 November 2026: the inputs are frozen; Phase D is next.]* *[D41, 19 November 2026: Phase D has run. H1–H3 are all mixed (`03-phase-d-results.md`); the explanation layer's evaluation remains.]* *[D42, 21 November 2026: the explanation layer is built; its four counted explanations are next.]* *[D44, 26 November 2026: the four counted explanations are made and rated; Phase D's secondary question is answered for those four.]* *[D45, 26 November 2026: Phase D is complete (D41, D44). TA-2 is off for now, with no new date.]* *[D46, 26 November 2026: Screen 2 is built; of Phase C, only the physical testbed remains.]* *[D47, 29 November 2026: A19 and A24 are closed and A28's wording is adopted; before testing and tuning, only the analysis remains.]*
 
 ## Phase A — Foundation ✅ Complete (its one open item was closed on 6 October 2026)
 
@@ -80,6 +80,15 @@ Guide review cycles, viva preparation, formatting to NFSU's submission requireme
 **Exit criteria:** submitted and defended.
 
 ## Where we are right now
+
+**Update, D47 (29 November 2026).**
+- *Three small items settled, your choices:*
+  - A19 is closed;
+  - A24's assumption, that an emulated decoy can be recognised, is in the threat model, and its Sweep-and-Seek principle is dropped;
+  - A28's wording is adopted as the working novelty claim, final after the update search.
+- *Two citation errors fixed:* A24 pointed at the wrong source number, and ICSLure's first author is Pironti, not Furfaro.
+- *Next:* the analysis chat, with Claude's starter message. Before testing and tuning, nothing else remains.
+- The D46 update below is overtaken where it lists A19, A24 and A28 as open.
 
 **Update, D46 (26 November 2026).**
 - *Screen 2 is built (D46):* the sensitivity sweep, a third tab in the interface. For one budget it shows the five declared weightings side by side, in six charts and a table of every value. Its button makes the 20 runs it reads.

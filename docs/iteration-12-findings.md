@@ -22,7 +22,7 @@ Targeted iteration on the two scoring components that were weakest in the specif
 
 ## 2. The uncomfortable finding
 
-`ICSLure`'s comparative evaluation (§6.3, already logged as #20 in the citation shortlist) reports results that the thesis cannot ignore:
+`ICSLure`'s comparative evaluation (§6.3, already logged as #20 in the citation shortlist) reports results that the thesis cannot ignore: *[D47: these are HoneyJudge's results (`sources.md` #334), which ICSLure §6.3 reports; ICSLure is `sources.md` #3, and the shortlist now numbers it 21.]*
 
 - Nmap identifies Conpot as a honeypot. PLCScan flags it as non-authentic.
 - Using **TIA Portal** — Siemens' ordinary engineering software, not an attack tool — Conpot, HoneyPLC, ICSpot and ICSpot+LSTM were all detected as honeypots.
@@ -41,7 +41,7 @@ The answer is not a defence bolted on afterwards. It falls out of the objective 
 1. **Detectability is attacker-dependent, not absolute.** An adversary in the reconnaissance stage running broad scans is not running TIA Portal against every host. Fingerprinting costs time, tooling, and exposure. The detection opportunity exists in the window before the attacker invests in verification.
 2. **This is precisely why `Early(x)` is in the objective.** Decoy fidelity degrades under scrutiny, and scrutiny increases as an attack progresses. A decoy encountered at step 1 of a path faces a scanning adversary; the same decoy at step 5 faces an adversary with established access, engineering tooling and time. Early interception is not merely *preferable* — it is the condition under which deception works at all. The earliness term was justified in `research-synthesis-implementation.md` on coverage grounds; this finding gives it a second, stronger justification.
 3. **This is why Filter 2 down-weights rather than excludes.** The original decision — recorded in D3 — was to treat detectability as a risk adjustment rather than a hard exclusion. That now looks better-founded than when it was made: a hard exclusion would empty the candidate set entirely, since on this evidence no emulated position is undetectable.
-4. **It sharpens the Sweep–Seek rule from iteration 11.** A *Sweep* encounter happens under broad, low-scrutiny movement — exactly the regime where decoys survive. A *Seek* encounter happens when the attacker is deliberately examining a specific asset type — exactly the regime where fingerprinting occurs. **Sweep candidates are therefore more robust to detectability than Seek candidates**, which is a substantive placement principle that neither source states and that follows from combining them.
+4. **It sharpens the Sweep–Seek rule from iteration 11.** A *Sweep* encounter happens under broad, low-scrutiny movement — exactly the regime where decoys survive. A *Seek* encounter happens when the attacker is deliberately examining a specific asset type — exactly the regime where fingerprinting occurs. **Sweep candidates are therefore more robust to detectability than Seek candidates**, which is a substantive placement principle that neither source states and that follows from combining them. *[Superseded by D47: D22a's full-text reading of #352 §4.9, and ICSLure's report that Nmap identifies Conpot, contradict its premise, so the principle is not adopted (A24).]*
 
 **Action:** this belongs in the thesis as a stated assumption in the threat model and as a paragraph in the results discussion, not as a footnote. Point 4 above is a genuine synthesis of two independent sources and is worth stating as such.
 

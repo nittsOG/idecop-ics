@@ -51,13 +51,13 @@ Six chapters. This is the standard shape for an M.Tech project report and maps c
 | 2.1 | Review methodology and its stated limitations | TA-1 §2.1 |
 | 2.2 | OT/ICS deception systems — generation and fidelity | Shortlist §III |
 | 2.3 | Placement optimisation in enterprise IT and adjacent domains | Shortlist §II |
-| 2.4 | Deception placement in OT — the closest prior art | Shortlist §I |
+| 2.4 | Deception placement in OT — the closest prior art | Shortlist §I *[D47: with the four commercial distinctions of `iteration-13-findings.md`, and how IEC 62443 zones and conduits enter the objective: numerically through Crit(v), structurally through the paths]* |
 | 2.5 | Criticality scoring methods | Shortlist §VI |
-| 2.6 | Candidate feasibility and decoy detectability | Shortlist §VII |
+| 2.6 | Candidate feasibility and decoy detectability | Shortlist §VII *[D47: the threat model's assumption that an emulated decoy can be recognised, from #3, #334 as reported in #3, and #352 §4.9]* |
 | 2.7 | Deterministic planning with model-generated explanation | Shortlist §II (SPEAR, i-EXAM) |
 | 2.8 | Standards and frameworks — IEC 62443, ATT&CK for ICS, NIST 800-82 | Shortlist §IV |
 | 2.9 | Comparative summary table | TA-1 §2.3 |
-| 2.10 | Research gap | TA-1 §3 |
+| 2.10 | Research gap | TA-1 §3 *[D47: the working novelty claim is A28's, final after A17's update re-run]* |
 
 **The one section that needs care:** 2.4. Jay (2023) requires a full paragraph arguing the three distinctions explicitly — single VLAN versus multi-zone, IEC 61850 versus IEC 62443, equilibrium over decoy type versus composite multi-metric objective. Rowe (2025) needs its own disambiguation, being the closest-*sounding* work. Everything else in the chapter can be grouped and summarised. *[D35, 11 November 2026: 2.4 must also treat A17's two T2 works, Park & Dagher and Dong et al., with the differences mapped in `01-search-screening-record.md` §3. It must cite Gong et al. from its abstract and say its full text was not accessible (shortlist entries 8, 45 and 46).]* *[D36, 15 November 2026: 2.4 must also treat the patent arm: CN 122339846 A/B (proposed T2, if the user confirms), US 12,261,855 B2 and CN 121356815 A as the closest patents by method, and BAG-HRF and Tan et al. from their abstracts (shortlist entries 50–54). If the user rules CN 121012683 A T2, 2.4 needs a sentence that its construction is Jay's.]* *[D37, 16 November 2026: he ruled CN 122339846 A/B and CN 121012683 A T2 and CN 117675308 A T1, so 2.4 treats both T2 patents and gives that sentence (shortlist entries 50 and 56).]* *[D38, 16 November 2026: 2.4 must also treat Zhan et al. 2026, beside Dong et al., from its abstract (shortlist entry 57).]*
 
